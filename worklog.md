@@ -396,3 +396,40 @@ Stage Summary:
 - Social media section completely removed from footer (Twitter, LinkedIn, GitHub gone); replaced by "Nos agences" column
 - Legal page updated with local data protection laws (Nigeria NDPR 2023, Togo law n°2018-026)
 - Dev server running on port 3000, lint clean
+
+---
+Task ID: 8 (logo integration)
+Agent: main
+Task: Integrate user-provided MailOqui logo (favicon set) into the project
+
+Work Log:
+- User uploaded 8 logo files: favicon.ico, favicon-16x16.png, apple-touch-icon.png, android-chrome-192x192.png, android-chrome-192x512x512.png + 3 variants with "EmailOqui" wordmark
+- VLM analysis: icon is a bold stylized "G/E" with checkmark + dot, black on white; wordmark variants say "EmailOqui"
+- Decision: use icon-only variants (no wordmark) as brand mark, keep "MailOqui" text label per cahier des charges
+- Copied favicon files to public/: favicon.ico, favicon-16x16.png, apple-touch-icon.png, android-chrome-192x192.png, android-chrome-512x512.png, logo.png (alias of 512x512)
+- Created public/site.webmanifest with MailOqui metadata (theme_color #d97706 amber)
+- Updated src/app/layout.tsx metadata: added manifest + icons (favicon.ico, 16x16, 192x192, 512x512, apple-touch-icon), keywords extended with Nigeria/Togo/Bénin/Ghana/Afrique de l'Ouest, description updated to "plateforme africaine"
+- Created src/components/brand/brand-logo.tsx with two reusable components:
+  - BrandLogo({size, showText, textClassName}) — icon + "MailOqui" wordmark
+  - BrandMark({size, className}) — icon only
+- Replaced all previous "M" gradient badges with the new PNG logo:
+  - src/components/marketing/site-header.tsx (desktop header + mobile Sheet header)
+  - src/components/marketing/site-footer.tsx (footer brand)
+  - src/components/dashboard/shell/sidebar.tsx (sidebar brand, with collapsed state)
+  - src/components/dashboard/views/owner-dashboard.tsx (Owner topbar brand)
+  - src/components/dashboard/views/renew-view.tsx (renew page header brand)
+  - src/components/email-editor/email-preview.tsx (email header inside rendered emails)
+- Removed unused eslint-disable @next/next/no-img-element directives (5 files)
+- Lint: 0 errors, 0 warnings
+- Browser verification (Agent Browser):
+  - Landing: header shows image "MailOqui" + text, footer shows same, all 7 favicon assets return 200 OK
+  - Dashboard: sidebar shows image "MailOqui" + "MailOqui" text + "mail.oquitogo.com" subtitle, footer shows image + "MailOqui — mail.oquitogo.com v0.1.0"
+  - Email preview (campaign detail "Newsletter — Octobre 2026"): rendered email header now shows image "MailOqui" PNG on amber background, replacing the old generic Mail lucide icon
+  - Browser tab favicon: favicon.ico served (verified 200)
+
+Stage Summary:
+- MailOqui brand identity fully deployed: favicon set in /public, manifest linked, metadata icons configured
+- All 7 previous "M" gradient badges replaced by the official PNG logo (header, footer, sidebar, owner topbar, renew header, email header)
+- Reusable BrandLogo/BrandMark components for future use
+- Email preview header now carries the brand logo on amber background (white-tinted) — emails are visibly branded
+- Dev server running on port 3000, lint clean, all assets served

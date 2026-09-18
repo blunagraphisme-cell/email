@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "MailOqui — Automatisez votre marketing par e-mail",
   description:
-    "MailOqui est la plateforme SaaS de gestion et d'automatisation des e-mails. Créez des campagnes, gérez vos contacts, programmez vos envois et suivez vos performances.",
+    "MailOqui est la plateforme africaine de gestion et d'automatisation des e-mails. Siège au Nigeria, agences au Bénin, Togo et Ghana. Créez des campagnes, gérez vos contacts, programmez vos envois et suivez vos performances.",
   keywords: [
     "MailOqui",
     "email marketing",
@@ -26,8 +26,24 @@ export const metadata: Metadata = {
     "newsletter",
     "gestion des campagnes",
     "SaaS email",
+    "Nigeria",
+    "Togo",
+    "Bénin",
+    "Ghana",
+    "Afrique de l'Ouest",
   ],
   authors: [{ name: "MailOqui" }],
+  manifest: "/site.webmanifest",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    shortcut: ["/favicon.ico"],
+  },
   openGraph: {
     title: "MailOqui — Automatisez votre marketing par e-mail",
     description:

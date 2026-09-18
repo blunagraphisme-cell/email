@@ -4,6 +4,7 @@ import * as React from 'react'
 import { Mail, Phone, MapPin } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { Button } from '@/components/ui/button'
+import { BrandMark } from '@/components/brand/brand-logo'
 
 const COLS: {
   title: string
@@ -55,9 +56,7 @@ export function SiteFooter() {
           {/* Brand col */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2">
-              <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Mail className="size-4" />
-              </span>
+              <BrandMark size={36} />
               <span className="text-lg font-bold tracking-tight">
                 Mail<span className="text-primary">Oqui</span>
               </span>

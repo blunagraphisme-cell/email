@@ -51,13 +51,17 @@ const NAV_ITEMS: NavItem[] = [
   { view: 'settings', label: 'Paramètres', icon: Settings },
 ]
 
-/** Brand mark — small gradient square with the "M" glyph. */
+/** Brand mark — uses the official MailOqui logo PNG. */
 function BrandMark({ collapsed }: { collapsed: boolean }) {
   return (
     <div className="flex items-center gap-2.5 px-2">
-      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 text-primary-foreground shadow-sm">
-        <span className="text-base font-bold">M</span>
-      </div>
+      <img
+        src="/logo.png"
+        alt="MailOqui"
+        width={36}
+        height={36}
+        className="size-9 shrink-0 rounded-lg object-contain"
+      />
       {!collapsed && (
         <div className="flex flex-col leading-tight">
           <span className="text-sm font-semibold tracking-tight">MailOqui</span>

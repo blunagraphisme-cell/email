@@ -170,9 +170,13 @@ export function RenewView() {
             className="flex items-center gap-2 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label="Aller au tableau de bord"
           >
-            <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-              <Mail className="size-5" />
-            </span>
+            <img
+              src="/logo.png"
+              alt="MailOqui"
+              width={36}
+              height={36}
+              className="size-9 rounded-lg object-contain"
+            />
             <span className="text-lg font-bold tracking-tight text-foreground">
               Mail<span className="text-primary">Oqui</span>
             </span>

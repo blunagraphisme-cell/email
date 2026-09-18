@@ -208,9 +208,13 @@ function BigStat({
 function BrandMark() {
   return (
     <div className="flex items-center gap-2">
-      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 text-primary-foreground shadow-sm">
-        <span className="text-base font-bold">M</span>
-      </div>
+      <img
+        src="/logo.png"
+        alt="MailOqui"
+        width={36}
+        height={36}
+        className="size-9 shrink-0 rounded-lg object-contain"
+      />
       <div className="flex flex-col leading-tight">
         <span className="text-sm font-semibold tracking-tight">MailOqui</span>
         <span className="text-[10px] text-muted-foreground">mail.oquitogo.com</span>

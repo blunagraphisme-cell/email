@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Mail, Menu, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import {
@@ -12,6 +12,7 @@ import {
   SheetClose,
 } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
+import { BrandLogo, BrandMark } from '@/components/brand/brand-logo'
 
 const NAV_ITEMS: { label: string; view: 'features' | 'pricing' | 'contact' }[] = [
   { label: 'Fonctionnalités', view: 'features' },
@@ -50,12 +51,7 @@ export function SiteHeader() {
           className="flex items-center gap-2 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-label="Accueil MailOqui"
         >
-          <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-            <Mail className="size-5" />
-          </span>
-          <span className="text-lg font-bold tracking-tight text-foreground">
-            Mail<span className="text-primary">Oqui</span>
-          </span>
+          <BrandLogo size={32} />
         </button>
 
         {/* Desktop nav */}
@@ -102,9 +98,7 @@ export function SiteHeader() {
             <div className="flex h-full flex-col">
               <div className="flex items-center justify-between border-b border-border p-4">
                 <SheetTitle className="flex items-center gap-2 text-base font-bold">
-                  <span className="flex size-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                    <Mail className="size-4" />
-                  </span>
+                  <BrandMark size={26} />
                   Mail<span className="text-primary">Oqui</span>
                 </SheetTitle>
                 <SheetClose

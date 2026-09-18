@@ -106,9 +106,13 @@ function EmailHeader({ workspaceName, compact = false }: { workspaceName: string
       style={{ backgroundColor: '#f59e0b' }}
     >
       <div className="flex items-center gap-2">
-        <span className="flex size-7 items-center justify-center rounded-md bg-white/20 backdrop-blur">
-          <Mail className="size-4" />
-        </span>
+        <img
+          src="/logo.png"
+          alt="MailOqui"
+          width={28}
+          height={28}
+          className="size-7 rounded-md bg-white/90 object-contain p-0.5"
+        />
         <span className={cn('font-semibold tracking-tight', compact ? 'text-sm' : 'text-base')}>
           {workspaceName}
         </span>
