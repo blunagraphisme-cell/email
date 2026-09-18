@@ -549,3 +549,41 @@ Stage Summary:
 - App domain corrected: email.oquitogo.online (TLD .online, not .com)
 - Parent brand domain preserved: oquitogo.com (contact email + website URLs)
 - All .env.example vars, OAuth redirect URIs, SPF/DKIM/DMARC records, unsubscribe URLs, messageId domains, etc. updated
+
+---
+Task ID: 12 (dynamic OAuth redirect URI)
+Agent: main
+Task: Make Google OAuth redirect URI dynamic so it works for both sandbox preview + production
+
+Work Log:
+- User configured Google OAuth client with:
+  - Authorized JS origins: https://preview-chat-2b250a6c-3a05-4de5-b5d9-0f34897c456e.space-z.ai + https://email.oquitogo.online
+  - Authorized redirect URIs: https://email.oquitogo.online/api/auth/google/callback + https://preview-chat-2b250a6c-3a05-4de5-b5d9-0f34897c456e.space-z.ai/api/auth/google/callback
+- The preview URL contains the chat_id (2b250a6c-...) and changes per session
+- Created src/lib/url.ts with getBaseUrl(headers) + getGoogleRedirectUri(headers) helpers:
+  - Reads X-Forwarded-Proto (default https in prod, http in dev)
+  - Reads X-Forwarded-Host or Host header
+  - Falls back to APP_URL or localhost:3000 if no headers
+- Updated src/app/api/auth/google/route.ts:
+  - Removed getEnv() function, removed unused db/addMonthsCal imports
+  - Uses getGoogleRedirectUri(req.headers) for the redirect_uri sent to Google
+  - Help page (503) now dynamically shows the detected domain + redirect URI to authorize
+  - Cookie secure flag also respects X-Forwarded-Proto: https
+- Updated src/app/api/auth/google/callback/route.ts:
+  - Uses getBaseUrl(req.headers) for all redirects (instead of APP_URL)
+  - Uses getGoogleRedirectUri(req.headers) for token exchange (must match what /google sent)
+  - Added oauth_not_configured error code (when GOOGLE_CLIENT_ID missing)
+- Updated src/components/auth/auth-modal.tsx: added oauth_not_configured error message
+- Lint: 0 errors, 0 warnings
+- Verification with curl + simulated headers:
+  - Host: preview-chat-2b250a6c-3a05-4de5-b5d9-0f34897c456e.space-z.ai → detected domain matches
+  - Host: email.oquitogo.online → detected domain matches
+- Browser verification: clicked "Continuer avec Google" → 503 page shows correct detected domain + redirect URI + helpful instructions
+
+Stage Summary:
+- Google OAuth redirect URI is now dynamically derived from request headers (Caddy forwards X-Forwarded-Proto + Host)
+- Works for both sandbox preview (preview-chat-<session>.space-z.ai) and production (email.oquitogo.online)
+- No APP_URL needed in .env (auto-detection); APP_URL remains as final fallback for CLI scripts
+- Help page (503) shows the exact URI to authorize in Google Cloud Console based on current host
+- User still needs to add GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET to local .env (NOT committed) to enable real Google login
+- Committing and pushing to git

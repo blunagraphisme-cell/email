@@ -19,6 +19,7 @@ import {
   addMonthsCal,
   SESSION_COOKIE,
 } from '@/lib/auth'
+import { getBaseUrl, getGoogleRedirectUri } from '@/lib/url'
 
 const STATE_COOKIE = 'eo_google_state'
 const SESSION_TTL_DAYS = 7
@@ -42,35 +43,33 @@ interface GoogleUserInfo {
   locale?: string
 }
 
-function getEnv() {
-  return {
-    clientId: process.env.GOOGLE_CLIENT_ID!,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    appUrl: process.env.APP_URL || (process.env.NODE_ENV === 'production' ? 'https://email.oquitogo.online' : 'http://localhost:3000'),
-  }
-}
-
 export async function GET(req: NextRequest) {
-  const { clientId, clientSecret, appUrl } = getEnv()
+  const clientId = process.env.GOOGLE_CLIENT_ID
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET
+  const baseUrl = getBaseUrl(req.headers)
   const url = new URL(req.url)
   const code = url.searchParams.get('code')
   const state = url.searchParams.get('state')
   const errorParam = url.searchParams.get('error')
 
+  if (!clientId || !clientSecret) {
+    return NextResponse.redirect(`${baseUrl}/?google_error=oauth_not_configured`)
+  }
   if (errorParam) {
-    return NextResponse.redirect(`${appUrl}/?google_error=access_denied`)
+    return NextResponse.redirect(`${baseUrl}/?google_error=access_denied`)
   }
   if (!code || !state) {
-    return NextResponse.redirect(`${appUrl}/?google_error=invalid_callback`)
+    return NextResponse.redirect(`${baseUrl}/?google_error=invalid_callback`)
   }
 
   // CSRF: validate state cookie
   const cookieState = req.cookies.get(STATE_COOKIE)?.value
   if (!cookieState || cookieState !== state) {
-    return NextResponse.redirect(`${appUrl}/?google_error=state_mismatch`)
+    return NextResponse.redirect(`${baseUrl}/?google_error=state_mismatch`)
   }
 
-  const redirectUri = `${appUrl.replace(/\/$/, '')}/api/auth/google/callback`
+  // Derive the redirect URI from the request host (matches what /api/auth/google sent)
+  const redirectUri = getGoogleRedirectUri(req.headers)
 
   // Exchange code for tokens
   let tokens: GoogleTokens
@@ -87,11 +86,11 @@ export async function GET(req: NextRequest) {
       }).toString(),
     })
     if (!tokenRes.ok) {
-      return NextResponse.redirect(`${appUrl}/?google_error=token_exchange_failed`)
+      return NextResponse.redirect(`${baseUrl}/?google_error=token_exchange_failed`)
     }
     tokens = await tokenRes.json()
   } catch {
-    return NextResponse.redirect(`${appUrl}/?google_error=token_exchange_failed`)
+    return NextResponse.redirect(`${baseUrl}/?google_error=token_exchange_failed`)
   }
 
   // Get user info
@@ -101,15 +100,15 @@ export async function GET(req: NextRequest) {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     })
     if (!uiRes.ok) {
-      return NextResponse.redirect(`${appUrl}/?google_error=userinfo_failed`)
+      return NextResponse.redirect(`${baseUrl}/?google_error=userinfo_failed`)
     }
     userInfo = await uiRes.json()
   } catch {
-    return NextResponse.redirect(`${appUrl}/?google_error=userinfo_failed`)
+    return NextResponse.redirect(`${baseUrl}/?google_error=userinfo_failed`)
   }
 
   if (!userInfo.email) {
-    return NextResponse.redirect(`${appUrl}/?google_error=no_email`)
+    return NextResponse.redirect(`${baseUrl}/?google_error=no_email`)
   }
 
   // Upsert user
@@ -117,7 +116,7 @@ export async function GET(req: NextRequest) {
   let user
   if (existing) {
     if (existing.status !== 'ACTIF') {
-      return NextResponse.redirect(`${appUrl}/?google_error=account_suspended`)
+      return NextResponse.redirect(`${baseUrl}/?google_error=account_suspended`)
     }
     user = existing
   } else {
@@ -182,11 +181,11 @@ export async function GET(req: NextRequest) {
 
   // Create session + set cookie directly on the redirect response
   const token = await createSession(user.id)
-  const res = NextResponse.redirect(`${appUrl}/`)
+  const res = NextResponse.redirect(`${baseUrl}/`)
   res.cookies.set(SESSION_COOKIE, token, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production' || req.headers.get('x-forwarded-proto') === 'https',
     path: '/',
     maxAge: SESSION_TTL_DAYS * 24 * 60 * 60,
   })

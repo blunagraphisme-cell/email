@@ -86,6 +86,7 @@ export function AuthModal() {
         userinfo_failed: 'Impossible de récupérer vos informations Google.',
         no_email: 'Aucun e-mail reçu de Google.',
         account_suspended: 'Votre compte EmailOqui est suspendu. Contactez le support.',
+        oauth_not_configured: 'Connexion Google non configurée. Ajoutez GOOGLE_CLIENT_ID et GOOGLE_CLIENT_SECRET au .env.',
       }
       toast.error(messages[err] ?? 'Erreur de connexion Google.')
       // Clean the URL
