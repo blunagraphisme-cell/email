@@ -162,7 +162,7 @@ export function Topbar({ onMenu }: TopbarProps) {
         ? 'bg-amber-500'
         : 'bg-emerald-500'
 
-  const title = VIEW_TITLES[view] ?? 'MailOqui'
+  const title = VIEW_TITLES[view] ?? 'EmailOqui'
 
   const initials = [
     user?.firstName?.[0] ?? '',

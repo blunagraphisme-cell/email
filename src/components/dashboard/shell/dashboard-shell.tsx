@@ -145,12 +145,12 @@ export function DashboardShell() {
           <footer className="mt-auto border-t border-border bg-background/60 px-4 py-3 text-xs text-muted-foreground">
             <div className="mx-auto flex max-w-7xl items-center justify-between">
               <span>
-                MailOqui —{' '}
+                EmailOqui —{' '}
                 <a
-                  href="https://mail.oquitogo.com"
+                  href="https://email.oquitogo.com"
                   className="font-medium text-foreground/80 hover:text-foreground"
                 >
-                  mail.oquitogo.com
+                  email.oquitogo.com
                 </a>
               </span>
               <span className="font-mono tabular-nums">{APP_VERSION}</span>

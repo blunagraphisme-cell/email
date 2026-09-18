@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * MailOqui — Email preview component
+ * EmailOqui — Email preview component
  *
  * Renders an array of `Block`s into a static HTML e-mail layout (no client
  * interactivity). Used inside the editor (right pane) and the campaign detail
@@ -108,7 +108,7 @@ function EmailHeader({ workspaceName, compact = false }: { workspaceName: string
       <div className="flex items-center gap-2">
         <img
           src="/logo.png"
-          alt="MailOqui"
+          alt="EmailOqui"
           width={28}
           height={28}
           className="size-7 rounded-md bg-white/90 object-contain p-0.5"
@@ -118,7 +118,7 @@ function EmailHeader({ workspaceName, compact = false }: { workspaceName: string
         </span>
       </div>
       <span className={cn('text-white/80', compact ? 'text-[10px]' : 'text-xs')}>
-        mail.oquitogo.com
+        email.oquitogo.com
       </span>
     </div>
   )

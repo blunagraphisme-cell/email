@@ -210,14 +210,14 @@ function BrandMark() {
     <div className="flex items-center gap-2">
       <img
         src="/logo.png"
-        alt="MailOqui"
+        alt="EmailOqui"
         width={36}
         height={36}
         className="size-9 shrink-0 rounded-lg object-contain"
       />
       <div className="flex flex-col leading-tight">
-        <span className="text-sm font-semibold tracking-tight">MailOqui</span>
-        <span className="text-[10px] text-muted-foreground">mail.oquitogo.com</span>
+        <span className="text-sm font-semibold tracking-tight">EmailOqui</span>
+        <span className="text-[10px] text-muted-foreground">email.oquitogo.com</span>
       </div>
     </div>
   )
@@ -460,12 +460,12 @@ export function OwnerDashboard() {
       <footer className="mt-auto border-t border-border bg-background/60 px-4 py-3 text-xs text-muted-foreground">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <span>
-            MailOqui —{' '}
+            EmailOqui —{' '}
             <a
-              href="https://mail.oquitogo.com"
+              href="https://email.oquitogo.com"
               className="font-medium text-foreground/80 hover:text-foreground"
             >
-              mail.oquitogo.com
+              email.oquitogo.com
             </a>
           </span>
           <span className="font-mono tabular-nums">v0.1.0</span>
@@ -895,7 +895,7 @@ function SubscriptionTab(props: {
             <CreditCard className="size-4 text-primary" />
             Plan {subscription?.planName ?? workspace?.planName ?? '—'}
           </CardTitle>
-          <CardDescription>Statut de votre abonnement MailOqui.</CardDescription>
+          <CardDescription>Statut de votre abonnement EmailOqui.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
@@ -951,7 +951,7 @@ function EmptyState() {
           <Mail className="size-7" />
         </div>
         <div>
-          <p className="text-base font-semibold">Bienvenue sur MailOqui</p>
+          <p className="text-base font-semibold">Bienvenue sur EmailOqui</p>
           <p className="mt-1 max-w-md text-sm text-muted-foreground">
             Aucune campagne n&apos;a encore été envoyée. Vos statistiques apparaîtront ici dès que
             votre équipe aura expédié la première campagne.

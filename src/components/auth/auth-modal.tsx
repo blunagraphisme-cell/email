@@ -26,14 +26,14 @@ import { toast } from 'sonner'
 
 type TabKey = 'login' | 'signup' | 'forgot'
 
-const DEMO_EMAIL = 'admin@mailoqui.com'
-const DEMO_PASSWORD = 'MailOqui2026!'
+const DEMO_EMAIL = 'admin@email.oquitogo.com'
+const DEMO_PASSWORD = 'EmailOqui2026!'
 
 function randomDemoEmail(): string {
   const n = Math.floor(Math.random() * 1_000_000)
     .toString(36)
     .padStart(6, '0')
-  return `demo-${n}@mailoqui.com`
+  return `demo-${n}@email.oquitogo.com`
 }
 
 export function AuthModal() {
@@ -215,7 +215,7 @@ export function AuthModal() {
               <Mail className="size-5" />
             </span>
             <div>
-              <DialogTitle className="text-lg">Bienvenue sur MailOqui</DialogTitle>
+              <DialogTitle className="text-lg">Bienvenue sur EmailOqui</DialogTitle>
               <DialogDescription>
                 Connectez-vous ou créez un compte pour démarrer.
               </DialogDescription>

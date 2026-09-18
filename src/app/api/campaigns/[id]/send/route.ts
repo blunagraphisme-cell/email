@@ -44,12 +44,12 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     events.push({
       workspaceId: ctx.workspace.id, campaignId: c.id, contactEmail: contact.email,
       eventId: `${c.id}-${contact.id}-SENT`, eventType: 'SENT', occurredAt: now,
-      messageId: `msg-${contact.id}@mailoqui.com`,
+      messageId: `msg-${contact.id}@email.oquitogo.com`,
     })
     events.push({
       workspaceId: ctx.workspace.id, campaignId: c.id, contactEmail: contact.email,
       eventId: `${c.id}-${contact.id}-DELIVERED`, eventType: 'DELIVERED', occurredAt: new Date(now.getTime() + 30000 + Math.random() * 60000),
-      messageId: `msg-${contact.id}@mailoqui.com`,
+      messageId: `msg-${contact.id}@email.oquitogo.com`,
     })
   }
   // OPENED for ~60%
@@ -57,22 +57,22 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     if (Math.random() < 0.6) events.push({
       workspaceId: ctx.workspace.id, campaignId: c.id, contactEmail: contact.email,
       eventId: `${c.id}-${contact.id}-OPENED`, eventType: 'OPENED', occurredAt: new Date(now.getTime() + 3600000 + Math.random() * 86400000),
-      messageId: `msg-${contact.id}@mailoqui.com`,
+      messageId: `msg-${contact.id}@email.oquitogo.com`,
     })
     if (Math.random() < 0.25) events.push({
       workspaceId: ctx.workspace.id, campaignId: c.id, contactEmail: contact.email,
       eventId: `${c.id}-${contact.id}-CLICKED`, eventType: 'CLICKED', occurredAt: new Date(now.getTime() + 7200000 + Math.random() * 86400000),
-      messageId: `msg-${contact.id}@mailoqui.com`,
+      messageId: `msg-${contact.id}@email.oquitogo.com`,
     })
     if (Math.random() < 0.04) events.push({
       workspaceId: ctx.workspace.id, campaignId: c.id, contactEmail: contact.email,
       eventId: `${c.id}-${contact.id}-UNSUB`, eventType: 'UNSUBSCRIBE', occurredAt: new Date(now.getTime() + 10800000 + Math.random() * 86400000),
-      messageId: `msg-${contact.id}@mailoqui.com`,
+      messageId: `msg-${contact.id}@email.oquitogo.com`,
     })
     if (Math.random() < 0.03) events.push({
       workspaceId: ctx.workspace.id, campaignId: c.id, contactEmail: contact.email,
       eventId: `${c.id}-${contact.id}-BOUNCE`, eventType: 'BOUNCE', occurredAt: new Date(now.getTime() + 60000),
-      messageId: `msg-${contact.id}@mailoqui.com`,
+      messageId: `msg-${contact.id}@email.oquitogo.com`,
     })
   }
   // Insert (chunked)

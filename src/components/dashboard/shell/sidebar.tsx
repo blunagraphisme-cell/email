@@ -51,21 +51,21 @@ const NAV_ITEMS: NavItem[] = [
   { view: 'settings', label: 'Paramètres', icon: Settings },
 ]
 
-/** Brand mark — uses the official MailOqui logo PNG. */
+/** Brand mark — uses the official EmailOqui logo PNG. */
 function BrandMark({ collapsed }: { collapsed: boolean }) {
   return (
     <div className="flex items-center gap-2.5 px-2">
       <img
         src="/logo.png"
-        alt="MailOqui"
+        alt="EmailOqui"
         width={36}
         height={36}
         className="size-9 shrink-0 rounded-lg object-contain"
       />
       {!collapsed && (
         <div className="flex flex-col leading-tight">
-          <span className="text-sm font-semibold tracking-tight">MailOqui</span>
-          <span className="text-[10px] text-muted-foreground">mail.oquitogo.com</span>
+          <span className="text-sm font-semibold tracking-tight">EmailOqui</span>
+          <span className="text-[10px] text-muted-foreground">email.oquitogo.com</span>
         </div>
       )}
     </div>

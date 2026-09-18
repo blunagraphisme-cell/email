@@ -43,7 +43,7 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* MailOqui brand: amber/coral — energetic, premium, West-African warmth.
+/* EmailOqui brand: amber/coral — energetic, premium, West-African warmth.
    Avoids indigo/blue per project UI rules. */
 :root {
   --radius: 0.625rem;

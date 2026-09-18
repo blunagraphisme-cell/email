@@ -427,7 +427,7 @@ export default function SupportView() {
                     <div className="flex size-7 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
                       <CheckCircle2 className="size-3.5" />
                     </div>
-                    <span className="text-xs font-medium">Support MailOqui</span>
+                    <span className="text-xs font-medium">Support EmailOqui</span>
                     <span className="text-[11px] text-muted-foreground">{fmt(detail.updatedAt)}</span>
                   </div>
                   <p className="text-sm leading-relaxed">
@@ -436,7 +436,7 @@ export default function SupportView() {
                     Nous avons bien reçu votre demande. Notre équipe technique analyse le problème
                     et revient vers vous dans les plus brefs délais. Merci de votre patience.
                     <br />
-                    — L&apos;équipe MailOqui
+                    — L&apos;équipe EmailOqui
                   </p>
                 </div>
 

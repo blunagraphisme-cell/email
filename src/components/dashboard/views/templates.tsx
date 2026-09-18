@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * MailOqui — Templates gallery
+ * EmailOqui — Templates gallery
  *
  * Galerie de modèles d'e-mails réutilisables pour démarrer une campagne.
  *

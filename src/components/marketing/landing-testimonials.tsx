@@ -11,7 +11,7 @@ const TESTIMONIALS = [
     role: 'Responsable CRM',
     company: 'OquiTogo — Lomé, Togo',
     quote:
-      'MailOqui nous a permis d’industrialiser nos newsletters en quelques jours. La délivrabilité est excellente et le tableau de bord clair.',
+      'EmailOqui nous a permis d’industrialiser nos newsletters en quelques jours. La délivrabilité est excellente et le tableau de bord clair.',
     initials: 'AA',
   },
   {
@@ -39,7 +39,7 @@ export function LandingTestimonials() {
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-primary">Témoignages</p>
           <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Ils automatisent leurs e-mails avec MailOqui
+            Ils automatisent leurs e-mails avec EmailOqui
           </h2>
           <p className="mt-4 text-muted-foreground">
             Des équipes en Afrique de l’Ouest et au-delà nous font confiance pour leurs campagnes.

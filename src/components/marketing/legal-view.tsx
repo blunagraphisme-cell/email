@@ -10,33 +10,33 @@ const MENTIONS: Section[] = [
   {
     heading: 'Éditeur',
     paragraphs: [
-      'Le site mail.oquitogo.com est édité par MailOqui, société africaine d’édition de logiciels spécialisée dans la gestion et l’automatisation des e-mails pour les entreprises.',
-      'MailOqui a son siège social à Lagos, au Nigeria, et dispose d’agences à Cotonou (Bénin), Lomé (Togo) et Accra (Ghana).',
-      'MailOqui est une plateforme multi-tenant: chaque client dispose d’un espace de travail isolé (workspace) contenant ses propres contacts, campagnes, modèles et automatisations.',
+      'Le site email.oquitogo.com est édité par EmailOqui, société africaine d’édition de logiciels spécialisée dans la gestion et l’automatisation des e-mails pour les entreprises.',
+      'EmailOqui a son siège social à Lagos, au Nigeria, et dispose d’agences à Cotonou (Bénin), Lomé (Togo) et Accra (Ghana).',
+      'EmailOqui est une plateforme multi-tenant: chaque client dispose d’un espace de travail isolé (workspace) contenant ses propres contacts, campagnes, modèles et automatisations.',
     ],
   },
   {
     heading: 'Responsable de publication',
     paragraphs: [
-      'Le responsable de publication est la direction de MailOqui, joignable via contact@oquitogo.com ou par téléphone au +234 813 8198 3521 (Nigeria) ou +228 22 22 77 58 (Togo). Le siège social est situé à Lagos, Nigeria, avec des agences à Cotonou (Bénin), Lomé (Togo) et Accra (Ghana).',
+      'Le responsable de publication est la direction de EmailOqui, joignable via contact@oquitogo.com ou par téléphone au +234 813 8198 3521 (Nigeria) ou +228 22 22 77 58 (Togo). Le siège social est situé à Lagos, Nigeria, avec des agences à Cotonou (Bénin), Lomé (Togo) et Accra (Ghana).',
     ],
   },
   {
     heading: 'Hébergement',
     paragraphs: [
-      'Les serveurs de MailOqui sont hébergés auprès d’un prestataire d’infrastructure cloud. Les données traitées (contacts, campagnes, statistiques) sont stockées sur ces serveurs et accessibles uniquement via le mécanisme d’authentification propre à chaque workspace.',
+      'Les serveurs de EmailOqui sont hébergés auprès d’un prestataire d’infrastructure cloud. Les données traitées (contacts, campagnes, statistiques) sont stockées sur ces serveurs et accessibles uniquement via le mécanisme d’authentification propre à chaque workspace.',
     ],
   },
   {
     heading: 'Propriété intellectuelle',
     paragraphs: [
-      'L’ensemble des contenus présents sur la plateforme (logos, textes, illustrations, design) est la propriété de MailOqui, sauf mention contraire. Toute reproduction sans autorisation préalable est interdite.',
+      'L’ensemble des contenus présents sur la plateforme (logos, textes, illustrations, design) est la propriété de EmailOqui, sauf mention contraire. Toute reproduction sans autorisation préalable est interdite.',
     ],
   },
   {
     heading: 'Responsabilité',
     paragraphs: [
-      'MailOqui met tout en œuvre pour assurer la disponibilité et la sécurité de la plateforme. Toutefois, la responsabilité de MailOqui ne peut être engagée en cas de défaillance du réseau, du navigateur, ou d’un tiers. MailOqui n’est pas responsable du contenu des e-mails envoyés par ses clients.',
+      'EmailOqui met tout en œuvre pour assurer la disponibilité et la sécurité de la plateforme. Toutefois, la responsabilité de EmailOqui ne peut être engagée en cas de défaillance du réseau, du navigateur, ou d’un tiers. EmailOqui n’est pas responsable du contenu des e-mails envoyés par ses clients.',
     ],
   },
 ]
@@ -45,7 +45,7 @@ const PRIVACY: Section[] = [
   {
     heading: 'Données traitées',
     paragraphs: [
-      'MailOqui traite les données nécessaires à la fourniture du service: identifiant (e-mail), mot de passe (haché), nom et prénom du compte utilisateur, nom du workspace, et coordonnées de contacts importés par le client.',
+      'EmailOqui traite les données nécessaires à la fourniture du service: identifiant (e-mail), mot de passe (haché), nom et prénom du compte utilisateur, nom du workspace, et coordonnées de contacts importés par le client.',
     ],
     list: [
       'Données de compte: e-mail, nom, prénom, mot de passe (haché)',
@@ -63,7 +63,7 @@ const PRIVACY: Section[] = [
   {
     heading: 'Sous-traitants',
     paragraphs: [
-      'MailOqui fait appel à des sous-traitants techniques pour l’hébergement et l’acheminement des e-mails. Ces prestataires sont soumis à des accords de confidentialité et n’accèdent pas aux données clients au-delà du strict nécessaire technique.',
+      'EmailOqui fait appel à des sous-traitants techniques pour l’hébergement et l’acheminement des e-mails. Ces prestataires sont soumis à des accords de confidentialité et n’accèdent pas aux données clients au-delà du strict nécessaire technique.',
     ],
   },
   {
@@ -95,13 +95,13 @@ const CGV: Section[] = [
   {
     heading: 'Objet',
     paragraphs: [
-      'Les présentes Conditions Générales de Vente (CGV) régissent les modalités d’abonnement et d’utilisation de la plateforme MailOqui.',
+      'Les présentes Conditions Générales de Vente (CGV) régissent les modalités d’abonnement et d’utilisation de la plateforme EmailOqui.',
     ],
   },
   {
     heading: 'Offres et tarification',
     paragraphs: [
-      'MailOqui propose trois offres: Starter (20 USD / 3 mois), Business (45 USD / 3 mois) et Premium (80 USD / 3 mois). La durée d’abonnement est de 3 mois calendaires.',
+      'EmailOqui propose trois offres: Starter (20 USD / 3 mois), Business (45 USD / 3 mois) et Premium (80 USD / 3 mois). La durée d’abonnement est de 3 mois calendaires.',
     ],
   },
   {
@@ -136,7 +136,7 @@ const CGV: Section[] = [
   {
     heading: 'Résiliation',
     paragraphs: [
-      'MailOqui se réserve le droit de suspendre un compte en cas de non-respect des présentes CGV ou d’usage abusif (spam, envoi non consenti).',
+      'EmailOqui se réserve le droit de suspendre un compte en cas de non-respect des présentes CGV ou d’usage abusif (spam, envoi non consenti).',
     ],
   },
 ]
@@ -145,7 +145,7 @@ const COOKIES: Section[] = [
   {
     heading: 'Utilisation des cookies',
     paragraphs: [
-      'MailOqui utilise des cookies techniques nécessaires au fonctionnement de la plateforme: maintien de la session utilisateur (cookie httpOnly), préférences d’affichage, mémorisation de la dernière vue consultée.',
+      'EmailOqui utilise des cookies techniques nécessaires au fonctionnement de la plateforme: maintien de la session utilisateur (cookie httpOnly), préférences d’affichage, mémorisation de la dernière vue consultée.',
     ],
   },
   {
@@ -176,7 +176,7 @@ export function LegalView() {
             Cadre légal & politique de confidentialité
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            Cette page regroupe les informations légales relatives à la plateforme MailOqui.
+            Cette page regroupe les informations légales relatives à la plateforme EmailOqui.
           </p>
         </div>
       </section>

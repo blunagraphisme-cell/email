@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * SubscriptionView — Abonnement MailOqui (Task 5-c)
+ * SubscriptionView — Abonnement EmailOqui (Task 5-c)
  *
  * Affiche l'abonnement courant (plan, statut, période, quota), la grille de
  * plans pour changement, la génération de liens de renouvellement (Developer
@@ -9,7 +9,7 @@
  *
  * Le montant affiché pour le paiement provient toujours du serveur — il
  * n'est jamais codé en dur côté frontend. Le fournisseur d'envoi (Resend)
- * reste invisible — MailOqui est white-label.
+ * reste invisible — EmailOqui est white-label.
  */
 
 import * as React from 'react'
@@ -341,7 +341,7 @@ export default function SubscriptionView() {
 
   const copyLink = async () => {
     if (!renewal) return
-    const link = `https://mail.oquitogo.com/renew/${renewal.token}`
+    const link = `https://email.oquitogo.com/renew/${renewal.token}`
     try {
       await navigator.clipboard.writeText(link)
       setCopied(true)
@@ -412,7 +412,7 @@ export default function SubscriptionView() {
 
   const confirmPlanChange = async () => {
     if (!selectedPlan) return
-    // V1 — plan changes require manual validation by the MailOqui team to
+    // V1 — plan changes require manual validation by the EmailOqui team to
     // avoid trusting a frontend amount. We acknowledge the request.
     toast.success(`Demande de changement vers le plan ${selectedPlan.name} enregistrée. Notre équipe vous contactera.`)
     setSelectedPlan(null)
@@ -663,7 +663,7 @@ export default function SubscriptionView() {
                         </div>
                         <div className="flex items-center gap-2 rounded-md border border-border bg-background p-2">
                           <code className="flex-1 truncate text-xs">
-                            mail.oquitogo.com/renew/{renewal.token}
+                            email.oquitogo.com/renew/{renewal.token}
                           </code>
                           <Button size="sm" variant="ghost" onClick={copyLink}>
                             {copied ? (
@@ -759,7 +759,7 @@ export default function SubscriptionView() {
                   <Alert className="border-border bg-secondary/30">
                     <ShieldCheck className="size-4 text-emerald-600" />
                     <AlertDescription>
-                      MailOqui ne stocke jamais les données bancaires complètes.
+                      EmailOqui ne stocke jamais les données bancaires complètes.
                       Paiement traité par prestataire sécurisé. Seuls les 4
                       derniers chiffres sont conservés pour mention légale.
                     </AlertDescription>
@@ -901,7 +901,7 @@ export default function SubscriptionView() {
 
             <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
               <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-emerald-600" />
-              MailOqui ne stocke pas les données bancaires complètes. Seuls les
+              EmailOqui ne stocke pas les données bancaires complètes. Seuls les
               4 derniers chiffres de la carte seront conservés (mention légale).
             </p>
           </div>

@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * MailOqui — Campaign detail view
+ * EmailOqui — Campaign detail view
  *
  * Affiche:
  *   - Header (nom, statut, actions selon le statut)

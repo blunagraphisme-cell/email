@@ -1,12 +1,12 @@
 'use client'
 
 /**
- * StatsView — Statistiques détaillées MailOqui (Task 5-c)
+ * StatsView — Statistiques détaillées EmailOqui (Task 5-c)
  * Vue agrégée: KPIs, taux calculés, graphiques d'évolution, répartition par
  * type d'événement, performance par campagne, quota quotidien, campagnes
  * récentes. Tout est lu via GET /api/stats/overview?days=... et GET /api/campaigns.
  *
- * Aucune mention d'un fournisseur d'envoi tiers — MailOqui reste white-label.
+ * Aucune mention d'un fournisseur d'envoi tiers — EmailOqui reste white-label.
  */
 
 import * as React from 'react'

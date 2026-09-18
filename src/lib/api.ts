@@ -1,5 +1,5 @@
 /**
- * MailOqui — helpers serveur partagés
+ * EmailOqui — helpers serveur partagés
  */
 import { NextResponse } from 'next/server'
 import { getSecurityContext } from './auth'

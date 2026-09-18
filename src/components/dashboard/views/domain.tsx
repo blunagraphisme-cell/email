@@ -113,18 +113,18 @@ async function copy(text: string) {
 const SPF_RECORD: DnsRow = {
   type: 'TXT',
   host: '@ (racine du domaine)',
-  value: 'v=spf1 include:_spf.mailoqui.com ~all',
+  value: 'v=spf1 include:_spf.email.oquitogo.com ~all',
 }
 const DKIM_RECORD: DnsRow = {
   type: 'TXT',
-  host: 'mailoqui._domainkey',
+  host: 'emailoqui._domainkey',
   value:
     'v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCtU7sXKWRb/aNBLxI5w0e1pQ8w10VT0a+ZrLgWn3iV5F5cYh6w3m8dNcDT6Qf9k2xq5t5K9wI7tq3Z1oU6+5d5l9K8wL3vQ5yP9iJ6mW1zj2eO3H8Qy1mV4j+aNxKpYqZ8nBhK0tQwIDAQAB',
 }
 const DMARC_RECORD: DnsRow = {
   type: 'TXT',
   host: '_dmarc',
-  value: 'v=DMARC1; p=quarantine; rua=mailto:dmarc@mailoqui.com',
+  value: 'v=DMARC1; p=quarantine; rua=mailto:dmarc@email.oquitogo.com',
 }
 
 /* --------------------------------- DnsCard -------------------------------- */
@@ -427,7 +427,7 @@ export default function DomainView() {
           <DnsCard
             code="SPF"
             title="SPF"
-            description="Autorise MailOqui à envoyer des e-mails depuis votre domaine. Indispensable pour éviter d’être marqué comme spam."
+            description="Autorise EmailOqui à envoyer des e-mails depuis votre domaine. Indispensable pour éviter d’être marqué comme spam."
             records={[SPF_RECORD]}
             status={domain?.spfStatus ?? 'NON_CONFIGURE'}
           />

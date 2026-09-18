@@ -1,5 +1,5 @@
 /**
- * MailOqui — server-side auth & crypto helpers
+ * EmailOqui — server-side auth & crypto helpers
  * Hashing mots de passe (scrypt), tokens aléatoires, sessions cookie.
  */
 
@@ -7,7 +7,7 @@ import { randomBytes, scryptSync, timingSafeEqual } from 'crypto'
 import { cookies } from 'next/headers'
 import { db } from './db'
 
-export const SESSION_COOKIE = 'mo_session'
+export const SESSION_COOKIE = 'eo_session'
 const SESSION_TTL_DAYS = 7
 
 export function hashPassword(password: string): string {

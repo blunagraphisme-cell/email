@@ -8,7 +8,7 @@
  * appelle POST /api/subscription/confirm. Toutes les vérifications de prix et
  * d'permissions restent côté serveur.
  *
- * Aucune mention du fournisseur d'envoi — MailOqui reste white-label.
+ * Aucune mention du fournisseur d'envoi — EmailOqui reste white-label.
  */
 
 import * as React from 'react'
@@ -68,7 +68,7 @@ function extractToken(viewParam: string | null): string | null {
   if (!viewParam) return null
   const trimmed = viewParam.trim()
   if (!trimmed) return null
-  // Allow either a bare token or a full URL like https://mail.oquitogo.com/renew/<token>
+  // Allow either a bare token or a full URL like https://email.oquitogo.com/renew/<token>
   if (trimmed.includes('/')) {
     const parts = trimmed.split('/').filter(Boolean)
     const last = parts[parts.length - 1]
@@ -172,13 +172,13 @@ export function RenewView() {
           >
             <img
               src="/logo.png"
-              alt="MailOqui"
+              alt="EmailOqui"
               width={36}
               height={36}
               className="size-9 rounded-lg object-contain"
             />
             <span className="text-lg font-bold tracking-tight text-foreground">
-              Mail<span className="text-primary">Oqui</span>
+              Email<span className="text-primary">Oqui</span>
             </span>
           </button>
           <Button
@@ -268,7 +268,7 @@ export function RenewView() {
                       </div>
                       <h1 className="text-xl font-semibold">Renouvellement d'abonnement</h1>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        Confirmez le renouvellement de votre abonnement MailOqui.
+                        Confirmez le renouvellement de votre abonnement EmailOqui.
                       </p>
                     </div>
 
@@ -318,7 +318,7 @@ export function RenewView() {
                     <Alert className="border-border bg-secondary/30">
                       <ShieldCheck className="size-4 text-emerald-600" />
                       <AlertDescription>
-                        MailOqui ne stocke jamais les données bancaires
+                        EmailOqui ne stocke jamais les données bancaires
                         complètes. Paiement traité par prestataire sécurisé.
                         Seuls les 4 derniers chiffres sont conservés (mention
                         légale).
@@ -349,12 +349,12 @@ export function RenewView() {
       {/* Footer */}
       <footer className="mt-auto border-t border-border bg-background/60 px-4 py-3 text-center text-xs text-muted-foreground">
         <a
-          href="https://mail.oquitogo.com"
+          href="https://email.oquitogo.com"
           className="font-medium text-foreground/80 hover:text-foreground"
         >
-          mail.oquitogo.com
+          email.oquitogo.com
         </a>{' '}
-        — MailOqui
+        — EmailOqui
       </footer>
     </div>
   )

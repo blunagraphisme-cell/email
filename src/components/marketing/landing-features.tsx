@@ -56,7 +56,7 @@ const FEATURES: {
   {
     title: 'API & webhooks',
     description:
-      'Intégrez MailOqui à votre stack via une API REST documentée et des webhooks d’événements.',
+      'Intégrez EmailOqui à votre stack via une API REST documentée et des webhooks d’événements.',
     icon: Code2,
     bullets: ['Clés API révocables', 'Webhooks SENT / DELIVERED / OPENED', 'Quotas journaliers'],
   },

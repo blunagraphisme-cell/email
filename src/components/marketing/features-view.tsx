@@ -102,7 +102,7 @@ const FEATURES: Feature[] = [
     icon: Code2,
     title: 'API & webhooks',
     description:
-      'Intégrez MailOqui à votre stack: gestion des contacts, envoi d’e-mails transactionnels, événements.',
+      'Intégrez EmailOqui à votre stack: gestion des contacts, envoi d’e-mails transactionnels, événements.',
     bullets: [
       'Clés API révocables et préfixées',
       'Quotas journaliers et limites par plan',
@@ -139,7 +139,7 @@ export function FeaturesView() {
             Tout ce qu’il faut pour réussir vos e-mails
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            De la création d’un template à l’analyse de la performance, MailOqui couvre la chaîne
+            De la création d’un template à l’analyse de la performance, EmailOqui couvre la chaîne
             complète de votre marketing par e-mail — sans dépendre d’un prestataire visible côté
             client.
           </p>

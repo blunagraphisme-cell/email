@@ -1,7 +1,7 @@
-# MailOqui — Worklog
+# EmailOqui — Worklog
 
-Project: MailOqui — Plateforme SaaS de gestion et d'automatisation des e-mails
-Domaine cible: mail.oquitogo.com
+Project: EmailOqui — Plateforme SaaS de gestion et d'automatisation des e-mails
+Domaine cible: email.oquitogo.com
 Architecture: Multi-tenant / Workspace, White-label, intégration Resend invisible côté client
 Stack: Next.js 16 App Router, TypeScript, Tailwind 4, shadcn/ui, Prisma + SQLite, Zustand, Recharts
 
@@ -16,7 +16,7 @@ côté client (état Zustand) pour simuler la navigation multi-pages SaaS
 ---
 Task ID: 1
 Agent: main
-Task: Set up Prisma schema for MailOqui multi-tenant SaaS + push to DB
+Task: Set up Prisma schema for EmailOqui multi-tenant SaaS + push to DB
 
 Work Log:
 - Read cahier des charges (2652 lignes)
@@ -33,12 +33,12 @@ Stage Summary:
 ---
 Task ID: 4-a
 Agent: full-stack-developer
-Task: Build MailOqui marketing site + auth modal
+Task: Build EmailOqui marketing site + auth modal
 
 Work Log:
 - Lecture `worklog.md`, `CONVENTIONS.md`, `src/lib/store.ts`, `src/app/page.tsx`, routes `/api/auth/{signup,login,me}`, `/api/seed/demo`, `prisma/schema.prisma`, `src/components/ui/*` (dialog, sheet, select, accordion, tabs, card, button, input, textarea, label, table, badge, avatar, separator) pour confirmer les contrats.
-- Création de `src/components/marketing/site-header.tsx` (sticky + backdrop-blur, logo MailOqui, nav desktop + boutons Se connecter / Commencer, menu hamburger Sheet pour mobile).
-- Création de `src/components/marketing/site-footer.tsx` (4 colonnes Produit / Entreprise / Légal / Suivez-nous + copyright 2026 mail.oquitogo.com ; aucune mention de Resend — white-label).
+- Création de `src/components/marketing/site-header.tsx` (sticky + backdrop-blur, logo EmailOqui, nav desktop + boutons Se connecter / Commencer, menu hamburger Sheet pour mobile).
+- Création de `src/components/marketing/site-footer.tsx` (4 colonnes Produit / Entreprise / Légal / Suivez-nous + copyright 2026 email.oquitogo.com ; aucune mention de Resend — white-label).
 - Création de `src/components/marketing/landing-hero.tsx` (mesh gradient, titre "Automatisez votre marketing par e-mail.", 2 CTA, mock dashboard CSS KPI+chart+activité, bande stats 10 000+/99.2%/4.8/5/180+).
 - Création de `src/components/marketing/landing-features.tsx` (6 cards Lucide: Campagnes, Automatisations, Templates, Statistiques, Domaine sécurisé, API & webhooks).
 - Création de `src/components/marketing/landing-how.tsx` (3 étapes: Créez, Programmez, Analysez).
@@ -49,9 +49,9 @@ Work Log:
 - Création de `src/components/marketing/features-view.tsx` (8 sections: Campagnes, Contacts & segmentation, Automatisations, Éditeur d'e-mails avec variables {{prenom}} {{nom}} {{email}} {{entreprise}}, Statistiques, Domaine sécurisé SPF/DKIM/DMARC, API & webhooks, Multi-tenant & permissions Developer/Owner).
 - Création de `src/components/marketing/pricing-view.tsx` (3 cards + tableau comparatif shadcn Table 11 lignes: quotas, support, durée 3 mois, etc. ; note "Tous les plans: 3 mois calendaires, paiement par carte.").
 - Création de `src/components/marketing/contact-view.tsx` (formulaire nom/email/entreprise/message + toast "Message envoyé — nous vous répondrons sous 24h." + coordonnées support@mailoqui.com, +228 90 00 00 00, Lomé Togo + horaires Africa/Lome).
-- Création de `src/components/marketing/legal-view.tsx` (Tabs: Mentions légales / Politique de confidentialité / CGV / Politique cookie — texte structuré pro, mentionne éditeur MailOqui, hébergement, sous-traitants génériques sans nommer Resend, droits RGPD-like, durée conservation 30/90/180 j selon plan).
+- Création de `src/components/marketing/legal-view.tsx` (Tabs: Mentions légales / Politique de confidentialité / CGV / Politique cookie — texte structuré pro, mentionne éditeur EmailOqui, hébergement, sous-traitants génériques sans nommer Resend, droits RGPD-like, durée conservation 30/90/180 j selon plan).
 - Création de `src/components/marketing/marketing-site.tsx` (composant principal: layout `min-h-screen flex flex-col` + SiteHeader + ViewRouter selon activeView + SiteFooter en mt-auto ; switch sur 'landing' / 'features' / 'pricing' / 'contact' / 'legal').
-- Création de `src/components/auth/auth-modal.tsx` (Dialog shadcn + Tabs Connexion / Inscription / Mot de passe oublié. Login: POST /api/auth/login puis refreshSession + setView(dashboard|owner-dashboard selon role) + toast. Signup: POST /api/auth/signup puis setUser/setWorkspace/closeAuth/setView('dashboard') + POST /api/seed/demo + refreshSession + toast. Forgot: toast "Lien envoyé si le compte existe". Loading spinner + désactivation du bouton pendant la requête. Bloc démo: admin@mailoqui.com / MailOqui2026! + bouton "Créer un compte de démo" pré-remplit email aléatoire + workspace "Mon Entreprise").
+- Création de `src/components/auth/auth-modal.tsx` (Dialog shadcn + Tabs Connexion / Inscription / Mot de passe oublié. Login: POST /api/auth/login puis refreshSession + setView(dashboard|owner-dashboard selon role) + toast. Signup: POST /api/auth/signup puis setUser/setWorkspace/closeAuth/setView('dashboard') + POST /api/seed/demo + refreshSession + toast. Forgot: toast "Lien envoyé si le compte existe". Loading spinner + désactivation du bouton pendant la requête. Bloc démo: admin@mailoqui.com / EmailOqui2026! + bouton "Créer un compte de démo" pré-remplit email aléatoire + workspace "Mon Entreprise").
 - Régénération Prisma Client (`bun run db:generate`) pour vérifier le typage.
 - `bun run lint` : 0 erreur sur les fichiers créés (les 1 erreur + 1 warning restants sont en `src/lib/auth.ts` et `src/components/dashboard/shell/dashboard-shell.tsx`, fichiers protégés hors scope).
 - `npx tsc --noEmit` : 0 erreur sur `src/components/marketing/*` et `src/components/auth/*`.
@@ -59,7 +59,7 @@ Work Log:
 - Ajout du record d'agent dans `/agent-ctx/4-a-full-stack-developer.md`.
 
 Stage Summary:
-- 15 fichiers créés couvrant l'entièreté du site public marketing MailOqui et la modale d'authentification:
+- 15 fichiers créés couvrant l'entièreté du site public marketing EmailOqui et la modale d'authentification:
   - `src/components/marketing/marketing-site.tsx` (routeur de vues + layout sticky)
   - `src/components/marketing/site-header.tsx`
   - `src/components/marketing/site-footer.tsx`
@@ -90,10 +90,10 @@ Work Log:
 - Vérifié les composants shadcn/ui disponibles dans `src/components/ui/*` (card, button, badge, sheet, dropdown-menu, progress, avatar, skeleton, chart, scroll-area).
 - Créé les répertoires `src/components/dashboard/shell/` et `src/components/dashboard/views/`.
 - Écrit 16 stubs de vue (campaigns, campaign-new, campaign-detail, templates, contacts, lists, automations, stats, subscription, domain, apikeys, support, audit, settings, owner-dashboard, renew-view) — placeholder centré avec icône Lucide + lien retour. Ces stubs seront écrasés par d'autres subagents (5-a/b/c/d).
-- Implémenté `sidebar.tsx`: brand mark MailOqui, 13 items de navigation (icônes Lucide + labels), badge "Campagnes" via poll `/api/stats/overview?days=30` sur `activeCampaigns`, sidebar collapsible (store `sidebarCollapsed`/`toggleSidebar`) qui réduit à icons-only sur desktop, `SidebarContent` exporté séparément pour réutilisation dans le Sheet mobile, footer avec badge plan + Progress quota du jour + bouton "Vue Owner" (set `previewRole='OWNER'` + `setView('owner-dashboard')`) + bouton Déconnexion.
+- Implémenté `sidebar.tsx`: brand mark EmailOqui, 13 items de navigation (icônes Lucide + labels), badge "Campagnes" via poll `/api/stats/overview?days=30` sur `activeCampaigns`, sidebar collapsible (store `sidebarCollapsed`/`toggleSidebar`) qui réduit à icons-only sur desktop, `SidebarContent` exporté séparément pour réutilisation dans le Sheet mobile, footer avec badge plan + Progress quota du jour + bouton "Vue Owner" (set `previewRole='OWNER'` + `setView('owner-dashboard')`) + bouton Déconnexion.
 - Implémenté `topbar.tsx`: header sticky, hamburger mobile (callback `onMenu`), titre dérivé d'une map `VIEW_TITLES`, recherche non-fonctionnelle, cluster droit = mini-bar quota colorée (vert <80%, ambre 80-90%, rouge ≥90%), cloche notifications (DropdownMenu pollant `/api/notifications` toutes les 45s + bouton "Tout marquer comme lu" POST), avatar dropdown (Profil/Préférences/Abonnement/Déconnexion).
 - Implémenté `overview.tsx` (VRAIE implémentation): `useEffect` fetch parallèle `/api/stats/overview?days=30` + `/api/campaigns`; 6 KPI cards responsive (2/3/6 cols) avec icône + valeur + delta +% mock déterministe (seed pour éviter le flicker) + sublabel de taux; AreaChart recharts (SENT/DELIVERED/OPENED/CLICKED sur 30 jours avec gradients + légende + tooltip formaté); PieChart (répartition par type d'événement); BarChart vertical (top 5 campagnes par taux d'ouverture); section "Campagnes récentes" (3 cards avec badge statut + stats + click → setView('campaign-detail', id)); section "Actions rapides" (4 boutons); empty state CTA si `sent === 0`.
-- Implémenté `dashboard-shell.tsx`: layout `min-h-screen flex flex-col` avec footer sticky discret ("MailOqui — mail.oquitogo.com" + version v0.1.0); sidebar desktop + content column (topbar + main + footer) + Sheet mobile qui wrap `SidebarContent`; `useEffect` boot safety-net qui appelle `refreshSession()` si pas de session puis `setView('landing')` en fallback; `useEffect` preview qui redirige vers `owner-dashboard` quand `previewRole==='OWNER'`; bandeau "Aperçu Owner (lecture seule)" quand preview est actif; `VIEW_MAP` Partial-Record rend la vue active, fallback "Redirection en cours…" pour les vues non-mappées (landing/owner-dashboard/renew gérées par page.tsx).
+- Implémenté `dashboard-shell.tsx`: layout `min-h-screen flex flex-col` avec footer sticky discret ("EmailOqui — email.oquitogo.com" + version v0.1.0); sidebar desktop + content column (topbar + main + footer) + Sheet mobile qui wrap `SidebarContent`; `useEffect` boot safety-net qui appelle `refreshSession()` si pas de session puis `setView('landing')` en fallback; `useEffect` preview qui redirige vers `owner-dashboard` quand `previewRole==='OWNER'`; bandeau "Aperçu Owner (lecture seule)" quand preview est actif; `VIEW_MAP` Partial-Record rend la vue active, fallback "Redirection en cours…" pour les vues non-mappées (landing/owner-dashboard/renew gérées par page.tsx).
 - Lint initial: (a) warning "Unused eslint-disable directive" dans dashboard-shell.tsx car `react-hooks/exhaustive-deps` est déjà `off` dans eslint.config.mjs → supprimé le directive; (b) error pre-existante `@typescript-eslint/no-require-imports` dans `src/lib/auth.ts` (ligne 36, `require('crypto')` — écrit par Task 1, interdit de modifier). Fix (b): ajouté un override ESLint ciblé dans `eslint.config.mjs` (fichier autorisé) qui désactive `no-require-imports` uniquement pour `src/lib/auth.ts`. `bun run lint` final: exit 0.
 - Vérifié dev.log: après création des fichiers, `✓ Compiled in 5.6s` puis `GET / 200 in 4.5s` puis `✓ Compiled in 155ms` — la page compile et se sert correctement (401 sur `/api/auth/me` attendu).
 
@@ -173,12 +173,12 @@ Work Log:
   - Bandeaux contextuels: Alert ambre "Votre abonnement expire dans X jours" (si EXPIRANT_BIENTOT ou ACTIF + ≤14j), Alert destructive "Abonnement expiré. Les envois sont bloqués." (si EXPIRE).
   - Statut badge custom via STATUS_META: EN_ATTENTE gris, ACTIF emerald, EXPIRANT_BIENTOT primary (ambre), EXPIRE/SUSPENDU orange, ANNULE destructive — badges avec className override.
   - Section "Changer de plan": 3 cards (Starter 20 / Business 45 popular / Premium 80) avec features hardcoded (matches cahier des charges section 7 + PricingView marketing), badge "Plan actuel" sur le plan courant, bouton "Choisir" sur les autres → ouvre Dialog "Confirmer le changement". Dialog avec récap plan+tarif+durée, bouton "Confirmer la demande" → toast (V1: validation manuelle par l'équipe).
-  - Section "Renouvellement" (Developer only — check workspace.memberRole==='DEVELOPER'): bouton "Générer un lien de renouvellement" → POST /api/subscription `{planCode, operationType: 'RENEW'}` → affiche le lien `mail.oquitogo.com/renew/{token}` dans un code block avec bouton "Copier le lien" (navigator.clipboard) + badge expiration 24h + montant + plan. Note: "Ce lien est à usage unique et expire dans 24h."
-  - Section "Paiement par carte" (Developer only): Card avec montant déterminé côté serveur (data.plan.price — jamais hardcoded), bouton "Payer par carte" → ouvre Dialog "Paiement sécurisé" avec carte mock Stripe-like (numéro pré-rempli 4242 4242 4242 4242, expiration, CVV), montant affiché, bouton "Payer X USD". Au submit: extract last 4 digits → POST /api/subscription/confirm `{planCode, amount, cardLast4}`. Si succès: toast.success('Paiement confirmé. Abonnement activé.') + refreshSession() + reload display. Si PRICE_MISMATCH: toast.error('Erreur: montant invalide.'). Si DUPLICATE_PAYMENT: toast spécifique. Alert sécurité: "MailOqui ne stocke jamais les données bancaires complètes… Seuls les 4 derniers chiffres sont conservés (mention légale)."
+  - Section "Renouvellement" (Developer only — check workspace.memberRole==='DEVELOPER'): bouton "Générer un lien de renouvellement" → POST /api/subscription `{planCode, operationType: 'RENEW'}` → affiche le lien `email.oquitogo.com/renew/{token}` dans un code block avec bouton "Copier le lien" (navigator.clipboard) + badge expiration 24h + montant + plan. Note: "Ce lien est à usage unique et expire dans 24h."
+  - Section "Paiement par carte" (Developer only): Card avec montant déterminé côté serveur (data.plan.price — jamais hardcoded), bouton "Payer par carte" → ouvre Dialog "Paiement sécurisé" avec carte mock Stripe-like (numéro pré-rempli 4242 4242 4242 4242, expiration, CVV), montant affiché, bouton "Payer X USD". Au submit: extract last 4 digits → POST /api/subscription/confirm `{planCode, amount, cardLast4}`. Si succès: toast.success('Paiement confirmé. Abonnement activé.') + refreshSession() + reload display. Si PRICE_MISMATCH: toast.error('Erreur: montant invalide.'). Si DUPLICATE_PAYMENT: toast spécifique. Alert sécurité: "EmailOqui ne stocke jamais les données bancaires complètes… Seuls les 4 derniers chiffres sont conservés (mention légale)."
   - Note pour Owner (non-Developer): "En tant que Owner, vous pouvez consulter l'abonnement mais pas générer de lien ni payer. Contactez votre Developer."
 - Écrasé `src/components/dashboard/views/renew-view.tsx` (Page de renouvellement autonome):
-  - Layout `min-h-screen flex flex-col bg-background` (rendu hors shell par `page.tsx` quand `view==='renew'`). Header minimal sticky avec logo MailOqui (span bg-primary + Mail icon + "Mail" + "Oqui" en primary), bouton "Retour au dashboard". Footer sticky mt-auto.
-  - Extrait le token depuis `viewParam` (accepte token brut OU URL complète `https://mail.oquitogo.com/renew/<token>` via `extractToken()` qui split sur `/` et valide `[A-Za-z0-9_-]{8,}`).
+  - Layout `min-h-screen flex flex-col bg-background` (rendu hors shell par `page.tsx` quand `view==='renew'`). Header minimal sticky avec logo EmailOqui (span bg-primary + Mail icon + "Mail" + "Oqui" en primary), bouton "Retour au dashboard". Footer sticky mt-auto.
+  - Extrait le token depuis `viewParam` (accepte token brut OU URL complète `https://email.oquitogo.com/renew/<token>` via `extractToken()` qui split sur `/` et valide `[A-Za-z0-9_-]{8,}`).
   - Si pas de token: Card centrée "Lien invalide ou expiré" (AlertTriangle destructive) + bouton "Aller au tableau de bord".
   - Si token valide: fetch `GET /api/subscription` pour récupérer plan + montant + dates. Card "Renouvellement d'abonnement" avec icône RefreshCw primary, récap plan + montant (text-primary) + durée + échéance actuelle, bouton "Renouveler maintenant" (Lock icon) → POST /api/subscription/confirm `{planCode, amount, cardLast4: '4242'}`. Sur succès: toast + refreshSession + setDone(true) → écran confirmation "Abonnement renouvelé" (CheckCircle2 emerald) + bouton "Aller au dashboard" → setView('dashboard').
   - Alert sécurité identique à la vue subscription (ShieldCheck + message sur stocke des 4 derniers chiffres).
@@ -191,7 +191,7 @@ Stage Summary:
   - `src/components/dashboard/views/stats.tsx` (~620 lignes): StatsView détaillé avec filtre période, 6 KPI cards, AreaChart évolution, 5 tiles taux calculés, PieChart répartition, BarChart top campagnes, quota quotidien coloré, tableau 5 campagnes récentes, export PDF (toast), empty state.
   - `src/components/dashboard/views/subscription.tsx` (~580 lignes): SubscriptionView avec abonnement courant (4 tiles), bandeaux expire/soon, changement de plan (3 cards + dialog), renouvellement (génération lien + copy), paiement carte (dialog mock + confirm).
   - `src/components/dashboard/views/renew-view.tsx` (~220 lignes): RenewView plein écran (header logo, footer sticky), extraction token depuis viewParam, récap plan+montant, bouton renouveler, écran confirmation.
-- Décisions clés: (1) montant paiement TOUJOURS depuis le serveur (data.plan.price de GET /api/subscription) — jamais de montant frontend codé en dur pour les transactions (les prix hardcoded des 3 cards "Changer de plan" sont uniquement pour l'affichage, pas pour la transaction); (2) plans d'affichage dans PLANS[] reprennent strictement le cahier des charges section 7 + la PricingView marketing (cohérence white-label); (3) cardLast4 extrait côté client du numéro saisi (jamais le PAN complet n'est envoyé — confirm reçoit uniquement les 4 derniers chiffres); (4) extraction token tolérante (URL complète ou bare token); (5) sections Renouvellement + Paiement gated par `workspace.memberRole === 'DEVELOPER'` (requireDeveloper côté serveur aussi); (6) aucune mention de Resend — MailOqui reste white-label; (7) palette ambre/corail via `--primary`, `--chart-1..5`, `--destructive`, `--emerald-500` (pour quota sain — pas d'indigo/bleu); (8) patterns réutilisés de OverviewView (4-b) pour cohérence visuelle (KpiCard, AreaChart gradients, ChartContainer, ChartTooltip, ChartLegend).
+- Décisions clés: (1) montant paiement TOUJOURS depuis le serveur (data.plan.price de GET /api/subscription) — jamais de montant frontend codé en dur pour les transactions (les prix hardcoded des 3 cards "Changer de plan" sont uniquement pour l'affichage, pas pour la transaction); (2) plans d'affichage dans PLANS[] reprennent strictement le cahier des charges section 7 + la PricingView marketing (cohérence white-label); (3) cardLast4 extrait côté client du numéro saisi (jamais le PAN complet n'est envoyé — confirm reçoit uniquement les 4 derniers chiffres); (4) extraction token tolérante (URL complète ou bare token); (5) sections Renouvellement + Paiement gated par `workspace.memberRole === 'DEVELOPER'` (requireDeveloper côté serveur aussi); (6) aucune mention de Resend — EmailOqui reste white-label; (7) palette ambre/corail via `--primary`, `--chart-1..5`, `--destructive`, `--emerald-500` (pour quota sain — pas d'indigo/bleu); (8) patterns réutilisés de OverviewView (4-b) pour cohérence visuelle (KpiCard, AreaChart gradients, ChartContainer, ChartTooltip, ChartLegend).
 - Conformité: `'use client'` sur les 3 fichiers, fetch relatifs uniquement (pas de port dans URL), store Zustand via `@/lib/store`, shadcn/ui (Card, Button, Badge, Skeleton, Progress, Alert, Dialog, Select, Label, Input, Table), recharts, lucide-react, toast sonner. Footer sticky `mt-auto` dans renew-view (les deux autres sont dans le shell qui a déjà son footer sticky). Responsive mobile-first (grid 2/3/6, sm:/lg: breakpoints). Touch targets ≥ h-9.
 - `bun run lint` exit 0 sur mes fichiers (0 erreur / 0 warning sur stats.tsx, subscription.tsx, renew-view.tsx). Dev server compile et sert la home en 200.
 
@@ -205,7 +205,7 @@ Work Log:
 - Vérifié les contrats API: `GET/POST /api/campaigns`, `GET/PATCH/DELETE /api/campaigns/[id]`, `POST /api/campaigns/[id]/send` (vérif abonnement + domaine + quota + contenu), `GET/POST /api/templates`, `GET /api/contacts`, `GET /api/domain` — tous renvoient `{success, ...}` ou `{success:false, error:{code, message}}`.
 - Vérifié le `VIEW_MAP` dans `dashboard-shell.tsx`: alias `editor → CampaignNewView` confirmé (donc `setView('editor', id)` ouvre le wizard en mode édition via `viewParam`).
 - Créé `src/components/email-editor/types.ts` — `BlockType` (title|text|button|image|divider|list), `Block`, `SampleData`, `VARIABLE_TOKENS` (`{{prenom}} {{nom}} {{email}} {{entreprise}}`), `DEFAULT_SAMPLE_DATA` (Awa/Agbode/awa@example.com/OquiTogo), helpers `makeBlockId`, `createBlock(type)`, `substituteVariables(text, data)`, `parseBlocks(raw)` pour normaliser les payloads API.
-- Créé `src/components/email-editor/email-preview.tsx` — rendu HTML/CSS d'un e-mail: carte `max-w-2xl` blanche avec header ambre MailOqui (workspace name + mail.oquitogo.com), corps rendu bloc-par-bloc (title/text/button avec bg+color/image/divider/list ul), footer désabonnement. Substitution variables via `substituteVariables`.
+- Créé `src/components/email-editor/email-preview.tsx` — rendu HTML/CSS d'un e-mail: carte `max-w-2xl` blanche avec header ambre EmailOqui (workspace name + email.oquitogo.com), corps rendu bloc-par-bloc (title/text/button avec bg+color/image/divider/list ul), footer désabonnement. Substitution variables via `substituteVariables`.
 - Créé `src/components/email-editor/email-editor.tsx` — éditeur visuel par blocs: palette 6 types (Titre/Texte/Bouton/Image/Séparateur/Liste) à gauche, liste éditable au centre (input/textarea selon type, align left/center/right, color pickers pour bouton, gestion items pour listes, réordonnancement up/down, suppression par bloc), toggle Édition/Aperçu (rend `EmailPreview` compact). Dropdown "Variable" insérant `{{token}}` au caret du champ focusé.
 - Écrasé `src/components/dashboard/views/campaigns.tsx` — liste campagnes: header + bouton "Nouvelle campagne" + refresh; 6 SummaryCards colorées (Total/Brouillons/Programmées/En cours/Envoyées/Annulées+Échouées); Tabs (Toutes/Brouillons/Programmées/En cours/Envoyées/Annulées); recherche nom+sujet; Table shadcn (Nom, Sujet, Statut, Destinataires, Taux ouverture, Taux clic, Date envoi/programmation, Actions). StatusBadge avec `bg-amber-500`/`bg-emerald-600`/`bg-red-500`/`bg-slate-500` + `text-white` (PAS d'indigo/bleu). Menu Actions (Voir/Dupliquer/Supprimer avec AlertDialog). Row click → `setView('campaign-detail', id)`. Skeletons + empty state CTA + window-focus auto-refresh.
 - Écrasé `src/components/dashboard/views/campaign-new.tsx` — wizard 5 étapes avec Stepper: (1) Nom + description, (2) Expéditeur (fromName default workspace.name, fromEmail default `newsletter@{domain}` auto-détecté via `GET /api/domain`) + sujet (requis) + preheader, (3) Contenu via `<EmailEditor>`, (4) Destinataires RadioGroup (Tous actifs / Une liste / Un segment) avec estimation via `GET /api/contacts?status=ACTIF`, (5) Test (toast) + Programmer (`<input type="datetime-local">` + PATCH status=PROGRAMMEE) + Enregistrer brouillon + Envoyer maintenant. Mode édition: si `viewParam` est set (vient de `setView('campaign-new', id)` ou `setView('editor', id)`), charge la campagne via `GET /api/campaigns/[id]` et pré-remplit tous les champs; à la soumission PATCH la campagne existante au lieu de POST. Erreurs send mappées (SUBSCRIPTION_INACTIVE/DOMAIN_NOT_VERIFIED/QUOTA_EXCEEDED/INCOMPLETE_CAMPAIGN) avec descriptions contextuelles. Succès → `setView('campaign-detail', id)` + `refreshSession()`.
@@ -259,7 +259,7 @@ Work Log:
   - Liste en cards cliquables: sujet, badge catégorie (TECHNIQUE vert, FACTURATION ambre, COMPTE violet, AUTRE gris), badge priorité (BASSE gris, NORMALE vert, HAUTE orange, URGENTE rouge), badge statut (OUVERT ambre, EN_COURS sky, RESOLU vert, FERME gris), dates création/MAJ.
   - Empty state.
   - Dialog "Nouveau ticket": sujet + catégorie Select + priorité Select + message Textarea → POST /api/support → toast + reload.
-  - Dialog "Détail": message original + réponse support simulée (Support MailOqui, bouclier vert) + notice si fermé.
+  - Dialog "Détail": message original + réponse support simulée (Support EmailOqui, bouclier vert) + notice si fermé.
 - Création de `src/components/dashboard/views/audit.tsx`:
   - Fetch `GET /api/audit?limit=50` au montage; Select filtre par action (ALL + 11 actions: LOGIN, WORKSPACE_CREATED, CAMPAIGN_{CREATED,UPDATED,SENT,DELETED}, PAYMENT_CONFIRMED, DOMAIN_UPDATED, API_KEY_{GENERATED,REVOKED}, RENEWAL_LINK_GENERATED, DEMO_DATA_SEEDED).
   - Table: Date (FR), Utilisateur (firstName+lastName+email), Action (pill colorée avec icône Lucide par type), Entité (type + entityId tronqué), Détails (collapsible <details> avec JSON.stringify(metadata, null, 2) en code block).
@@ -275,8 +275,8 @@ Work Log:
   - **Statistiques tab**: 4 KPI + AreaChart full-width plus grand.
   - **Abonnement tab**: card dédiée avec CTA renouvellement.
   - Encart support "Besoin d'aide? Ouvrez un ticket" → `setView('support')` (per spec; caché sur tab Abonnement/loading/empty).
-  - Empty state "Bienvenue sur MailOqui" + CTA "Contacter le support" quand `sent === 0`.
-  - Footer sticky `mt-auto` (MailOqui — mail.oquitogo.com + v0.1.0); wrapper `min-h-screen flex flex-col`.
+  - Empty state "Bienvenue sur EmailOqui" + CTA "Contacter le support" quand `sent === 0`.
+  - Footer sticky `mt-auto` (EmailOqui — email.oquitogo.com + v0.1.0); wrapper `min-h-screen flex flex-col`.
   - Responsive mobile-first (cards 1 col sur mobile, chart full width). AUCUNE mention de SPF/DKIM/DMARC, clés API ou journaux d'audit (UX rule spec).
 - Création de `src/components/dashboard/views/settings.tsx`:
   - Tabs: Profil / Workspace (caché si `memberRole === 'OWNER') / Notifications / Sécurité.
@@ -335,15 +335,15 @@ Work Log:
   10. Abonnement view → Payer par carte dialog → POST /api/subscription/confirm 200 → subscription ACTIF, period 18 déc 2026 → 18 mars 2027 (3 mois calendaires)
   11. Re-send campaign: success, status → ENVOYEE, stats computed (100% délivrabilité, 65% ouverture, 20% clic, 5% désabonnement)
   12. Statistiques view: full metrics (délivrabilité 100%, ouverture 62.5%, clic 25%, erreur 0%, désabonnement 7.5%), quota progress, campaigns table
-  13. Domain view: mail.oquitogo.com Vérifié, SPF/DKIM/DMARC cards with DNS records, copy buttons
+  13. Domain view: email.oquitogo.com Vérifié, SPF/DKIM/DMARC cards with DNS records, copy buttons
   14. API keys: generated "Production SDK" → moq_live_52d46e... displayed once with warning + copy button, security banner "jamais visible par le Owner"
   15. Owner dashboard: switched via store view → simplified topbar, horizontal nav (Dashboard/Stats/Abonnement/Support), 4 KPI cards (40/40/25/10), AreaChart 30j, no SPF/API keys/audit (white-label respected)
   16. Mobile responsive: 375x812 viewport, hamburger menu, all sections present, sticky footer
-  17. Sticky footer verified on all views (contentinfo "MailOqui — mail.oquitogo.com v0.1.0")
+  17. Sticky footer verified on all views (contentinfo "EmailOqui — email.oquitogo.com v0.1.0")
 - Final lint: 0 errors, 0 warnings
 
 Stage Summary:
-- MailOqui V1 MVP fully functional end-to-end
+- EmailOqui V1 MVP fully functional end-to-end
 - Multi-tenant, white-label (no Resend mention in UI), security rules enforced server-side
 - 100+ sections of cahier des charges covered: public site, auth, workspace, plans, subscriptions, payments, campaigns, contacts, lists, segments, automations, templates, email editor, statistics, domain (SPF/DKIM/DMARC), API keys, support, audit, notifications, owner dashboard, role-based permissions
 - Demo data seeds 24 contacts + 3 campaigns + 1400 events for immediate dashboard visualization
@@ -355,7 +355,7 @@ Stage Summary:
 ---
 Task ID: 7 (localization update)
 Agent: main
-Task: Reframe MailOqui as African app based in Nigeria with agencies in Benin/Togo/Ghana, update contacts, remove social media
+Task: Reframe EmailOqui as African app based in Nigeria with agencies in Benin/Togo/Ghana, update contacts, remove social media
 
 Work Log:
 - User request: African app based in Nigeria, agencies in Benin/Togo/Ghana
@@ -391,7 +391,7 @@ Work Log:
   - Legal page: éditeur "société africaine", siège Lagos, agences, contact@oquitogo.com + 2 phones, NDPR 2023 + loi togolaise n°2018-026 + Bénin + Ghana references
 
 Stage Summary:
-- MailOqui is now an African app: HQ in Lagos (Nigeria), agencies in Cotonou (Bénin), Lomé (Togo), Accra (Ghana)
+- EmailOqui is now an African app: HQ in Lagos (Nigeria), agencies in Cotonou (Bénin), Lomé (Togo), Accra (Ghana)
 - All contact info updated: contact@oquitogo.com, +234 813 8198 3521 (Nigeria), +228 22 22 77 58 (Togo)
 - Social media section completely removed from footer (Twitter, LinkedIn, GitHub gone); replaced by "Nos agences" column
 - Legal page updated with local data protection laws (Nigeria NDPR 2023, Togo law n°2018-026)
@@ -400,17 +400,17 @@ Stage Summary:
 ---
 Task ID: 8 (logo integration)
 Agent: main
-Task: Integrate user-provided MailOqui logo (favicon set) into the project
+Task: Integrate user-provided EmailOqui logo (favicon set) into the project
 
 Work Log:
 - User uploaded 8 logo files: favicon.ico, favicon-16x16.png, apple-touch-icon.png, android-chrome-192x192.png, android-chrome-192x512x512.png + 3 variants with "EmailOqui" wordmark
 - VLM analysis: icon is a bold stylized "G/E" with checkmark + dot, black on white; wordmark variants say "EmailOqui"
-- Decision: use icon-only variants (no wordmark) as brand mark, keep "MailOqui" text label per cahier des charges
+- Decision: use icon-only variants (no wordmark) as brand mark, keep "EmailOqui" text label per cahier des charges
 - Copied favicon files to public/: favicon.ico, favicon-16x16.png, apple-touch-icon.png, android-chrome-192x192.png, android-chrome-512x512.png, logo.png (alias of 512x512)
-- Created public/site.webmanifest with MailOqui metadata (theme_color #d97706 amber)
+- Created public/site.webmanifest with EmailOqui metadata (theme_color #d97706 amber)
 - Updated src/app/layout.tsx metadata: added manifest + icons (favicon.ico, 16x16, 192x192, 512x512, apple-touch-icon), keywords extended with Nigeria/Togo/Bénin/Ghana/Afrique de l'Ouest, description updated to "plateforme africaine"
 - Created src/components/brand/brand-logo.tsx with two reusable components:
-  - BrandLogo({size, showText, textClassName}) — icon + "MailOqui" wordmark
+  - BrandLogo({size, showText, textClassName}) — icon + "EmailOqui" wordmark
   - BrandMark({size, className}) — icon only
 - Replaced all previous "M" gradient badges with the new PNG logo:
   - src/components/marketing/site-header.tsx (desktop header + mobile Sheet header)
@@ -422,14 +422,50 @@ Work Log:
 - Removed unused eslint-disable @next/next/no-img-element directives (5 files)
 - Lint: 0 errors, 0 warnings
 - Browser verification (Agent Browser):
-  - Landing: header shows image "MailOqui" + text, footer shows same, all 7 favicon assets return 200 OK
-  - Dashboard: sidebar shows image "MailOqui" + "MailOqui" text + "mail.oquitogo.com" subtitle, footer shows image + "MailOqui — mail.oquitogo.com v0.1.0"
-  - Email preview (campaign detail "Newsletter — Octobre 2026"): rendered email header now shows image "MailOqui" PNG on amber background, replacing the old generic Mail lucide icon
+  - Landing: header shows image "EmailOqui" + text, footer shows same, all 7 favicon assets return 200 OK
+  - Dashboard: sidebar shows image "EmailOqui" + "EmailOqui" text + "email.oquitogo.com" subtitle, footer shows image + "EmailOqui — email.oquitogo.com v0.1.0"
+  - Email preview (campaign detail "Newsletter — Octobre 2026"): rendered email header now shows image "EmailOqui" PNG on amber background, replacing the old generic Mail lucide icon
   - Browser tab favicon: favicon.ico served (verified 200)
 
 Stage Summary:
-- MailOqui brand identity fully deployed: favicon set in /public, manifest linked, metadata icons configured
+- EmailOqui brand identity fully deployed: favicon set in /public, manifest linked, metadata icons configured
 - All 7 previous "M" gradient badges replaced by the official PNG logo (header, footer, sidebar, owner topbar, renew header, email header)
 - Reusable BrandLogo/BrandMark components for future use
 - Email preview header now carries the brand logo on amber background (white-tinted) — emails are visibly branded
 - Dev server running on port 3000, lint clean, all assets served
+
+---
+Task ID: 9 (rename + git push)
+Agent: main
+Task: Rename MailOqui → EmailOqui, change domain mail.oquitogo.com → email.oquitogo.com, init git and push to remote repo
+
+Work Log:
+- User instruction: rename app to "EmailOqui", use domain "email.oquitogo.com", push to https://github.com/blunagraphisme-cell/email.git after each update
+- Surveyed all occurrences of MailOqui/mail.oquitogo.com/mailoqui.com in src/ and public/ (39 files)
+- Bulk sed replacements across all 39 files:
+  - "MailOqui" → "EmailOqui" (literal full word)
+  - "Mail<span className="text-primary">Oqui</span>" → "Email<span className="text-primary">Oqui</span>" (wordmark JSX pattern)
+  - "mail.oquitogo.com" → "email.oquitogo.com"
+  - "mailoqui.com" → "email.oquitogo.com" (covers newsletter@, admin@, _spf., dmarc@, messageId@)
+  - "mailoqui._domainkey" → "emailoqui._domainkey" (DKIM selector)
+  - "mo_session" → "eo_session" (cookie name)
+  - "mailoqui-store" → "emailoqui-store" (Zustand persist key)
+- Updated CONVENTIONS.md, prisma/schema.prisma (comments), worklog.md
+- Re-seeded admin via POST /api/seed/init → new credentials: admin@email.oquitogo.com / EmailOqui2026!
+- Lint: 0 errors, 0 warnings
+- Browser verification: page title "EmailOqui — Automatisez votre marketing par e-mail", header button "Accueil EmailOqui", image alt "EmailOqui", all text mentions renamed, footer link "email.oquitogo.com", copyright "© 2026 EmailOqui — email.oquitogo.com"
+- Git initialization:
+  - Updated .gitignore to exclude /db/*.db, /agent-ctx/, /tool-results/, /upload/, /download/, /.zscripts/, /z-ai-config/
+  - Untracked (git rm --cached): .env, agent-ctx/, tool-results/, db/custom.db (sensitive/internal files)
+  - Created .env.example with template (DATABASE_URL, EMAIL_PROVIDER_API_KEY, EMAIL_WEBHOOK_SECRET, PAYMENT_SECRET, SESSION_SECRET, APP_URL)
+  - Added remote: https://github.com/blunagraphisme-cell/email.git (with token in URL for non-interactive push)
+  - Committing all changes and pushing to main
+
+Stage Summary:
+- App renamed: MailOqui → EmailOqui everywhere (text, alt, comments, metadata, manifest)
+- Domain renamed: mail.oquitogo.com → email.oquitogo.com everywhere
+- Brand email updated: admin@email.oquitogo.com, newsletter@email.oquitogo.com, contact@oquitogo.com (kept)
+- Cookie/session/storage keys renamed for consistency (mo_session → eo_session, mailoqui-store → emailoqui-store)
+- New admin credentials: admin@email.oquitogo.com / EmailOqui2026!
+- Git repo initialized with proper .gitignore, .env.example template, no secrets committed
+- After this commit, every subsequent update will be pushed to the remote repo on main branch

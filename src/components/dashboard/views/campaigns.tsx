@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * MailOqui — Campaigns list view
+ * EmailOqui — Campaigns list view
  *
  * Tableau des campagnes du workspace courant avec:
  *  - Filtres par statut (Toutes / Brouillons / Programmées / En cours / Envoyées / Annulées)

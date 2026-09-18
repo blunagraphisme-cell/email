@@ -37,7 +37,7 @@ export function LandingHow() {
             Trois étapes pour vos premières campagnes
           </h2>
           <p className="mt-4 text-muted-foreground">
-            De l’inscription au premier envoi, MailOqui vous accompagne à chaque étape.
+            De l’inscription au premier envoi, EmailOqui vous accompagne à chaque étape.
           </p>
         </div>
 

@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * MailOqui — Campaign creation wizard (multi-step)
+ * EmailOqui — Campaign creation wizard (multi-step)
  *
  * 5 steps:
  *   1. Nom & description
@@ -110,7 +110,7 @@ export default function CampaignNewView() {
   const [name, setName] = React.useState('')
   const [description, setDescription] = React.useState('')
   const [fromName, setFromName] = React.useState(workspace?.name ?? '')
-  const [fromEmail, setFromEmail] = React.useState('newsletter@mailoqui.com')
+  const [fromEmail, setFromEmail] = React.useState('newsletter@email.oquitogo.com')
   const [subject, setSubject] = React.useState('')
   const [preheader, setPreheader] = React.useState('')
   const [blocks, setBlocks] = React.useState<Block[]>([
@@ -180,7 +180,7 @@ export default function CampaignNewView() {
         const c = data.campaign
         setName(c.name ?? '')
         setFromName(c.fromName ?? workspace?.name ?? '')
-        setFromEmail(c.fromEmail ?? 'newsletter@mailoqui.com')
+        setFromEmail(c.fromEmail ?? 'newsletter@email.oquitogo.com')
         setSubject(c.subject ?? '')
         setBlocks(parseBlocks(c.content))
         if (c.scheduledAt) {
@@ -449,7 +449,7 @@ export default function CampaignNewView() {
                     id="from-email"
                     value={fromEmail}
                     onChange={(e) => setFromEmail(e.target.value)}
-                    placeholder="newsletter@mailoqui.com"
+                    placeholder="newsletter@email.oquitogo.com"
                   />
                   {domain && (
                     <p className="text-xs text-muted-foreground">

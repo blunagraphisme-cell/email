@@ -19,10 +19,10 @@ const FAQ = [
   },
   {
     q: 'Mes données sont-elles isolées des autres clients ?',
-    a: 'Oui. MailOqui est multi-tenant: chaque workspace a ses propres contacts, campagnes, templates, automatisations et statistiques. Aucune donnée n’est partagée entre espaces de travail, et les permissions sont gérées par rôle (Developer, Owner).',
+    a: 'Oui. EmailOqui est multi-tenant: chaque workspace a ses propres contacts, campagnes, templates, automatisations et statistiques. Aucune donnée n’est partagée entre espaces de travail, et les permissions sont gérées par rôle (Developer, Owner).',
   },
   {
-    q: 'Puis-je essayer MailOqui avant de m’abonner ?',
+    q: 'Puis-je essayer EmailOqui avant de m’abonner ?',
     a: 'Vous pouvez créer un compte et configurer votre domaine immédiatement. À l’inscription, votre abonnement est en attente de paiement. Vous pouvez ensuite choisir un plan Starter, Business ou Premium pour activer votre envoi d’e-mails.',
   },
   {

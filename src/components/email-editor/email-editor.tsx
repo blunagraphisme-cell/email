@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * MailOqui — Visual block email editor
+ * EmailOqui — Visual block email editor
  *
  * Layout: left palette of insertable blocks / center editable list / toggle
  * between "Édition" and "Aperçu" (renders `EmailPreview`).

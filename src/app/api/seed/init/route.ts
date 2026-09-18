@@ -24,7 +24,7 @@ export async function POST() {
       results.push(`plan ${p.code} updated`)
     }
   }
-  const adminEmail = 'admin@mailoqui.com'
+  const adminEmail = 'admin@email.oquitogo.com'
   const existingAdmin = await db.user.findUnique({ where: { email: adminEmail } })
   if (!existingAdmin) {
     await db.user.create({
@@ -32,13 +32,13 @@ export async function POST() {
         email: adminEmail,
         firstName: 'Platform',
         lastName: 'Admin',
-        passwordHash: hashPassword('MailOqui2026!'),
+        passwordHash: hashPassword('EmailOqui2026!'),
         emailVerified: true,
         role: 'PLATFORM_ADMIN',
         status: 'ACTIF',
       },
     })
-    results.push('platform admin created (admin@mailoqui.com / MailOqui2026!)')
+    results.push('platform admin created (admin@email.oquitogo.com / EmailOqui2026!)')
   } else {
     results.push('platform admin already exists')
   }

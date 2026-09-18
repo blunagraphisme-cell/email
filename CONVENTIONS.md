@@ -1,4 +1,4 @@
-# MailOqui — Conventions partagées (CONVENTIONS.md)
+# EmailOqui — Conventions partagées (CONVENTIONS.md)
 
 Lecture obligatoire pour tous les subagents.
 
@@ -10,7 +10,7 @@ Lecture obligatoire pour tous les subagents.
 - charts: `recharts` (déjà installé).
 - state client: `zustand` via `@/lib/store` (voir ci-dessous).
 - zod pour validation.
-- PAS de bleu/indigo comme couleur principale. MailOqui utilise un ambre/corail (déjà configuré dans globals.css).
+- PAS de bleu/indigo comme couleur principale. EmailOqui utilise un ambre/corail (déjà configuré dans globals.css).
 - Footer sticky obligatoire (`min-h-screen flex flex-col`, footer en `mt-auto`).
 - Responsive mobile-first. Touch targets ≥ 44px.
 - Aucune route Next.js autre que `/`. Tout est une SPA monopage avec routeur d'état.
@@ -76,7 +76,7 @@ En particulier: button, card, input, label, textarea, dialog, dropdown-menu, she
 - Types partagés dans `src/lib/types.ts` si besoin.
 - NE PAS créer de nouveaux fichiers `src/app/*` (route). Uniquement `src/components/*` et `src/lib/*`.
 
-## Couleurs MailOqui (déjà dans globals.css)
+## Couleurs EmailOqui (déjà dans globals.css)
 - `primary` = ambre/corail (oklch 0.62 0.18 38) — boutons, accents
 - `chart-1` = ambre, `chart-2` = vert, `chart-3` = violet, `chart-4` = jaune, `chart-5` = magenta
 - Utiliser `bg-primary text-primary-foreground` pour les boutons principaux

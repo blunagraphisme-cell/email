@@ -52,3 +52,13 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# EmailOqui project-specific
+/db/*.db
+/db/*.db-journal
+/agent-ctx/
+/tool-results/
+/upload/
+/download/
+/.zscripts/
+/z-ai-config/

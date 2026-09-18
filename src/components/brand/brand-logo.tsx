@@ -4,10 +4,10 @@ import * as React from 'react'
 import { cn } from '@/lib/utils'
 
 /**
- * MailOqui brand logo component.
+ * EmailOqui brand logo component.
  * Uses the official PNG mark from /public/logo.png (stylized "G/E" with checkmark + dot).
  *
- * The "MailOqui" wordmark text is rendered next to the icon (the cahier des charges
+ * The "EmailOqui" wordmark text is rendered next to the icon (the cahier des charges
  * is the source of truth for the brand name).
  *
  * Props:
@@ -31,7 +31,7 @@ export function BrandLogo({
     <span className={cn('inline-flex items-center gap-2', className)}>
       <img
         src="/logo.png"
-        alt="MailOqui"
+        alt="EmailOqui"
         width={size}
         height={size}
         className="rounded-md object-contain"
@@ -39,7 +39,7 @@ export function BrandLogo({
       />
       {showText && (
         <span className={cn('text-lg font-bold tracking-tight', textClassName)}>
-          Mail<span className="text-primary">Oqui</span>
+          Email<span className="text-primary">Oqui</span>
         </span>
       )}
     </span>
@@ -59,7 +59,7 @@ export function BrandMark({
   return (
     <img
       src="/logo.png"
-      alt="MailOqui"
+      alt="EmailOqui"
       width={size}
       height={size}
       className={cn('rounded-md object-contain', className)}

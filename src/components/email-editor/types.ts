@@ -1,5 +1,5 @@
 /**
- * MailOqui — Email editor shared types
+ * EmailOqui — Email editor shared types
  *
  * The `content` of a campaign (or template) is a JSON array of blocks.
  * Each block describes a piece of the email body. Variables inside `text`

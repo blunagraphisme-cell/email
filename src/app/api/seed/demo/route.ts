@@ -1,6 +1,6 @@
 /**
  * POST /api/seed/demo — peuple le workspace courant avec des données démo:
- *   - 1 domaine vérifié (mail.oquitogo.com)
+ *   - 1 domaine vérifié (email.oquitogo.com)
  *   - ~24 contacts
  *   - 4 templates
  *   - 2 automations
@@ -20,7 +20,7 @@ const COMPANIES = ['OquiTogo','BTP Plus','LomeMarket','AgriKossi','TogoFret','Sa
 
 function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)] }
 function pickEmail(first: string, last: string, i: number): string {
-  const dom = ['gmail.com','yahoo.fr','outlook.com','mailoqui.com','oquitogo.com'][i % 5]
+  const dom = ['gmail.com','yahoo.fr','outlook.com','email.oquitogo.com','oquitogo.com'][i % 5]
   return `${first}.${last}${i}@${dom}`.toLowerCase()
 }
 
@@ -49,7 +49,7 @@ export async function POST() {
   await db.domain.create({
     data: {
       workspaceId: ws,
-      domain: 'mail.oquitogo.com',
+      domain: 'email.oquitogo.com',
       status: 'VERIFIE',
       spfStatus: 'VERIFIE',
       dkimStatus: 'VERIFIE',
@@ -92,7 +92,7 @@ export async function POST() {
   // Templates
   await db.template.create({ data: { workspaceId: ws, name: 'Newsletter mensuelle', category: 'Newsletter', content: JSON.stringify([{type:'title',text:'Notre actualité du mois'},{type:'text',text:'Bonjour {{prenom}}, voici nos dernières nouvelles.'},{type:'button',text:'Lire la suite',url:'https://oquitogo.com'}]), thumbnail: '#0ea5e9' } })
   await db.template.create({ data: { workspaceId: ws, name: 'Promo week-end', category: 'Promotion', content: JSON.stringify([{type:'title',text:'-20% ce week-end !'},{type:'text',text:'Bonjour {{prenom}}, profitez de -20% sur tout le catalogue.'},{type:'button',text:'J\'en profite',url:'https://oquitogo.com/promo'}]), thumbnail: '#f59e0b' } })
-  await db.template.create({ data: { workspaceId: ws, name: 'Bienvenue', category: 'Bienvenue', content: JSON.stringify([{type:'title',text:'Bienvenue {{prenom}} !'},{type:'text',text:'Merci de rejoindre MailOqui. Nous sommes ravis de vous compter parmi nous.'}]), thumbnail: '#10b981' } })
+  await db.template.create({ data: { workspaceId: ws, name: 'Bienvenue', category: 'Bienvenue', content: JSON.stringify([{type:'title',text:'Bienvenue {{prenom}} !'},{type:'text',text:'Merci de rejoindre EmailOqui. Nous sommes ravis de vous compter parmi nous.'}]), thumbnail: '#10b981' } })
   await db.template.create({ data: { workspaceId: ws, name: 'Confirmation paiement', category: 'Transactionnel', content: JSON.stringify([{type:'title',text:'Paiement confirmé'},{type:'text',text:'Bonjour {{prenom}}, votre paiement a bien été reçu.'}]), thumbnail: '#a855f7' } })
 
   // Automations
@@ -191,7 +191,7 @@ export async function POST() {
         eventId: `${sentCampaign.id}-${c.id}-${ev}-${j}`,
         eventType: ev,
         occurredAt: new Date(sentDate.getTime() + j * 3600000 + Math.random() * 600000),
-        messageId: `msg-${c.id}-${j}@mailoqui.com`,
+        messageId: `msg-${c.id}-${j}@email.oquitogo.com`,
       })
     }
   }
@@ -210,7 +210,7 @@ export async function POST() {
   // NOTE: for simplicity we already have ~1400 events, sufficient for the demo
 
   // Notifications
-  await db.notification.create({ data: { workspaceId: ws, type: 'DOMAIN', title: 'Domaine vérifié', message: 'Le domaine mail.oquitogo.com est vérifié (SPF, DKIM, DMARC).' } })
+  await db.notification.create({ data: { workspaceId: ws, type: 'DOMAIN', title: 'Domaine vérifié', message: 'Le domaine email.oquitogo.com est vérifié (SPF, DKIM, DMARC).' } })
   await db.notification.create({ data: { workspaceId: ws, type: 'EXPIRATION', title: 'Abonnement expirant', message: 'Votre abonnement expire dans 30 jours. Renouvelez dès maintenant.' } })
   await db.notification.create({ data: { workspaceId: ws, type: 'QUOTA', title: 'Quota quotidien', message: 'Vous avez utilisé 80% de votre quota quotidien.' } })
 

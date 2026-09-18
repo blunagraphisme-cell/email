@@ -58,7 +58,7 @@ export function SiteFooter() {
             <div className="flex items-center gap-2">
               <BrandMark size={36} />
               <span className="text-lg font-bold tracking-tight">
-                Mail<span className="text-primary">Oqui</span>
+                Email<span className="text-primary">Oqui</span>
               </span>
             </div>
             <p className="mt-3 max-w-xs text-sm text-muted-foreground">
@@ -90,10 +90,10 @@ export function SiteFooter() {
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
               <a
-                href="https://mail.oquitogo.com"
+                href="https://email.oquitogo.com"
                 className="font-medium text-foreground hover:text-primary"
               >
-                mail.oquitogo.com
+                email.oquitogo.com
               </a>
             </p>
           </div>
@@ -153,7 +153,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-10 border-t border-border pt-6 text-center text-xs text-muted-foreground sm:text-left">
-          © 2026 MailOqui — mail.oquitogo.com. Siège : Lagos, Nigeria. Tous droits réservés.
+          © 2026 EmailOqui — email.oquitogo.com. Siège : Lagos, Nigeria. Tous droits réservés.
         </div>
       </div>
     </footer>

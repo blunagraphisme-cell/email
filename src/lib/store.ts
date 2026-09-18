@@ -1,5 +1,5 @@
 /**
- * MailOqui — Application store (Zustand)
+ * EmailOqui — Application store (Zustand)
  * Gère la navigation côté client (routeur de vue), la session simulée, et le panier UI.
  *
  * NOTE: la vraie session est sécurisée côté serveur (cookie httpOnly via /api/auth/*).
@@ -137,7 +137,7 @@ export const useAppStore = create<AppState>()(
       },
     }),
     {
-      name: 'mailoqui-store',
+      name: 'emailoqui-store',
       // Ne pas persister user/workspace (sécurité: la session est gérée serveur)
       partialize: (s) => ({
         view: s.view,

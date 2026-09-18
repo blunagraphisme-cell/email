@@ -49,7 +49,7 @@ export function SiteHeader() {
           type="button"
           onClick={() => setView('landing')}
           className="flex items-center gap-2 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          aria-label="Accueil MailOqui"
+          aria-label="Accueil EmailOqui"
         >
           <BrandLogo size={32} />
         </button>
@@ -99,7 +99,7 @@ export function SiteHeader() {
               <div className="flex items-center justify-between border-b border-border p-4">
                 <SheetTitle className="flex items-center gap-2 text-base font-bold">
                   <BrandMark size={26} />
-                  Mail<span className="text-primary">Oqui</span>
+                  Email<span className="text-primary">Oqui</span>
                 </SheetTitle>
                 <SheetClose
                   className="rounded-md p-1.5 text-muted-foreground hover:bg-accent"

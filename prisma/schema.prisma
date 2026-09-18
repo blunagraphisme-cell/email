@@ -1,4 +1,4 @@
-// MailOqui — Prisma schema (multi-tenant SaaS)
+// EmailOqui — Prisma schema (multi-tenant SaaS)
 // Voir cahier des charges complet
 
 generator client {

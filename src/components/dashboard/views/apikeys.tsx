@@ -91,14 +91,14 @@ function ApiDocCard() {
       title: 'Lister les campagnes',
       method: 'GET',
       path: '/api/v1/campaigns',
-      code: `curl https://mail.oquitogo.com/api/v1/campaigns \\
+      code: `curl https://email.oquitogo.com/api/v1/campaigns \\
   -H "Authorization: Bearer moq_live_xxxx"`,
     },
     {
       title: 'Importer des contacts',
       method: 'POST',
       path: '/api/v1/contacts',
-      code: `curl https://mail.oquitogo.com/api/v1/contacts \\
+      code: `curl https://email.oquitogo.com/api/v1/contacts \\
   -H "Authorization: Bearer moq_live_xxxx" \\
   -H "Content-Type: application/json" \\
   -d '{"email":"contact@exemple.com","firstName":"Awa"}'`,
@@ -107,7 +107,7 @@ function ApiDocCard() {
       title: 'Récupérer les analytics',
       method: 'GET',
       path: '/api/v1/analytics',
-      code: `curl https://mail.oquitogo.com/api/v1/analytics?days=30 \\
+      code: `curl https://email.oquitogo.com/api/v1/analytics?days=30 \\
   -H "Authorization: Bearer moq_live_xxxx"`,
     },
   ]
@@ -120,7 +120,7 @@ function ApiDocCard() {
           Documentation API
         </CardTitle>
         <CardDescription>
-          Intégrez MailOqui à vos applications. Toutes les requêtes doivent inclure l&apos;en-tête
+          Intégrez EmailOqui à vos applications. Toutes les requêtes doivent inclure l&apos;en-tête
           <code className="mx-1 rounded bg-muted px-1.5 py-0.5 text-xs">Authorization: Bearer &lt;votre_clé&gt;</code>.
         </CardDescription>
       </CardHeader>
@@ -298,7 +298,7 @@ export default function ApiKeysView() {
               <div>
                 <p className="text-sm font-medium">Aucune clé API</p>
                 <p className="text-xs text-muted-foreground">
-                  Générez votre première clé pour accéder à l&apos;API MailOqui.
+                  Générez votre première clé pour accéder à l&apos;API EmailOqui.
                 </p>
               </div>
               <Button type="button" variant="outline" size="sm" onClick={openCreate}>
