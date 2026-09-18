@@ -341,7 +341,7 @@ export default function SubscriptionView() {
 
   const copyLink = async () => {
     if (!renewal) return
-    const link = `https://email.oquitogo.com/renew/${renewal.token}`
+    const link = `https://email.oquitogo.online/renew/${renewal.token}`
     try {
       await navigator.clipboard.writeText(link)
       setCopied(true)
@@ -663,7 +663,7 @@ export default function SubscriptionView() {
                         </div>
                         <div className="flex items-center gap-2 rounded-md border border-border bg-background p-2">
                           <code className="flex-1 truncate text-xs">
-                            email.oquitogo.com/renew/{renewal.token}
+                            email.oquitogo.online/renew/{renewal.token}
                           </code>
                           <Button size="sm" variant="ghost" onClick={copyLink}>
                             {copied ? (

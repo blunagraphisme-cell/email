@@ -24,7 +24,7 @@ export async function POST() {
       results.push(`plan ${p.code} updated`)
     }
   }
-  const adminEmail = 'admin@email.oquitogo.com'
+  const adminEmail = 'admin@email.oquitogo.online'
   const existingAdmin = await db.user.findUnique({ where: { email: adminEmail } })
   if (!existingAdmin) {
     await db.user.create({
@@ -38,7 +38,7 @@ export async function POST() {
         status: 'ACTIF',
       },
     })
-    results.push('platform admin created (admin@email.oquitogo.com / EmailOqui2026!)')
+    results.push('platform admin created (admin@email.oquitogo.online / EmailOqui2026!)')
   } else {
     results.push('platform admin already exists')
   }

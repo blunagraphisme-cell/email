@@ -51,7 +51,7 @@ export async function sendEmail(params: SendEmailParams): Promise<SendEmailResul
     // and DELIVERED events so the dashboard shows realistic data.
     return {
       success: true,
-      messageId: `sim_${Math.random().toString(36).slice(2, 14)}@email.oquitogo.com`,
+      messageId: `sim_${Math.random().toString(36).slice(2, 14)}@email.oquitogo.online`,
       provider: 'simulated',
     }
   }
@@ -98,7 +98,7 @@ export async function sendBatch(
     // Dev fallback: simulate all as success
     return batch.map(() => ({
       success: true,
-      messageId: `sim_${Math.random().toString(36).slice(2, 14)}@email.oquitogo.com`,
+      messageId: `sim_${Math.random().toString(36).slice(2, 14)}@email.oquitogo.online`,
       provider: 'simulated',
     }))
   }

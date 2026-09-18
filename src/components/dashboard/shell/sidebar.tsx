@@ -65,7 +65,7 @@ function BrandMark({ collapsed }: { collapsed: boolean }) {
       {!collapsed && (
         <div className="flex flex-col leading-tight">
           <span className="text-sm font-semibold tracking-tight">EmailOqui</span>
-          <span className="text-[10px] text-muted-foreground">email.oquitogo.com</span>
+          <span className="text-[10px] text-muted-foreground">email.oquitogo.online</span>
         </div>
       )}
     </div>

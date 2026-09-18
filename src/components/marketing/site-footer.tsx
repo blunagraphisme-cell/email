@@ -90,10 +90,10 @@ export function SiteFooter() {
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
               <a
-                href="https://email.oquitogo.com"
+                href="https://email.oquitogo.online"
                 className="font-medium text-foreground hover:text-primary"
               >
-                email.oquitogo.com
+                email.oquitogo.online
               </a>
             </p>
           </div>
@@ -153,7 +153,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-10 border-t border-border pt-6 text-center text-xs text-muted-foreground sm:text-left">
-          © 2026 EmailOqui — email.oquitogo.com. Siège : Lagos, Nigeria. Tous droits réservés.
+          © 2026 EmailOqui — email.oquitogo.online. Siège : Lagos, Nigeria. Tous droits réservés.
         </div>
       </div>
     </footer>

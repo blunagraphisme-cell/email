@@ -46,7 +46,7 @@ function getEnv() {
   return {
     clientId: process.env.GOOGLE_CLIENT_ID!,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    appUrl: process.env.APP_URL || (process.env.NODE_ENV === 'production' ? 'https://email.oquitogo.com' : 'http://localhost:3000'),
+    appUrl: process.env.APP_URL || (process.env.NODE_ENV === 'production' ? 'https://email.oquitogo.online' : 'http://localhost:3000'),
   }
 }
 

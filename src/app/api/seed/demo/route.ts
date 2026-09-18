@@ -1,6 +1,6 @@
 /**
  * POST /api/seed/demo — peuple le workspace courant avec des données démo:
- *   - 1 domaine vérifié (email.oquitogo.com)
+ *   - 1 domaine vérifié (email.oquitogo.online)
  *   - ~24 contacts
  *   - 4 templates
  *   - 2 automations
@@ -20,7 +20,7 @@ const COMPANIES = ['OquiTogo','BTP Plus','LomeMarket','AgriKossi','TogoFret','Sa
 
 function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)] }
 function pickEmail(first: string, last: string, i: number): string {
-  const dom = ['gmail.com','yahoo.fr','outlook.com','email.oquitogo.com','oquitogo.com'][i % 5]
+  const dom = ['gmail.com','yahoo.fr','outlook.com','email.oquitogo.online','oquitogo.com'][i % 5]
   return `${first}.${last}${i}@${dom}`.toLowerCase()
 }
 
@@ -49,7 +49,7 @@ export async function POST() {
   await db.domain.create({
     data: {
       workspaceId: ws,
-      domain: 'email.oquitogo.com',
+      domain: 'email.oquitogo.online',
       status: 'VERIFIE',
       spfStatus: 'VERIFIE',
       dkimStatus: 'VERIFIE',
@@ -191,7 +191,7 @@ export async function POST() {
         eventId: `${sentCampaign.id}-${c.id}-${ev}-${j}`,
         eventType: ev,
         occurredAt: new Date(sentDate.getTime() + j * 3600000 + Math.random() * 600000),
-        messageId: `msg-${c.id}-${j}@email.oquitogo.com`,
+        messageId: `msg-${c.id}-${j}@email.oquitogo.online`,
       })
     }
   }
@@ -210,7 +210,7 @@ export async function POST() {
   // NOTE: for simplicity we already have ~1400 events, sufficient for the demo
 
   // Notifications
-  await db.notification.create({ data: { workspaceId: ws, type: 'DOMAIN', title: 'Domaine vérifié', message: 'Le domaine email.oquitogo.com est vérifié (SPF, DKIM, DMARC).' } })
+  await db.notification.create({ data: { workspaceId: ws, type: 'DOMAIN', title: 'Domaine vérifié', message: 'Le domaine email.oquitogo.online est vérifié (SPF, DKIM, DMARC).' } })
   await db.notification.create({ data: { workspaceId: ws, type: 'EXPIRATION', title: 'Abonnement expirant', message: 'Votre abonnement expire dans 30 jours. Renouvelez dès maintenant.' } })
   await db.notification.create({ data: { workspaceId: ws, type: 'QUOTA', title: 'Quota quotidien', message: 'Vous avez utilisé 80% de votre quota quotidien.' } })
 

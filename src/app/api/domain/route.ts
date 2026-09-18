@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   if (error) return error
   const body = await req.json().catch(() => ({}))
   if (!body.domain) return fail('INVALID_INPUT', 'Domaine requis.', 400)
-  // Vérification simulée: si le domaine contient "oquitogo.com" ou "email.oquitogo.com" -> VÉRIFIÉ
+  // Vérification simulée: si le domaine contient "oquitogo.com" ou "email.oquitogo.online" -> VÉRIFIÉ
   // (en prod: résolution DNS réelle SPF/DKIM/DMARC)
   const verified = /oquitogo\.com$|mailoqui\.com$/.test(body.domain)
   const data = {

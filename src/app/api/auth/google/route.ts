@@ -21,7 +21,7 @@ function getEnv() {
   return {
     clientId: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    appUrl: process.env.APP_URL || (process.env.NODE_ENV === 'production' ? 'https://email.oquitogo.com' : 'http://localhost:3000'),
+    appUrl: process.env.APP_URL || (process.env.NODE_ENV === 'production' ? 'https://email.oquitogo.online' : 'http://localhost:3000'),
   }
 }
 
@@ -70,7 +70,7 @@ GOOGLE_CLIENT_SECRET="votre-client-secret"
 APP_URL="http://localhost:3000"</pre>
 <p style="margin-top:16px;font-size:14px;color:#6b7280;">Créez vos identifiants OAuth sur la <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">Google Cloud Console</a>, puis ajoutez l'URI de redirection suivante dans les origines autorisées :</p>
 <pre>http://localhost:3000/api/auth/google/callback
-https://email.oquitogo.com/api/auth/google/callback</pre>
+https://email.oquitogo.online/api/auth/google/callback</pre>
 <p style="margin-top:16px"><a href="/">&larr; Retour à l'accueil</a></p>
 </div></body></html>`
 }

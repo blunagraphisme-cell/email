@@ -89,7 +89,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
         entreprise: contact.company ?? '',
       } as SampleData,
       workspaceName: ctx.workspace.name,
-      unsubscribeUrl: `https://email.oquitogo.com/unsub?email=${encodeURIComponent(contact.email)}&w=${ctx.workspace.id}&c=${c.id}`,
+      unsubscribeUrl: `https://email.oquitogo.online/unsub?email=${encodeURIComponent(contact.email)}&w=${ctx.workspace.id}&c=${c.id}`,
     }))
     const results = await sendBatch(params)
     for (let j = 0; j < batch.length; j++) {
@@ -104,7 +104,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
           eventId: `${c.id}-${contact.id}-SENT-${i}-${j}`,
           eventType: 'SENT',
           occurredAt: now,
-          messageId: r.messageId ?? `msg-${contact.id}@email.oquitogo.com`,
+          messageId: r.messageId ?? `msg-${contact.id}@email.oquitogo.online`,
         })
         // DELIVERED (soonest after SENT). En prod, le vrai DELIVERED arrive via webhook Resend.
         sentEvents.push({
@@ -114,7 +114,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
           eventId: `${c.id}-${contact.id}-DELIVERED-${i}-${j}`,
           eventType: 'DELIVERED',
           occurredAt: new Date(now.getTime() + 30000 + Math.random() * 60000),
-          messageId: r.messageId ?? `msg-${contact.id}@email.oquitogo.com`,
+          messageId: r.messageId ?? `msg-${contact.id}@email.oquitogo.online`,
         })
       } else {
         failedCount++
@@ -145,22 +145,22 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     if (Math.random() < 0.6) simEvents.push({
       workspaceId: ctx.workspace.id, campaignId: c.id, contactEmail: contact.email,
       eventId: `${c.id}-${contact.id}-OPENED`, eventType: 'OPENED', occurredAt: new Date(now.getTime() + 3600000 + Math.random() * 86400000),
-      messageId: `msg-${contact.id}@email.oquitogo.com`,
+      messageId: `msg-${contact.id}@email.oquitogo.online`,
     })
     if (Math.random() < 0.25) simEvents.push({
       workspaceId: ctx.workspace.id, campaignId: c.id, contactEmail: contact.email,
       eventId: `${c.id}-${contact.id}-CLICKED`, eventType: 'CLICKED', occurredAt: new Date(now.getTime() + 7200000 + Math.random() * 86400000),
-      messageId: `msg-${contact.id}@email.oquitogo.com`,
+      messageId: `msg-${contact.id}@email.oquitogo.online`,
     })
     if (Math.random() < 0.04) simEvents.push({
       workspaceId: ctx.workspace.id, campaignId: c.id, contactEmail: contact.email,
       eventId: `${c.id}-${contact.id}-UNSUB`, eventType: 'UNSUBSCRIBE', occurredAt: new Date(now.getTime() + 10800000 + Math.random() * 86400000),
-      messageId: `msg-${contact.id}@email.oquitogo.com`,
+      messageId: `msg-${contact.id}@email.oquitogo.online`,
     })
     if (Math.random() < 0.03) simEvents.push({
       workspaceId: ctx.workspace.id, campaignId: c.id, contactEmail: contact.email,
       eventId: `${c.id}-${contact.id}-BOUNCE`, eventType: 'BOUNCE', occurredAt: new Date(now.getTime() + 60000),
-      messageId: `msg-${contact.id}@email.oquitogo.com`,
+      messageId: `msg-${contact.id}@email.oquitogo.online`,
     })
   }
   for (let i = 0; i < simEvents.length; i += 200) {

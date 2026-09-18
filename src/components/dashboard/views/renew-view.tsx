@@ -68,7 +68,7 @@ function extractToken(viewParam: string | null): string | null {
   if (!viewParam) return null
   const trimmed = viewParam.trim()
   if (!trimmed) return null
-  // Allow either a bare token or a full URL like https://email.oquitogo.com/renew/<token>
+  // Allow either a bare token or a full URL like https://email.oquitogo.online/renew/<token>
   if (trimmed.includes('/')) {
     const parts = trimmed.split('/').filter(Boolean)
     const last = parts[parts.length - 1]
@@ -349,10 +349,10 @@ export function RenewView() {
       {/* Footer */}
       <footer className="mt-auto border-t border-border bg-background/60 px-4 py-3 text-center text-xs text-muted-foreground">
         <a
-          href="https://email.oquitogo.com"
+          href="https://email.oquitogo.online"
           className="font-medium text-foreground/80 hover:text-foreground"
         >
-          email.oquitogo.com
+          email.oquitogo.online
         </a>{' '}
         — EmailOqui
       </footer>

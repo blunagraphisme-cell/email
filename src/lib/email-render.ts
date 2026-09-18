@@ -14,7 +14,7 @@
 import type { Block, SampleData } from '@/components/email-editor/types'
 import { substituteVariables } from '@/components/email-editor/types'
 
-const BRAND_LOGO_URL = 'https://email.oquitogo.com/logo.png'
+const BRAND_LOGO_URL = 'https://email.oquitogo.online/logo.png'
 const BRAND_PRIMARY = '#f59e0b' // amber-500
 
 /** Escape HTML special characters to prevent injection. */
@@ -114,7 +114,7 @@ export function renderEmailHtml(
                     <img src="${BRAND_LOGO_URL}" alt="EmailOqui" width="28" height="28" style="display:inline-block;vertical-align:middle;border-radius:6px;background-color:rgba(255,255,255,0.9);padding:2px;" />
                     <span style="margin-left:8px;font-size:16px;font-weight:600;color:#ffffff;vertical-align:middle;">${escapeHtml(workspaceName)}</span>
                   </td>
-                  <td align="right" style="vertical-align:middle;font-size:11px;color:rgba(255,255,255,0.85);">email.oquitogo.com</td>
+                  <td align="right" style="vertical-align:middle;font-size:11px;color:rgba(255,255,255,0.85);">email.oquitogo.online</td>
                 </tr>
               </table>
             </td>
@@ -134,7 +134,7 @@ export function renderEmailHtml(
             </td>
           </tr>
         </table>
-        <p style="margin:16px 0 0 0;font-size:11px;color:#9ca3af;text-align:center;">© ${year} ${escapeHtml(workspaceName)} — email.oquitogo.com</p>
+        <p style="margin:16px 0 0 0;font-size:11px;color:#9ca3af;text-align:center;">© ${year} ${escapeHtml(workspaceName)} — email.oquitogo.online</p>
       </td>
     </tr>
   </table>

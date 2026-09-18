@@ -118,7 +118,7 @@ function EmailHeader({ workspaceName, compact = false }: { workspaceName: string
         </span>
       </div>
       <span className={cn('text-white/80', compact ? 'text-[10px]' : 'text-xs')}>
-        email.oquitogo.com
+        email.oquitogo.online
       </span>
     </div>
   )

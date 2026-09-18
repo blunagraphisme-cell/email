@@ -113,7 +113,7 @@ async function copy(text: string) {
 const SPF_RECORD: DnsRow = {
   type: 'TXT',
   host: '@ (racine du domaine)',
-  value: 'v=spf1 include:_spf.email.oquitogo.com ~all',
+  value: 'v=spf1 include:_spf.email.oquitogo.online ~all',
 }
 const DKIM_RECORD: DnsRow = {
   type: 'TXT',
@@ -124,7 +124,7 @@ const DKIM_RECORD: DnsRow = {
 const DMARC_RECORD: DnsRow = {
   type: 'TXT',
   host: '_dmarc',
-  value: 'v=DMARC1; p=quarantine; rua=mailto:dmarc@email.oquitogo.com',
+  value: 'v=DMARC1; p=quarantine; rua=mailto:dmarc@email.oquitogo.online',
 }
 
 /* --------------------------------- DnsCard -------------------------------- */

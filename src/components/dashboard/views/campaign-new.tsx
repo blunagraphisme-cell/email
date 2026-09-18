@@ -110,7 +110,7 @@ export default function CampaignNewView() {
   const [name, setName] = React.useState('')
   const [description, setDescription] = React.useState('')
   const [fromName, setFromName] = React.useState(workspace?.name ?? '')
-  const [fromEmail, setFromEmail] = React.useState('newsletter@email.oquitogo.com')
+  const [fromEmail, setFromEmail] = React.useState('newsletter@email.oquitogo.online')
   const [subject, setSubject] = React.useState('')
   const [preheader, setPreheader] = React.useState('')
   const [blocks, setBlocks] = React.useState<Block[]>([
@@ -180,7 +180,7 @@ export default function CampaignNewView() {
         const c = data.campaign
         setName(c.name ?? '')
         setFromName(c.fromName ?? workspace?.name ?? '')
-        setFromEmail(c.fromEmail ?? 'newsletter@email.oquitogo.com')
+        setFromEmail(c.fromEmail ?? 'newsletter@email.oquitogo.online')
         setSubject(c.subject ?? '')
         setBlocks(parseBlocks(c.content))
         if (c.scheduledAt) {
@@ -449,7 +449,7 @@ export default function CampaignNewView() {
                     id="from-email"
                     value={fromEmail}
                     onChange={(e) => setFromEmail(e.target.value)}
-                    placeholder="newsletter@email.oquitogo.com"
+                    placeholder="newsletter@email.oquitogo.online"
                   />
                   {domain && (
                     <p className="text-xs text-muted-foreground">

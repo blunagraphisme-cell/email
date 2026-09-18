@@ -27,14 +27,14 @@ import { toast } from 'sonner'
 
 type TabKey = 'login' | 'signup' | 'forgot'
 
-const DEMO_EMAIL = 'admin@email.oquitogo.com'
+const DEMO_EMAIL = 'admin@email.oquitogo.online'
 const DEMO_PASSWORD = 'EmailOqui2026!'
 
 function randomDemoEmail(): string {
   const n = Math.floor(Math.random() * 1_000_000)
     .toString(36)
     .padStart(6, '0')
-  return `demo-${n}@email.oquitogo.com`
+  return `demo-${n}@email.oquitogo.online`
 }
 
 export function AuthModal() {

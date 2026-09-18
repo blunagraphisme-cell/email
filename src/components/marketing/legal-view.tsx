@@ -10,7 +10,7 @@ const MENTIONS: Section[] = [
   {
     heading: 'Éditeur',
     paragraphs: [
-      'Le site email.oquitogo.com est édité par EmailOqui, société africaine d’édition de logiciels spécialisée dans la gestion et l’automatisation des e-mails pour les entreprises.',
+      'Le site email.oquitogo.online est édité par EmailOqui, société africaine d’édition de logiciels spécialisée dans la gestion et l’automatisation des e-mails pour les entreprises.',
       'EmailOqui a son siège social à Lagos, au Nigeria, et dispose d’agences à Cotonou (Bénin), Lomé (Togo) et Accra (Ghana).',
       'EmailOqui est une plateforme multi-tenant: chaque client dispose d’un espace de travail isolé (workspace) contenant ses propres contacts, campagnes, modèles et automatisations.',
     ],

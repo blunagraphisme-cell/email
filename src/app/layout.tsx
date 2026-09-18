@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     title: "EmailOqui — Automatisez votre marketing par e-mail",
     description:
       "Développez votre communication, programmez vos campagnes et suivez vos performances depuis une plateforme conçue pour votre activité.",
-    url: "https://email.oquitogo.com",
+    url: "https://email.oquitogo.online",
     siteName: "EmailOqui",
     type: "website",
   },

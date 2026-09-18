@@ -91,14 +91,14 @@ function ApiDocCard() {
       title: 'Lister les campagnes',
       method: 'GET',
       path: '/api/v1/campaigns',
-      code: `curl https://email.oquitogo.com/api/v1/campaigns \\
+      code: `curl https://email.oquitogo.online/api/v1/campaigns \\
   -H "Authorization: Bearer moq_live_xxxx"`,
     },
     {
       title: 'Importer des contacts',
       method: 'POST',
       path: '/api/v1/contacts',
-      code: `curl https://email.oquitogo.com/api/v1/contacts \\
+      code: `curl https://email.oquitogo.online/api/v1/contacts \\
   -H "Authorization: Bearer moq_live_xxxx" \\
   -H "Content-Type: application/json" \\
   -d '{"email":"contact@exemple.com","firstName":"Awa"}'`,
@@ -107,7 +107,7 @@ function ApiDocCard() {
       title: 'Récupérer les analytics',
       method: 'GET',
       path: '/api/v1/analytics',
-      code: `curl https://email.oquitogo.com/api/v1/analytics?days=30 \\
+      code: `curl https://email.oquitogo.online/api/v1/analytics?days=30 \\
   -H "Authorization: Bearer moq_live_xxxx"`,
     },
   ]
