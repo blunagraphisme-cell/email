@@ -9,26 +9,26 @@ const TESTIMONIALS = [
   {
     name: 'Awa Agbode',
     role: 'Responsable CRM',
-    company: 'OquiTogo',
+    company: 'OquiTogo — Lomé, Togo',
     quote:
       'MailOqui nous a permis d’industrialiser nos newsletters en quelques jours. La délivrabilité est excellente et le tableau de bord clair.',
     initials: 'AA',
   },
   {
-    name: 'Komlan Mensah',
+    name: 'Tunde Adeyemi',
     role: 'Directeur marketing',
-    company: 'BTP Plus',
+    company: 'Lagos Logistics Co. — Lagos, Nigeria',
     quote:
       'Les automatisations sont intuitives. Nous avons mis en place un parcours de bienvenue qui convertit 30% mieux que nos anciens e-mails.',
-    initials: 'KM',
+    initials: 'TA',
   },
   {
-    name: 'Afi Kossi',
+    name: 'Abena Mensah',
     role: 'Cheffe de produit',
-    company: 'LomeMarket',
+    company: 'Accra Mart — Accra, Ghana',
     quote:
       'Statistiques en temps réel, support réactif, et un éditeur d’e-mails enfin pensé pour les équipes. Je recommande sans hésiter.',
-    initials: 'AK',
+    initials: 'AM',
   },
 ]
 

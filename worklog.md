@@ -351,3 +351,48 @@ Stage Summary:
 - Quota check atomic, payment idempotency (PRICE_MISMATCH, DUPLICATE_PAYMENT), domain verification simulated, email event deduplication via UNIQUE(workspace_id, event_id)
 - Sticky footer + responsive mobile + accessibility (ARIA, semantic HTML)
 - Dev server running on port 3000, all routes compile cleanly
+
+---
+Task ID: 7 (localization update)
+Agent: main
+Task: Reframe MailOqui as African app based in Nigeria with agencies in Benin/Togo/Ghana, update contacts, remove social media
+
+Work Log:
+- User request: African app based in Nigeria, agencies in Benin/Togo/Ghana
+  Contacts: Nigeria +234 813 8198 3521, Togo +228 22 22 77 58, email contact@oquitogo.com
+  Remove social media links
+- Surveyed all marketing components for geographic/contact/social references
+- Updated src/components/marketing/site-footer.tsx:
+  - Removed SOCIALS array (Twitter, LinkedIn, GitHub) and "Suivez-nous" column entirely
+  - Added "Nos agences" column with 4 locations: Lagos (Nigeria, Siège), Cotonou (Bénin, Agence), Lomé (Togo, Agence), Accra (Ghana, Agence)
+  - Brand tagline: "Plateforme africaine de gestion et d'automatisation des e-mails. Siège au Nigeria, agences au Bénin, au Togo et au Ghana."
+  - Added contact links: contact@oquitogo.com (mailto), +234 813 8198 3521 (Nigeria, tel), +228 22 22 77 58 (Togo, tel)
+  - Copyright line: "Siège : Lagos, Nigeria"
+- Updated src/components/marketing/landing-hero.tsx:
+  - Stats band: replaced "180+ pays" with "4 pays — Nigeria · Bénin · Togo · Ghana"
+- Updated src/components/marketing/landing-testimonials.tsx:
+  - Awa Agbode — Responsable CRM — OquiTogo — Lomé, Togo (kept)
+  - Komlan Mensah/BTP Plus → Tunde Adeyemi — Directeur marketing — Lagos Logistics Co. — Lagos, Nigeria
+  - Afi Kossi/LomeMarket → Abena Mensah — Cheffe de produit — Accra Mart — Accra, Ghana
+- Updated src/components/marketing/contact-view.tsx (full rewrite of contact section):
+  - New AGENCIES array with 4 entries (Lagos-Siège, Cotonou, Lomé, Accra)
+  - Subtitle: "présente au Nigeria, au Bénin, au Togo et au Ghana"
+  - CONTACTS card: contact@oquitogo.com, Nigeria +234 813 8198 3521, Togo +228 22 22 77 58, Siège social Lagos Nigeria
+  - New "Nos agences en Afrique de l'Ouest" card: 4 agency cards (city, role badge, country, phone or "Contact via le siège")
+  - Fuseaux horaires: Africa/Lagos (WAT, GMT+1) · Africa/Lome (GMT+0) · Africa/Accra (GMT+0) · Africa/Porto-Novo (WAT, GMT+1)
+- Updated src/components/marketing/legal-view.tsx (Mentions + Confidentialité):
+  - Éditeur: "société africaine", siège Lagos Nigeria, agences Cotonou/Lomé/Accra
+  - Responsable de publication: contact@oquitogo.com + 2 phones + siège + 3 agences
+  - Droits des personnes: référence à Nigeria Data Protection Regulation 2023, loi togolaise n°2018-026, Bénin, Ghana + contact@oquitogo.com
+- Lint: 0 errors, 0 warnings
+- Browser verification (Agent Browser):
+  - Landing: stats "4 pays · Nigeria · Bénin · Togo · Ghana", 3 testimonials (Lomé/Lagos/Accra), footer brand "Plateforme africaine... Siège au Nigeria", contact@oquitogo.com, 2 phones, "Nos agences" column (Lagos-Nigeria-Siège/+234, Cotonou-Bénin-Agence, Lomé-Togo-Agence/+228, Accra-Ghana-Agence), copyright "Siège : Lagos, Nigeria". NO social media links (verified absence of Twitter/LinkedIn/GitHub).
+  - Contact page: subtitle mentions 4 countries, email contact@oquitogo.com (mailto), Nigeria +234, Togo +228, "Nos agences en Afrique de l'Ouest" card with 4 agency cards, fuseaux horaires 4 pays
+  - Legal page: éditeur "société africaine", siège Lagos, agences, contact@oquitogo.com + 2 phones, NDPR 2023 + loi togolaise n°2018-026 + Bénin + Ghana references
+
+Stage Summary:
+- MailOqui is now an African app: HQ in Lagos (Nigeria), agencies in Cotonou (Bénin), Lomé (Togo), Accra (Ghana)
+- All contact info updated: contact@oquitogo.com, +234 813 8198 3521 (Nigeria), +228 22 22 77 58 (Togo)
+- Social media section completely removed from footer (Twitter, LinkedIn, GitHub gone); replaced by "Nos agences" column
+- Legal page updated with local data protection laws (Nigeria NDPR 2023, Togo law n°2018-026)
+- Dev server running on port 3000, lint clean

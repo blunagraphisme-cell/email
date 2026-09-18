@@ -17,7 +17,7 @@ const STATS = [
   { value: '10 000+', label: 'e-mails / jour' },
   { value: '99.2%', label: 'délivrabilité' },
   { value: '4.8/5', label: 'satisfaction' },
-  { value: '180+', label: 'pays' },
+  { value: '4 pays', label: 'Nigeria · Bénin · Togo · Ghana' },
 ]
 
 export function LandingHero() {

@@ -10,14 +10,15 @@ const MENTIONS: Section[] = [
   {
     heading: 'Éditeur',
     paragraphs: [
-      'Le site mail.oquitogo.com est édité par MailOqui, société d’édition de logiciels spécialisée dans la gestion et l’automatisation des e-mails pour les entreprises.',
+      'Le site mail.oquitogo.com est édité par MailOqui, société africaine d’édition de logiciels spécialisée dans la gestion et l’automatisation des e-mails pour les entreprises.',
+      'MailOqui a son siège social à Lagos, au Nigeria, et dispose d’agences à Cotonou (Bénin), Lomé (Togo) et Accra (Ghana).',
       'MailOqui est une plateforme multi-tenant: chaque client dispose d’un espace de travail isolé (workspace) contenant ses propres contacts, campagnes, modèles et automatisations.',
     ],
   },
   {
     heading: 'Responsable de publication',
     paragraphs: [
-      'Le responsable de publication est la direction de MailOqui, joignable via support@mailoqui.com ou à l’adresse postale située à Lomé, Togo.',
+      'Le responsable de publication est la direction de MailOqui, joignable via contact@oquitogo.com ou par téléphone au +234 813 8198 3521 (Nigeria) ou +228 22 22 77 58 (Togo). Le siège social est situé à Lagos, Nigeria, avec des agences à Cotonou (Bénin), Lomé (Togo) et Accra (Ghana).',
     ],
   },
   {
@@ -79,7 +80,7 @@ const PRIVACY: Section[] = [
   {
     heading: 'Droits des personnes',
     paragraphs: [
-      'Conformément aux principes applicables en matière de protection des données, les utilisateurs disposent d’un droit d’accès, de rectification, d’effacement et d’opposition. Ces droits peuvent être exercés via support@mailoqui.com.',
+      'Conformément aux principes applicables en matière de protection des données (notamment la Nigeria Data Protection Regulation 2023, la loi togolaise n°2018-026 et les réglementations similaires du Bénin et du Ghana), les utilisateurs disposent d’un droit d’accès, de rectification, d’effacement et d’opposition. Ces droits peuvent être exercés via contact@oquitogo.com.',
     ],
   },
   {
