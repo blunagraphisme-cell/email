@@ -1,0 +1,461 @@
+// MailOqui — Prisma schema (multi-tenant SaaS)
+// Voir cahier des charges complet
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ===================== AUTH & USERS =====================
+
+model User {
+  id            String   @id @default(cuid())
+  firstName     String?
+  lastName      String?
+  email         String   @unique
+  passwordHash  String?
+  emailVerified Boolean  @default(false)
+  status        String   @default("ACTIF") // ACTIF | SUSPENDU
+  role          String   @default("USER") // USER | PLATFORM_ADMIN
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  memberships     WorkspaceMember[]
+  invitations     Invitation[]      @relation("InvitationsCreatedBy")
+  renewalsCreated RenewalLink[]     @relation("RenewalCreatedBy")
+  tickets         SupportTicket[]
+  auditLogs       AuditLog[]
+  apiKeys         ApiKey[]
+  payments       Payment[]          @relation("PaymentsConfirmedBy")
+  sessions       Session[]
+
+  @@index([email])
+}
+
+// ===================== WORKSPACE (multi-tenant) =====================
+
+model Workspace {
+  id          String   @id @default(cuid())
+  name        String
+  status      String   @default("ACTIF") // ACTIF | SURVEILLE | SUSPENDU | ANNULE
+  timezone    String   @default("Africa/Lome")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members        WorkspaceMember[]
+  subscriptions Subscription[]
+  campaigns      Campaign[]
+  contacts       Contact[]
+  lists          List[]
+  segments      Segment[]
+  automations    Automation[]
+  templates      Template[]
+  emailEvents    EmailEvent[]
+  tickets        SupportTicket[]
+  auditLogs      AuditLog[]
+  apiKeys        ApiKey[]
+  domain         Domain?
+  notifications  Notification[]
+  quotas         QuotaUsage[]
+  payments       Payment[]
+  invitations    Invitation[]
+  renewalLinks   RenewalLink[]
+
+  @@index([status])
+}
+
+model WorkspaceMember {
+  id          String   @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        String   // DEVELOPER | OWNER
+  status      String   @default("ACTIF") // ACTIF | EN_ATTENTE | SUSPENDU
+  invitedBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+  @@index([workspaceId])
+}
+
+// ===================== PLANS & SUBSCRIPTIONS =====================
+
+model Plan {
+  id              String   @id @default(cuid())
+  code            String   @unique // STARTER | BUSINESS | PREMIUM
+  name            String
+  price           Float
+  currency        String   @default("USD")
+  durationMonths  Int      @default(3)
+  dailyEmailLimit Int
+  automationLimit Int
+  retentionDays   Int
+  supportLevel    String   @default("STANDARD") // STANDARD | PRIORITY
+  status          String   @default("ACTIF")
+  features        String?  // JSON serialized
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id            String    @id @default(cuid())
+  workspaceId   String
+  planId        String
+  status        String    @default("EN_ATTENTE") // EN_ATTENTE | ACTIF | EXPIRANT_BIENTOT | EXPIRE | SUSPENDU | ANNULE
+  startDate     DateTime?
+  endDate       DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  plan        Plan      @relation(fields: [planId], references: [id])
+  payments    Payment[]
+  renewals    RenewalLink[]
+
+  @@index([workspaceId])
+  @@index([status])
+  @@index([endDate])
+}
+
+model Payment {
+  id                  String    @id @default(cuid())
+  subscriptionId      String
+  workspaceId        String
+  amount             Float
+  currency           String    @default("USD")
+  status             String    @default("EN_ATTENTE") // EN_ATTENTE | PAIEMENT_EN_COURS | EN_VERIFICATION | CONFIRME | REFUSE | ANNULE | REMBOURSE
+  transactionReference String?  @unique
+  providerReference  String?
+  paymentMethod      String    @default("CARD")
+  cardLast4          String?
+  confirmedAt        DateTime?
+  confirmedBy        String?
+  createdAt          DateTime  @default(now())
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  confirmedByUser User?      @relation("PaymentsConfirmedBy", fields: [confirmedBy], references: [id])
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId])
+  @@index([workspaceId])
+  @@index([status])
+}
+
+model Invitation {
+  id          String    @id @default(cuid())
+  workspaceId String
+  email       String
+  role        String    @default("OWNER")
+  tokenHash   String    @unique
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  status      String    @default("EN_ATTENTE") // EN_ATTENTE | ACCEPTEE | EXPIREE | ANNULEE
+  createdById String?
+  createdAt   DateTime  @default(now())
+
+  workspace  Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdBy  User?     @relation("InvitationsCreatedBy", fields: [createdById], references: [id])
+
+  @@index([workspaceId])
+  @@index([email])
+  @@index([status])
+}
+
+model RenewalLink {
+  id            String    @id @default(cuid())
+  subscriptionId String
+  workspaceId   String
+  createdById   String?
+  operationType String    @default("RENEW") // RENEW | EXTEND
+  tokenHash     String    @unique
+  expiresAt     DateTime
+  usedAt        DateTime?
+  status        String    @default("ACTIF") // ACTIF | UTILISE | EXPIRE | ANNULE
+  createdAt     DateTime  @default(now())
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  createdBy    User?        @relation("RenewalCreatedBy", fields: [createdById], references: [id])
+  workspace    Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId])
+  @@index([workspaceId])
+}
+
+// ===================== EMAIL CAMPAIGNS =====================
+
+model Campaign {
+  id           String    @id @default(cuid())
+  workspaceId  String
+  name         String
+  subject      String
+  fromName     String?
+  fromEmail    String?
+  content      String? // JSON-serialized blocks
+  htmlContent  String?
+  status       String    @default("BROUILLON") // BROUILLON | PROGRAMMEE | EN_COURS | ENVOYEE | ANNULEE | ECHOUEE
+  scheduledAt  DateTime?
+  sentAt       DateTime?
+  recipientCount Int     @default(0)
+  createdById  String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  workspace  Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  emailEvents EmailEvent[]
+
+  @@index([workspaceId])
+  @@index([status])
+  @@index([scheduledAt])
+}
+
+model Template {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  category    String   @default("Newsletter") // Newsletter | Promotion | Bienvenue | Transactionnel | Evenement | Information
+  content     String?  // JSON-serialized blocks
+  thumbnail   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([category])
+}
+
+// ===================== CONTACTS =====================
+
+model Contact {
+  id          String   @id @default(cuid())
+  workspaceId String
+  email       String
+  firstName   String?
+  lastName    String?
+  phone       String?
+  company     String?
+  tags        String?  // comma-separated
+  status      String   @default("ACTIF") // ACTIF | DESABONNE | SUPPRIME | BOUNCE
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, email])
+  @@index([workspaceId])
+  @@index([status])
+  @@index([email])
+}
+
+model List {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  description String?
+  color       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  segments  Segment[]
+
+  @@index([workspaceId])
+}
+
+model Segment {
+  id          String   @id @default(cuid())
+  workspaceId String
+  listId      String?
+  name        String
+  ruleType    String? // TAG | STATUS | DATE | ACTIVITY | CAMPAIGN | OPEN | CLICK
+  ruleValue   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  list      List?     @relation(fields: [listId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([listId])
+}
+
+// ===================== AUTOMATIONS =====================
+
+model Automation {
+  id             String   @id @default(cuid())
+  workspaceId    String
+  name           String
+  status         String   @default("BROUILLON") // BROUILLON | ACTIF | EN_PAUSE | ARCHIVE
+  configuration String?  // JSON-serialized steps
+  executionCount Int     @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([status])
+}
+
+// ===================== EMAIL EVENTS / ANALYTICS =====================
+
+model EmailEvent {
+  id            String   @id @default(cuid())
+  workspaceId   String
+  campaignId    String?
+  contactEmail  String
+  messageId     String?
+  eventId       String?  // provider event_id (idempotency)
+  eventType     String   // SENT | DELIVERED | OPENED | CLICKED | BOUNCE | FAILED | UNSUBSCRIBE | COMPLAINT
+  occurredAt    DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  campaign  Campaign?  @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+
+  @@unique([workspaceId, eventId])
+  @@index([workspaceId])
+  @@index([campaignId])
+  @@index([eventType])
+  @@index([occurredAt])
+}
+
+// ===================== DOMAIN CONFIG =====================
+
+model Domain {
+  id           String   @id @default(cuid())
+  workspaceId  String   @unique
+  domain       String
+  status       String   @default("NON_CONFIGURE") // NON_CONFIGURE | EN_VERIFICATION | VERIFIE | ERREUR
+  spfStatus    String   @default("NON_CONFIGURE")
+  dkimStatus   String   @default("NON_CONFIGURE")
+  dmarcStatus  String   @default("NON_CONFIGURE")
+  lastCheckedAt DateTime?
+  errors       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+// ===================== API KEYS =====================
+
+model ApiKey {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  keyPrefix   String
+  keyHash     String   @unique
+  status      String   @default("ACTIF") // ACTIF | REVOQUE
+  lastUsedAt  DateTime?
+  createdById String?
+  createdAt   DateTime @default(now())
+  revokedAt   DateTime?
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdBy User?     @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([status])
+}
+
+// ===================== SUPPORT =====================
+
+model SupportTicket {
+  id          String   @id @default(cuid())
+  workspaceId String
+  userId      String
+  subject     String
+  category    String   @default("AUTRE") // TECHNIQUE | FACTURATION | COMPTE | AUTRE
+  priority    String   @default("NORMALE") // BASSE | NORMALE | HAUTE | URGENTE
+  status      String   @default("OUVERT") // OUVERT | EN_COURS | RESOLU | FERME
+  message     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([status])
+}
+
+// ===================== AUDIT LOGS =====================
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  workspaceId String
+  userId      String?
+  action      String
+  entityType  String?
+  entityId    String?
+  metadata    String?  // JSON serialized
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// ===================== NOTIFICATIONS =====================
+
+model Notification {
+  id          String   @id @default(cuid())
+  workspaceId String
+  type        String   // INVITATION | PAYMENT | ACTIVATION | EXPIRATION | QUOTA | DOMAIN | TICKET
+  title       String
+  message     String
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([read])
+  @@index([createdAt])
+}
+
+// ===================== QUOTA USAGE (daily) =====================
+
+model QuotaUsage {
+  id          String   @id @default(cuid())
+  workspaceId String
+  date        DateTime
+  emailsSent  Int      @default(0)
+  automations Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, date])
+  @@index([workspaceId])
+}
+
+// ===================== SESSIONS (cookie auth) =====================
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}

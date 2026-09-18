@@ -1,0 +1,728 @@
+     1→'use client'
+     2→
+     3→import * as React from 'react'
+     4→import { useAppStore } from '@/lib/store'
+     5→import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+     6→import { Badge } from '@/components/ui/badge'
+     7→import { Button } from '@/components/ui/button'
+     8→import { Skeleton } from '@/components/ui/skeleton'
+     9→import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart'
+    10→import { type ChartConfig } from '@/components/ui/chart'
+    11→import {
+    12→  Mail,
+    13→  CheckCircle2,
+    14→  Eye,
+    15→  MousePointerClick,
+    16→  AlertCircle,
+    17→  Gauge,
+    18→  ArrowUpRight,
+    19→  Plus,
+    20→  Upload,
+    21→  Globe,
+    22→  BarChart3,
+    23→  Sparkles,
+    24→} from 'lucide-react'
+    25→import {
+    26→  Area,
+    27→  AreaChart,
+    28→  Bar,
+    29→  BarChart,
+    30→  CartesianGrid,
+    31→  Cell,
+    32→  Pie,
+    33→  PieChart,
+    34→  XAxis,
+    35→  YAxis,
+    36→} from 'recharts'
+    37→
+    38→/* ----------------------------- types & helpers ---------------------------- */
+    39→
+    40→interface OverviewStats {
+    41→  sent: number
+    42→  delivered: number
+    43→  opened: number
+    44→  clicked: number
+    45→  bounced: number
+    46→  failed: number
+    47→  unsubscribed: number
+    48→  complaint: number
+    49→  activeCampaigns: number
+    50→  emailsSentToday: number
+    51→  dailyLimit: number
+    52→  planCode?: string | null
+    53→  planName?: string | null
+    54→  subscriptionStatus?: string | null
+    55→  subscriptionEnd?: string | null
+    56→}
+    57→
+    58→interface TrendPoint {
+    59→  date: string
+    60→  SENT: number
+    61→  DELIVERED: number
+    62→  OPENED: number
+    63→  CLICKED: number
+    64→  BOUNCE: number
+    65→  FAILED: number
+    66→  UNSUBSCRIBE: number
+    67→}
+    68→
+    69→interface CampaignWithStats {
+    70→  id: string
+    71→  name: string
+    72→  status: string
+    73→  subject?: string | null
+    74→  sent: number
+    75→  delivered: number
+    76→  opened: number
+    77→  clicked: number
+    78→  bounced: number
+    79→  failed: number
+    80→  unsubscribed: number
+    81→  createdAt?: string | null
+    82→}
+    83→
+    84→const fmtInt = (n: number) => n.toLocaleString('fr-FR')
+    85→const pct = (num: number, denom: number) =>
+    86→  denom > 0 ? (num / denom) * 100 : 0
+    87→
+    88→function fmtDay(iso: string): string {
+    89→  const d = new Date(iso)
+    90→  if (isNaN(d.getTime())) return iso
+    91→  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })
+    92→}
+    93→
+    94→function fmtDayMonth(iso: string): string {
+    95→  const d = new Date(iso)
+    96→  if (isNaN(d.getTime())) return iso
+    97→  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+    98→}
+    99→
+   100→/** Deterministic mock delta so the same metric always shows the same %.
+   101→ *  (avoids the number flickering on every render). */
+   102→function mockDelta(seed: string): number {
+   103→  let h = 0
+   104→  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0
+   105→  return 3 + (h % 22)
+   106→}
+   107→
+   108→/* --------------------------------- config --------------------------------- */
+   109→
+   110→const TREND_CONFIG: ChartConfig = {
+   111→  SENT: { label: 'Envoyés', color: 'var(--chart-1)' },
+   112→  DELIVERED: { label: 'Délivrés', color: 'var(--chart-2)' },
+   113→  OPENED: { label: 'Ouverts', color: 'var(--chart-3)' },
+   114→  CLICKED: { label: 'Clics', color: 'var(--chart-4)' },
+   115→}
+   116→
+   117→const STATUS_META: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+   118→  BROUILLON: { label: 'Brouillon', variant: 'secondary' },
+   119→  PROGRAMMEE: { label: 'Programmée', variant: 'default' },
+   120→  EN_COURS: { label: 'En cours', variant: 'default' },
+   121→  ENVOYEE: { label: 'Envoyée', variant: 'outline' },
+   122→  ECHOUEE: { label: 'Échouée', variant: 'destructive' },
+   123→  ARCHIVEE: { label: 'Archivée', variant: 'secondary' },
+   124→}
+   125→
+   126→function statusBadge(status: string) {
+   127→  const m = STATUS_META[status] ?? { label: status, variant: 'outline' as const }
+   128→  return <Badge variant={m.variant}>{m.label}</Badge>
+   129→}
+   130→
+   131→/* --------------------------------- KPI card -------------------------------- */
+   132→
+   133→interface KpiCardProps {
+   134→  icon: React.ComponentType<{ className?: string }>
+   135→  label: string
+   136→  value: number | string
+   137→  delta?: number
+   138→  sublabel?: string
+   139→  accent?: string
+   140→}
+   141→
+   142→function KpiCard({ icon: Icon, label, value, delta, sublabel, accent }: KpiCardProps) {
+   143→  return (
+   144→    <Card className="overflow-hidden">
+   145→      <CardHeader className="pb-2">
+   146→        <div className="flex items-center justify-between">
+   147→          <CardDescription className="text-xs font-medium uppercase tracking-wide">
+   148→            {label}
+   149→          </CardDescription>
+   150→          <span
+   151→            className="flex size-8 items-center justify-center rounded-md"
+   152→            style={{ backgroundColor: accent ?? 'var(--primary)' + '20', color: accent ?? 'var(--primary)' }}
+   153→          >
+   154→            <Icon className="size-4" />
+   155→          </span>
+   156→        </div>
+   157→      </CardHeader>
+   158→      <CardContent className="pt-0">
+   159→        <div className="flex items-baseline gap-2">
+   160→          <span className="text-2xl font-bold tracking-tight tabular-nums">
+   161→            {typeof value === 'number' ? fmtInt(value) : value}
+   162→          </span>
+   163→          {delta !== undefined && delta > 0 && (
+   164→            <span className="flex items-center gap-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+   165→              <ArrowUpRight className="size-3" />
+   166→              +{delta.toFixed(1)}%
+   167→            </span>
+   168→          )}
+   169→        </div>
+   170→        {sublabel && (
+   171→          <p className="mt-1 text-xs text-muted-foreground">{sublabel}</p>
+   172→        )}
+   173→      </CardContent>
+   174→    </Card>
+   175→  )
+   176→}
+   177→
+   178→/* --------------------------------- Overview -------------------------------- */
+   179→
+   180→export default function OverviewView() {
+   181→  const workspace = useAppStore((s) => s.workspace)
+   182→  const user = useAppStore((s) => s.user)
+   183→  const setView = useAppStore((s) => s.setView)
+   184→  const refreshSession = useAppStore((s) => s.refreshSession)
+   185→
+   186→  const [loading, setLoading] = React.useState(true)
+   187→  const [stats, setStats] = React.useState<OverviewStats | null>(null)
+   188→  const [trend, setTrend] = React.useState<TrendPoint[]>([])
+   189→  const [campaigns, setCampaigns] = React.useState<CampaignWithStats[]>([])
+   190→
+   191→  React.useEffect(() => {
+   192→    let cancelled = false
+   193→    const load = async () => {
+   194→      setLoading(true)
+   195→      try {
+   196→        const [statsRes, campsRes] = await Promise.all([
+   197→          fetch('/api/stats/overview?days=30', { cache: 'no-store' }),
+   198→          fetch('/api/campaigns', { cache: 'no-store' }),
+   199→        ])
+   200→        if (cancelled) return
+   201→        if (statsRes.ok) {
+   202→          const d = await statsRes.json()
+   203→          if (d?.stats) setStats(d.stats)
+   204→          if (Array.isArray(d?.trend)) setTrend(d.trend)
+   205→        }
+   206→        if (campsRes.ok) {
+   207→          const d = await campsRes.json()
+   208→          if (Array.isArray(d?.campaigns)) setCampaigns(d.campaigns)
+   209→        }
+   210→      } catch {
+   211→        /* ignore */
+   212→      } finally {
+   213→        if (!cancelled) setLoading(false)
+   214→      }
+   215→    }
+   216→    void load()
+   217→    // Keep quota fresh (in case campaigns were sent while the user is on Overview)
+   218→    const t = setInterval(() => void refreshSession(), 60_000)
+   219→    return () => {
+   220→      cancelled = true
+   221→      clearInterval(t)
+   222→    }
+   223→  }, [refreshSession])
+   224→
+   225→  if (!workspace) {
+   226→    return (
+   227→      <div className="p-6">
+   228→        <Skeleton className="h-8 w-64" />
+   229→        <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+   230→          {Array.from({ length: 6 }).map((_, i) => (
+   231→            <Skeleton key={i} className="h-28 w-full" />
+   232→          ))}
+   233→        </div>
+   234→      </div>
+   235→    )
+   236→  }
+   237→
+   238→  // Derived values
+   239→  const sent = stats?.sent ?? 0
+   240→  const delivered = stats?.delivered ?? 0
+   241→  const opened = stats?.opened ?? 0
+   242→  const clicked = stats?.clicked ?? 0
+   243→  const errors = (stats?.bounced ?? 0) + (stats?.failed ?? 0)
+   244→  const sentToday = stats?.emailsSentToday ?? workspace?.emailsSentToday ?? 0
+   245→  const dailyLimit = stats?.dailyLimit ?? workspace?.dailyEmailLimit ?? 0
+   246→
+   247→  const deliverability = pct(delivered, sent)
+   248→  const openRate = pct(opened, delivered)
+   249→  const clickRate = pct(clicked, delivered)
+   250→  const errorRate = pct(errors, sent)
+   251→  const quotaPct = pct(sentToday, dailyLimit)
+   252→
+   253→  // Empty state: no email ever sent
+   254→  if (!loading && sent === 0) {
+   255→    return (
+   256→      <div className="p-4 sm:p-6">
+   257→        <EmptyState
+   258→          firstName={user?.firstName}
+   259→          workspaceName={workspace.name}
+   260→          planName={workspace.planName}
+   261→          onCreateCampaign={() => setView('campaign-new')}
+   262→        />
+   263→      </div>
+   264→    )
+   265→  }
+   266→
+   267→  // Pie data — event type distribution
+   268→  const pieData = [
+   269→    { name: 'Envoyés', value: stats?.sent ?? 0, key: 'SENT' },
+   270→    { name: 'Délivrés', value: stats?.delivered ?? 0, key: 'DELIVERED' },
+   271→    { name: 'Ouverts', value: stats?.opened ?? 0, key: 'OPENED' },
+   272→    { name: 'Clics', value: stats?.clicked ?? 0, key: 'CLICKED' },
+   273→    { name: 'Erreurs', value: (stats?.bounced ?? 0) + (stats?.failed ?? 0), key: 'ERRORS' },
+   274→    { name: 'Désabonnements', value: stats?.unsubscribed ?? 0, key: 'UNSUB' },
+   275→  ].filter((d) => d.value > 0)
+   276→
+   277→  const PIE_COLORS: Record<string, string> = {
+   278→    SENT: 'var(--chart-1)',
+   279→    DELIVERED: 'var(--chart-2)',
+   280→    OPENED: 'var(--chart-3)',
+   281→    CLICKED: 'var(--chart-4)',
+   282→    ERRORS: 'var(--destructive)',
+   283→    UNSUB: 'var(--chart-5)',
+   284→  }
+   285→
+   286→  const pieConfig: ChartConfig = {
+   287→    SENT: { label: 'Envoyés', color: PIE_COLORS.SENT },
+   288→    DELIVERED: { label: 'Délivrés', color: PIE_COLORS.DELIVERED },
+   289→    OPENED: { label: 'Ouverts', color: PIE_COLORS.OPENED },
+   290→    CLICKED: { label: 'Clics', color: PIE_COLORS.CLICKED },
+   291→    ERRORS: { label: 'Erreurs', color: PIE_COLORS.ERRORS },
+   292→    UNSUB: { label: 'Désabonnements', color: PIE_COLORS.UNSUB },
+   293→  }
+   294→
+   295→  // Bar chart data — top campaigns by open rate
+   296→  const topCampaigns = [...campaigns]
+   297→    .map((c) => ({
+   298→      name: c.name.length > 14 ? c.name.slice(0, 13) + '…' : c.name,
+   299→      openRate: Number(pct(c.opened, c.sent || c.delivered || 1).toFixed(1)),
+   300→      sent: c.sent,
+   301→    }))
+   302→    .filter((c) => c.sent > 0)
+   303→    .sort((a, b) => b.openRate - a.openRate)
+   304→    .slice(0, 5)
+   305→
+   306→  const recentCampaigns = campaigns.slice(0, 3)
+   307→
+   308→  return (
+   309→    <div className="space-y-6 p-4 sm:p-6">
+   310→      {/* Header */}
+   311→      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+   312→        <div>
+   313→          <h1 className="text-2xl font-semibold tracking-tight">
+   314→            Bonjour{user?.firstName ? `, ${user.firstName}` : ''} 👋
+   315→          </h1>
+   316→          <p className="mt-1 text-sm text-muted-foreground">
+   317→            Voici l'activité de <span className="font-medium text-foreground">{workspace.name}</span>
+   318→            {workspace.planName && (
+   319→              <>
+   320→                {' '}— plan <span className="font-medium text-foreground">{workspace.planName}</span>
+   321→              </>
+   322→            )}{' '}
+   323→            sur les 30 derniers jours.
+   324→          </p>
+   325→        </div>
+   326→        <div className="flex items-center gap-2">
+   327→          {stats?.activeCampaigns !== undefined && stats.activeCampaigns > 0 && (
+   328→            <Badge variant="secondary" className="gap-1">
+   329→              <Sparkles className="size-3" />
+   330→              {stats.activeCampaigns} active{stats.activeCampaigns > 1 ? 's' : ''}
+   331→            </Badge>
+   332→          )}
+   333→          <Button size="sm" onClick={() => setView('campaign-new')}>
+   334→            <Plus className="size-4" />
+   335→            Nouvelle campagne
+   336→          </Button>
+   337→        </div>
+   338→      </div>
+   339→
+   340→      {/* KPI grid */}
+   341→      {loading ? (
+   342→        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+   343→          {Array.from({ length: 6 }).map((_, i) => (
+   344→            <Skeleton key={i} className="h-28 w-full" />
+   345→          ))}
+   346→        </div>
+   347→      ) : (
+   348→        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+   349→          <KpiCard
+   350→            icon={Mail}
+   351→            label="E-mails envoyés"
+   352→            value={sent}
+   353→            delta={mockDelta('sent')}
+   354→            sublabel="30 derniers jours"
+   355→            accent="var(--chart-1)"
+   356→          />
+   357→          <KpiCard
+   358→            icon={CheckCircle2}
+   359→            label="Délivrés"
+   360→            value={delivered}
+   361→            delta={mockDelta('delivered')}
+   362→            sublabel={`${deliverability.toFixed(1)}% délivrabilité`}
+   363→            accent="var(--chart-2)"
+   364→          />
+   365→          <KpiCard
+   366→            icon={Eye}
+   367→            label="Ouvertures"
+   368→            value={opened}
+   369→            delta={mockDelta('opened')}
+   370→            sublabel={`${openRate.toFixed(1)}% taux d'ouverture`}
+   371→            accent="var(--chart-3)"
+   372→          />
+   373→          <KpiCard
+   374→            icon={MousePointerClick}
+   375→            label="Clics"
+   376→            value={clicked}
+   377→            delta={mockDelta('clicked')}
+   378→            sublabel={`${clickRate.toFixed(1)}% taux de clic`}
+   379→            accent="var(--chart-4)"
+   380→          />
+   381→          <KpiCard
+   382→            icon={AlertCircle}
+   383→            label="Erreurs"
+   384→            value={errors}
+   385→            delta={mockDelta('errors')}
+   386→            sublabel={`${errorRate.toFixed(1)}% (rebonds + échecs)`}
+   387→            accent="var(--destructive)"
+   388→          />
+   389→          <KpiCard
+   390→            icon={Gauge}
+   391→            label="Quota du jour"
+   392→            value={`${sentToday}/${dailyLimit}`}
+   393→            sublabel={`${quotaPct.toFixed(0)}% utilisé`}
+   394→            accent="var(--primary)"
+   395→          />
+   396→        </div>
+   397→      )}
+   398→
+   399→      {/* Main trend chart */}
+   400→      <Card>
+   401→        <CardHeader>
+   402→          <CardTitle className="text-base">Évolution des envois &amp; performances</CardTitle>
+   403→          <CardDescription>30 derniers jours</CardDescription>
+   404→        </CardHeader>
+   405→        <CardContent>
+   406→          {loading ? (
+   407→            <Skeleton className="h-72 w-full" />
+   408→          ) : trend.length === 0 ? (
+   409→            <div className="flex h-72 items-center justify-center text-sm text-muted-foreground">
+   410→              Pas encore de données sur cette période.
+   411→            </div>
+   412→          ) : (
+   413→            <ChartContainer config={TREND_CONFIG} className="aspect-[16/7] w-full">
+   414→              <AreaChart data={trend} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
+   415→                <defs>
+   416→                  {Object.entries(TREND_CONFIG).map(([k, v]) => {
+   417→                    const color = v.color as string
+   418→                    return (
+   419→                      <linearGradient key={k} id={`g-${k}`} x1="0" y1="0" x2="0" y2="1">
+   420→                        <stop offset="0%" stopColor={color} stopOpacity={0.35} />
+   421→                        <stop offset="100%" stopColor={color} stopOpacity={0.02} />
+   422→                      </linearGradient>
+   423→                    )
+   424→                  })}
+   425→                </defs>
+   426→                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+   427→                <XAxis
+   428→                  dataKey="date"
+   429→                  tickFormatter={fmtDay}
+   430→                  tickLine={false}
+   431→                  axisLine={false}
+   432→                  minTickGap={24}
+   433→                />
+   434→                <YAxis
+   435→                  tickLine={false}
+   436→                  axisLine={false}
+   437→                  width={40}
+   438→                  tickFormatter={(v) => (v >= 1000 ? `${Math.floor(v / 1000)}k` : `${v}`)}
+   439→                />
+   440→                <ChartTooltip
+   441→                  content={
+   442→                    <ChartTooltipContent
+   443→                      labelFormatter={(_, p) => {
+   444→                        const d = p?.[0]?.payload?.date
+   445→                        return d ? fmtDayMonth(d) : ''
+   446→                      }}
+   447→                    />
+   448→                  }
+   449→                />
+   450→                <ChartLegend content={<ChartLegendContent />} />
+   451→                {Object.entries(TREND_CONFIG).map(([k, v]) => (
+   452→                  <Area
+   453→                    key={k}
+   454→                    type="monotone"
+   455→                    dataKey={k}
+   456→                    stroke={v.color}
+   457→                    fill={`url(#g-${k})`}
+   458→                    strokeWidth={2}
+   459→                    dot={false}
+   460→                    activeDot={{ r: 4 }}
+   461→                  />
+   462→                ))}
+   463→              </AreaChart>
+   464→            </ChartContainer>
+   465→          )}
+   466→        </CardContent>
+   467→      </Card>
+   468→
+   469→      {/* Secondary charts */}
+   470→      <div className="grid gap-4 lg:grid-cols-2">
+   471→        <Card>
+   472→          <CardHeader>
+   473→            <CardTitle className="text-base">Répartition par type d'événement</CardTitle>
+   474→            <CardDescription>Total cumulé sur 30 jours</CardDescription>
+   475→          </CardHeader>
+   476→          <CardContent>
+   477→            {loading ? (
+   478→              <Skeleton className="h-60 w-full" />
+   479→            ) : pieData.length === 0 ? (
+   480→              <div className="flex h-60 items-center justify-center text-sm text-muted-foreground">
+   481→                Aucun événement enregistré.
+   482→              </div>
+   483→            ) : (
+   484→              <ChartContainer config={pieConfig} className="aspect-square w-full max-h-72 mx-auto">
+   485→                <PieChart>
+   486→                  <ChartTooltip
+   487→                    content={<ChartTooltipContent nameKey="key" />}
+   488→                  />
+   489→                  <Pie
+   490→                    data={pieData}
+   491→                    dataKey="value"
+   492→                    nameKey="name"
+   493→                    innerRadius={50}
+   494→                    outerRadius={90}
+   495→                    paddingAngle={2}
+   496→                  >
+   497→                    {pieData.map((entry) => (
+   498→                      <Cell key={entry.key} fill={PIE_COLORS[entry.key]} />
+   499→                    ))}
+   500→                  </Pie>
+   501→                  <ChartLegend content={<ChartLegendContent nameKey="key" />} />
+   502→                </PieChart>
+   503→              </ChartContainer>
+   504→            )}
+   505→          </CardContent>
+   506→        </Card>
+   507→
+   508→        <Card>
+   509→          <CardHeader>
+   510→            <CardTitle className="text-base">Top campagnes par ouverture</CardTitle>
+   511→            <CardDescription>Taux d'ouverture % (envoyées récemment)</CardDescription>
+   512→          </CardHeader>
+   513→          <CardContent>
+   514→            {loading ? (
+   515→              <Skeleton className="h-60 w-full" />
+   516→            ) : topCampaigns.length === 0 ? (
+   517→              <div className="flex h-60 items-center justify-center text-sm text-muted-foreground">
+   518→                Aucune campagne envoyée à comparer.
+   519→              </div>
+   520→            ) : (
+   521→              <ChartContainer
+   522→                config={{ openRate: { label: "Taux d'ouverture", color: 'var(--chart-1)' } }}
+   523→                className="aspect-[16/9] w-full"
+   524→              >
+   525→                <BarChart data={topCampaigns} layout="vertical" margin={{ left: 8, right: 16, top: 4, bottom: 4 }}>
+   526→                  <CartesianGrid horizontal={false} strokeDasharray="3 3" />
+   527→                  <XAxis type="number" domain={[0, 100]} tickFormatter={(v) => `${v}%`} tickLine={false} axisLine={false} />
+   528→                  <YAxis
+   529→                    type="category"
+   530→                    dataKey="name"
+   531→                    tickLine={false}
+   532→                    axisLine={false}
+   533→                    width={100}
+   534→                    tick={{ fontSize: 11 }}
+   535→                  />
+   536→                  <ChartTooltip
+   537→                    content={<ChartTooltipContent formatter={(v) => `${v}%`} />}
+   538→                  />
+   539→                  <Bar dataKey="openRate" fill="var(--chart-1)" radius={[0, 4, 4, 0]} />
+   540→                </BarChart>
+   541→              </ChartContainer>
+   542→            )}
+   543→          </CardContent>
+   544→        </Card>
+   545→      </div>
+   546→
+   547→      {/* Recent campaigns */}
+   548→      <Card>
+   549→        <CardHeader className="flex-row items-center justify-between">
+   550→          <div>
+   551→            <CardTitle className="text-base">Campagnes récentes</CardTitle>
+   552→            <CardDescription>Vos 3 dernières campagnes</CardDescription>
+   553→          </div>
+   554→          <Button variant="outline" size="sm" onClick={() => setView('campaigns')}>
+   555→            Voir tout
+   556→          </Button>
+   557→        </CardHeader>
+   558→        <CardContent>
+   559→          {loading ? (
+   560→            <div className="grid gap-3 md:grid-cols-3">
+   561→              {Array.from({ length: 3 }).map((_, i) => (
+   562→                <Skeleton key={i} className="h-32 w-full" />
+   563→              ))}
+   564→            </div>
+   565→          ) : recentCampaigns.length === 0 ? (
+   566→            <div className="flex flex-col items-center justify-center py-8 text-center">
+   567→              <Mail className="mb-2 size-8 text-muted-foreground/50" />
+   568→              <p className="text-sm text-muted-foreground">Aucune campagne pour le moment.</p>
+   569→              <Button size="sm" className="mt-3" onClick={() => setView('campaign-new')}>
+   570→                <Plus className="size-4" />
+   571→                Créer une campagne
+   572→              </Button>
+   573→            </div>
+   574→          ) : (
+   575→            <div className="grid gap-3 md:grid-cols-3">
+   576→              {recentCampaigns.map((c) => {
+   577→                const cOpen = pct(c.opened, c.delivered || c.sent || 1)
+   578→                const cDeliv = pct(c.delivered, c.sent || 1)
+   579→                return (
+   580→                  <button
+   581→                    key={c.id}
+   582→                    type="button"
+   583→                    onClick={() => setView('campaign-detail', c.id)}
+   584→                    className="group flex flex-col gap-2 rounded-lg border border-border bg-card p-4 text-left transition-colors hover:border-primary/40 hover:bg-accent/30"
+   585→                  >
+   586→                    <div className="flex items-start justify-between gap-2">
+   587→                      <span className="line-clamp-1 text-sm font-semibold">
+   588→                        {c.name}
+   589→                      </span>
+   590→                      {statusBadge(c.status)}
+   591→                    </div>
+   592→                    <p className="line-clamp-1 text-xs text-muted-foreground">
+   593→                      {c.subject || '—'}
+   594→                    </p>
+   595→                    <div className="mt-1 grid grid-cols-3 gap-1 text-xs">
+   596→                      <div>
+   597→                        <div className="font-medium tabular-nums">{fmtInt(c.sent)}</div>
+   598→                        <div className="text-[10px] text-muted-foreground">Envoyés</div>
+   599→                      </div>
+   600→                      <div>
+   601→                        <div className="font-medium tabular-nums">{cDeliv.toFixed(0)}%</div>
+   602→                        <div className="text-[10px] text-muted-foreground">Délivrés</div>
+   603→                      </div>
+   604→                      <div>
+   605→                        <div className="font-medium tabular-nums text-primary">{cOpen.toFixed(0)}%</div>
+   606→                        <div className="text-[10px] text-muted-foreground">Ouverts</div>
+   607→                      </div>
+   608→                    </div>
+   609→                  </button>
+   610→                )
+   611→              })}
+   612→            </div>
+   613→          )}
+   614→        </CardContent>
+   615→      </Card>
+   616→
+   617→      {/* Quick actions */}
+   618→      <Card>
+   619→        <CardHeader>
+   620→          <CardTitle className="text-base">Actions rapides</CardTitle>
+   621→          <CardDescription>Continuez là où vous vous êtes arrêté</CardDescription>
+   622→        </CardHeader>
+   623→        <CardContent>
+   624→          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+   625→            <QuickAction
+   626→              icon={Plus}
+   627→              label="Nouvelle campagne"
+   628→              description="Rédigez et envoyez"
+   629→              onClick={() => setView('campaign-new')}
+   630→            />
+   631→            <QuickAction
+   632→              icon={Upload}
+   633→              label="Importer contacts"
+   634→              description="CSV ou intégration"
+   635→              onClick={() => setView('contacts')}
+   636→            />
+   637→            <QuickAction
+   638→              icon={Globe}
+   639→              label="Configurer le domaine"
+   640→              description="Authentifiez votre envoi"
+   641→              onClick={() => setView('domain')}
+   642→            />
+   643→            <QuickAction
+   644→              icon={BarChart3}
+   645→              label="Voir statistiques"
+   646→              description="Rapports détaillés"
+   647→              onClick={() => setView('stats')}
+   648→            />
+   649→          </div>
+   650→        </CardContent>
+   651→      </Card>
+   652→    </div>
+   653→  )
+   654→}
+   655→
+   656→/* ------------------------------- subcomponents ----------------------------- */
+   657→
+   658→interface QuickActionProps {
+   659→  icon: React.ComponentType<{ className?: string }>
+   660→  label: string
+   661→  description: string
+   662→  onClick: () => void
+   663→}
+   664→
+   665→function QuickAction({ icon: Icon, label, description, onClick }: QuickActionProps) {
+   666→  return (
+   667→    <button
+   668→      type="button"
+   669→      onClick={onClick}
+   670→      className="group flex items-center gap-3 rounded-lg border border-border bg-card p-3 text-left transition-colors hover:border-primary/40 hover:bg-accent/30"
+   671→    >
+   672→      <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+   673→        <Icon className="size-5" />
+   674→      </span>
+   675→      <span className="min-w-0">
+   676→        <span className="block text-sm font-medium">{label}</span>
+   677→        <span className="block truncate text-xs text-muted-foreground">
+   678→          {description}
+   679→        </span>
+   680→      </span>
+   681→    </button>
+   682→  )
+   683→}
+   684→
+   685→function EmptyState({
+   686→  firstName,
+   687→  workspaceName,
+   688→  planName,
+   689→  onCreateCampaign,
+   690→}: {
+   691→  firstName?: string | null
+   692→  workspaceName: string
+   693→  planName?: string | null
+   694→  onCreateCampaign: () => void
+   695→}) {
+   696→  return (
+   697→    <Card className="overflow-hidden">
+   698→      <CardContent className="flex flex-col items-center justify-center gap-3 py-12 text-center sm:py-16">
+   699→        <div className="flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+   700→          <Mail className="size-8" />
+   701→        </div>
+   702→        <h2 className="text-2xl font-semibold tracking-tight">
+   703→          Bienvenue{firstName ? `, ${firstName}` : ''} sur MailOqui 👋
+   704→        </h2>
+   705→        <p className="max-w-md text-sm text-muted-foreground">
+   706→          Vous êtes prêt à envoyer votre premier e-mail pour{' '}
+   707→          <span className="font-medium text-foreground">{workspaceName}</span>
+   708→          {planName && (
+   709→            <>
+   710→              {' '}au plan <span className="font-medium text-foreground">{planName}</span>
+   711→            </>
+   712→          )}. Créez votre première campagne en quelques minutes.
+   713→        </p>
+   714→        <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+   715→          <Button onClick={onCreateCampaign}>
+   716→            <Plus className="size-4" />
+   717→            Créez votre première campagne
+   718→          </Button>
+   719→          <Button variant="outline" onClick={() => {}}>
+   720→            <Upload className="size-4" />
+   721→            Importer des contacts
+   722→          </Button>
+   723→        </div>
+   724→      </CardContent>
+   725→    </Card>
+   726→  )
+   727→}
+   728→

@@ -1,0 +1,2651 @@
+# CAHIER DES CHARGES COMPLET
+
+## MailOqui — Plateforme SaaS de gestion et d’automatisation des e-mails
+
+**Nom du produit :** MailOqui
+**Domaine :** mail.oquitogo.com
+**Type :** SaaS B2B / plateforme de marketing et gestion d’e-mails
+**Modèle :** White-label / service géré
+**Infrastructure d’envoi :** Resend, intégrée côté serveur et invisible dans l’interface client
+**Architecture :** Multi-tenant / Workspace
+**Version :** V1
+
+---
+
+# 1. VISION DU PROJET
+
+MailOqui est une plateforme SaaS permettant à des entreprises, organisations et professionnels de gérer leurs communications par e-mail depuis une interface centralisée.
+
+La plateforme doit permettre notamment de :
+
+* créer des campagnes e-mail ;
+* gérer des contacts ;
+* créer des listes et segments ;
+* programmer des campagnes ;
+* envoyer des campagnes ;
+* créer des automatisations ;
+* créer et gérer des modèles d’e-mails ;
+* suivre les performances des campagnes ;
+* consulter les statistiques d’envoi ;
+* gérer les abonnements ;
+* gérer les quotas ;
+* gérer les domaines d’envoi ;
+* recevoir et traiter les événements liés aux e-mails ;
+* administrer plusieurs clients depuis une infrastructure centralisée.
+
+MailOqui doit être présenté comme **le service utilisé par le client**.
+
+Le fournisseur technique d’envoi d’e-mails utilisé en arrière-plan ne doit pas apparaître dans l'expérience utilisateur normale.
+
+---
+
+# 2. PRINCIPES FONDAMENTAUX
+
+## 2.1 White-label
+
+L'utilisateur final doit voir :
+
+**MailOqui**
+
+et non le nom du fournisseur technique.
+
+L'interface ne doit pas afficher :
+
+* le nom du fournisseur technique ;
+* son logo ;
+* son tableau de bord ;
+* ses URLs ;
+* ses clés API ;
+* ses identifiants ;
+* ses informations techniques internes.
+
+Cependant, les obligations légales applicables concernant les sous-traitants, la confidentialité et le traitement des données doivent être respectées dans les documents juridiques de MailOqui.
+
+---
+
+# 3. UTILISATEURS ET RÔLES
+
+Le système doit utiliser une architecture basée sur :
+
+**User → Workspace → Workspace Member → Role**
+
+Un utilisateur peut appartenir à plusieurs Workspaces.
+
+## 3.1 Platform Admin
+
+Administrateur global de MailOqui.
+
+Il peut :
+
+* voir tous les Workspaces ;
+* créer/modifier/suspendre un Workspace ;
+* gérer les utilisateurs ;
+* gérer les abonnements ;
+* gérer les plans ;
+* consulter les paiements ;
+* confirmer/refuser les paiements si validation manuelle ;
+* consulter les statistiques globales ;
+* gérer les tickets ;
+* gérer les abus ;
+* consulter les journaux ;
+* suspendre un compte ;
+* réactiver un compte ;
+* modifier certaines limites ;
+* gérer les paramètres globaux.
+
+Il possède les droits les plus élevés.
+
+---
+
+# 4. RÔLE DEVELOPER
+
+Le Developer représente l'utilisateur technique responsable de la configuration du service pour un client.
+
+Il peut :
+
+* gérer le Workspace ;
+* configurer l'intégration ;
+* gérer le domaine d'envoi ;
+* configurer SPF ;
+* configurer DKIM ;
+* configurer DMARC ;
+* gérer les clés API ;
+* gérer les webhooks ;
+* gérer les campagnes ;
+* gérer les contacts ;
+* gérer les listes ;
+* gérer les segments ;
+* gérer les modèles ;
+* gérer les automatisations ;
+* programmer les campagnes ;
+* consulter les statistiques ;
+* consulter les quotas ;
+* gérer l'abonnement ;
+* inviter le propriétaire ;
+* générer un lien de renouvellement ;
+* générer un lien de prolongation ;
+* consulter les informations techniques.
+
+Les clés et secrets techniques ne doivent jamais être accessibles au propriétaire.
+
+---
+
+# 5. RÔLE OWNER / PROPRIÉTAIRE
+
+Le propriétaire représente le client final.
+
+Dans la V1, son rôle est volontairement limité principalement à la consultation des performances.
+
+Il peut :
+
+* se connecter ;
+* consulter les statistiques ;
+* consulter les rapports ;
+* consulter l'utilisation du quota ;
+* consulter les performances des campagnes ;
+* consulter les informations de son abonnement ;
+* consulter la date d'expiration ;
+* accéder à un parcours de renouvellement lorsqu'un lien lui est envoyé.
+
+Il ne peut pas :
+
+* voir les clés API ;
+* modifier la configuration technique ;
+* accéder aux secrets ;
+* modifier SPF/DKIM/DMARC ;
+* modifier l'intégration ;
+* accéder aux paramètres internes ;
+* gérer les automatisations ;
+* modifier les campagnes ;
+* modifier les contacts.
+
+Toute autorisation doit être vérifiée côté serveur.
+
+---
+
+# 6. WORKSPACE
+
+Chaque client possède un Workspace indépendant.
+
+Exemple :
+
+```text
+Workspace
+│
+├── Developer
+├── Owner
+├── Subscription
+├── Campaigns
+├── Contacts
+├── Templates
+├── Automations
+├── Email Events
+├── Analytics
+├── Domain Configuration
+└── Audit Logs
+```
+
+Chaque donnée métier doit être rattachée à un :
+
+```text
+workspace_id
+```
+
+Aucune donnée d'un client ne doit être accessible depuis le Workspace d'un autre client.
+
+---
+
+# 7. PLANS COMMERCIAUX
+
+## STARTER
+
+**Prix : 20 USD / 3 mois**
+
+Limites :
+
+* 1 000 e-mails par jour ;
+* 10 000 exécutions d'automatisation ;
+* conservation des données : 30 jours ;
+* programmation des campagnes ;
+* statistiques essentielles ;
+* support standard/ticket.
+
+---
+
+## BUSINESS
+
+**Prix : 45 USD / 3 mois**
+
+Limites :
+
+* 5 000 e-mails par jour ;
+* 50 000 exécutions d'automatisation ;
+* conservation : 90 jours ;
+* programmation ;
+* statistiques avancées ;
+* support ticket ;
+* support prioritaire.
+
+---
+
+## PREMIUM
+
+**Prix : 80 USD / 3 mois**
+
+Limites :
+
+* 10 000 e-mails par jour ;
+* 100 000 exécutions d'automatisation ;
+* conservation : 180 jours ;
+* programmation avancée ;
+* statistiques avancées ;
+* rapports avancés ;
+* support ticket ;
+* support prioritaire.
+
+---
+
+# 8. DURÉE DES ABONNEMENTS
+
+Les abonnements ont une durée de :
+
+**3 mois calendaires.**
+
+Exemple :
+
+Activation :
+
+18 septembre 2026
+
+Expiration :
+
+18 décembre 2026
+
+Le système ne doit pas considérer automatiquement trois mois comme exactement 90 jours.
+
+---
+
+# 9. STATUTS D'ABONNEMENT
+
+Les statuts possibles :
+
+```text
+EN_ATTENTE
+ACTIF
+EXPIRANT_BIENTOT
+EXPIRE
+SUSPENDU
+ANNULE
+```
+
+## Règles
+
+### ACTIF
+
+Toutes les fonctions autorisées par le plan sont disponibles.
+
+### EXPIRANT_BIENTOT
+
+L'abonnement reste fonctionnel mais affiche les rappels de renouvellement.
+
+### EXPIRE
+
+Le système bloque :
+
+* nouveaux envois ;
+* campagnes programmées ;
+* nouvelles exécutions d'automatisations.
+
+Les anciennes statistiques restent accessibles selon la politique de conservation.
+
+### SUSPENDU
+
+Toutes les fonctions sensibles sont bloquées.
+
+### ANNULE
+
+Le Workspace ne peut plus utiliser les services concernés.
+
+---
+
+# 10. RAPPELS D'EXPIRATION
+
+Prévoir des notifications :
+
+* J-30 ;
+* J-7 ;
+* J-3 ;
+* J-1 ;
+* jour J.
+
+Le système doit éviter les doublons.
+
+Une notification envoyée doit être enregistrée.
+
+---
+
+# 11. RENOUVELLEMENT
+
+Le Developer peut générer un lien de renouvellement pour le propriétaire.
+
+Le lien doit être :
+
+* unique ;
+* temporaire ;
+* sécurisé ;
+* lié au Workspace ;
+* lié à l'abonnement ;
+* non modifiable côté client ;
+* inutilisable après expiration ;
+* inutilisable après consommation.
+
+Exemple :
+
+```text
+mail.oquitogo.com/renew/xxxxxxxx
+```
+
+Le token réel doit être aléatoire et stocké sous forme de hash.
+
+---
+
+# 12. PROLONGATION
+
+Le système doit distinguer :
+
+### RENOUVELLEMENT
+
+Créer une nouvelle période après la période actuelle.
+
+### PROLONGATION
+
+Ajouter une durée supplémentaire à la période existante.
+
+Exemple :
+
+Expiration actuelle :
+
+18 décembre
+
+Prolongation de 3 mois :
+
+18 mars
+
+Le calcul doit être effectué côté serveur.
+
+---
+
+# 13. PAIEMENTS
+
+Pour la V1 :
+
+**Carte bancaire uniquement.**
+
+Les autres méthodes peuvent rester désactivées :
+
+* PayPal ;
+* Mobile Money ;
+* crypto ;
+* espèces ;
+* virement bancaire.
+
+---
+
+# 14. SÉCURITÉ DES PAIEMENTS
+
+MailOqui ne doit jamais stocker :
+
+* numéro complet de carte ;
+* CVV ;
+* PIN ;
+* mot de passe bancaire ;
+* code OTP ;
+* secret 3D Secure.
+
+Les données bancaires doivent être traitées par un prestataire de paiement sécurisé.
+
+MailOqui conserve uniquement les informations nécessaires :
+
+* montant ;
+* devise ;
+* référence ;
+* statut ;
+* date ;
+* identifiant fournisseur ;
+* méthode ;
+* éventuellement quatre derniers chiffres si fournis légalement par le prestataire.
+
+---
+
+# 15. STATUTS DES PAIEMENTS
+
+```text
+EN_ATTENTE
+PAIEMENT_EN_COURS
+EN_VERIFICATION
+CONFIRME
+REFUSE
+ANNULE
+REMBOURSE
+```
+
+Une page de succès ne doit jamais suffire à activer automatiquement un abonnement.
+
+L'activation doit dépendre :
+
+* d'une confirmation fiable du prestataire ;
+* ou d'une confirmation administrative si le paiement est vérifié manuellement.
+
+---
+
+# 16. PRÉVENTION DES DOUBLONS DE PAIEMENT
+
+Le système doit empêcher :
+
+* double activation ;
+* double confirmation ;
+* double extension ;
+* réutilisation d'une transaction ;
+* modification du prix côté navigateur ;
+* falsification d'une réponse de paiement ;
+* replay d'une notification de paiement.
+
+Utiliser des clés d'idempotence et des références de transaction uniques.
+
+---
+
+# 17. ACTIVATION
+
+Une activation peut suivre :
+
+```text
+Paiement
+↓
+Vérification
+↓
+Confirmation
+↓
+Activation abonnement
+↓
+Création période
+↓
+Journalisation
+↓
+Notification
+```
+
+---
+
+# 18. INTÉGRATION EMAIL
+
+MailOqui utilise une infrastructure d'envoi tierce intégrée côté serveur.
+
+Le fournisseur technique ne doit jamais être exposé au client.
+
+Architecture :
+
+```text
+Application client
+       ↓
+Backend MailOqui / intégration
+       ↓
+Infrastructure d'envoi
+       ↓
+Destinataire
+       ↓
+Événements email
+       ↓
+MailOqui
+       ↓
+Base de données
+       ↓
+Analytics
+       ↓
+Dashboard Owner
+```
+
+---
+
+# 19. RÈGLE ABSOLUE SUR LES CLÉS
+
+Les clés techniques doivent rester côté serveur.
+
+Interdit :
+
+```text
+Frontend
+localStorage
+sessionStorage
+HTML
+URL
+JavaScript public
+```
+
+Une clé ne doit jamais apparaître dans le navigateur.
+
+---
+
+# 20. ENVOI DES E-MAILS
+
+L'envoi ne doit pas être réalisé directement dans une requête HTTP longue.
+
+Architecture recommandée :
+
+```text
+Campaign
+↓
+Queue
+↓
+Worker
+↓
+Email Provider
+↓
+Recipient
+```
+
+Cela permet :
+
+* retry ;
+* contrôle du quota ;
+* traitement massif ;
+* meilleure stabilité ;
+* suivi des erreurs.
+
+---
+
+# 21. CONTRÔLE AVANT ENVOI
+
+Avant chaque envoi, vérifier :
+
+1. Workspace valide ;
+2. utilisateur autorisé ;
+3. abonnement actif ;
+4. quota disponible ;
+5. domaine configuré ;
+6. domaine vérifié ;
+7. destinataire valide ;
+8. destinataire non supprimé ;
+9. campagne valide ;
+10. contenu valide.
+
+Si une condition critique échoue, l'envoi est bloqué.
+
+---
+
+# 22. QUOTAS
+
+Chaque plan possède une limite quotidienne.
+
+Exemple Starter :
+
+```text
+1 000 e-mails / jour
+```
+
+Le quota doit être contrôlé côté serveur.
+
+L'utilisateur ne doit jamais pouvoir contourner le quota en :
+
+* changeant une valeur frontend ;
+* utilisant une autre route API ;
+* rechargeant la page ;
+* créant plusieurs campagnes ;
+* utilisant plusieurs requêtes simultanées.
+
+Les compteurs doivent être atomiques ou protégés contre les conditions de concurrence.
+
+---
+
+# 23. CAMPAGNES
+
+Une campagne possède notamment :
+
+* nom ;
+* sujet ;
+* expéditeur ;
+* contenu ;
+* destinataires ;
+* liste ;
+* segment ;
+* statut ;
+* date de programmation ;
+* date d'envoi ;
+* créateur ;
+* statistiques.
+
+---
+
+# 24. STATUTS CAMPAGNE
+
+```text
+BROUILLON
+PROGRAMMEE
+EN_COURS
+ENVOYEE
+ANNULEE
+ECHOUEE
+```
+
+---
+
+# 25. CRÉATION D'UNE CAMPAGNE
+
+Étapes :
+
+```text
+Nom
+↓
+Destinataires
+↓
+Sujet
+↓
+Expéditeur
+↓
+Contenu
+↓
+Prévisualisation
+↓
+Test
+↓
+Envoi immédiat / Programmation
+```
+
+---
+
+# 26. TEST EMAIL
+
+Avant l'envoi définitif, le Developer doit pouvoir envoyer un test.
+
+Le test ne doit pas :
+
+* consommer le quota normal de campagne de manière incorrecte ;
+* modifier les statistiques de campagne ;
+* déclencher une automatisation.
+
+Il doit être clairement identifié comme test.
+
+---
+
+# 27. PROGRAMMATION
+
+Le Developer peut programmer :
+
+* date ;
+* heure ;
+* fuseau horaire.
+
+Une campagne programmée peut être :
+
+* modifiée ;
+* annulée ;
+* dupliquée.
+
+Une campagne déjà en cours d'envoi ne doit plus pouvoir être modifiée comme une campagne brouillon.
+
+---
+
+# 28. ÉDITEUR D'E-MAIL
+
+L'éditeur doit permettre :
+
+* texte ;
+* titre ;
+* sous-titre ;
+* image ;
+* lien ;
+* bouton ;
+* séparation ;
+* alignement ;
+* couleur ;
+* arrière-plan ;
+* listes ;
+* variables dynamiques.
+
+Variables :
+
+```text
+{{prenom}}
+{{nom}}
+{{email}}
+{{entreprise}}
+```
+
+Les variables inconnues doivent être détectées avant envoi.
+
+---
+
+# 29. MODÈLES
+
+Le Developer peut :
+
+* créer ;
+* modifier ;
+* dupliquer ;
+* supprimer ;
+* utiliser un modèle.
+
+Catégories :
+
+* Newsletter ;
+* Promotion ;
+* Bienvenue ;
+* Transactionnel ;
+* Événement ;
+* Information.
+
+---
+
+# 30. CONTACTS
+
+Chaque Workspace possède ses contacts.
+
+Informations possibles :
+
+```text
+id
+email
+prénom
+nom
+téléphone
+entreprise
+tags
+date d'inscription
+statut
+```
+
+---
+
+# 31. GESTION DES CONTACTS
+
+Fonctions :
+
+* ajouter ;
+* modifier ;
+* supprimer ;
+* rechercher ;
+* filtrer ;
+* importer ;
+* exporter si autorisé ;
+* ajouter à une liste ;
+* retirer d'une liste ;
+* attribuer des tags.
+
+---
+
+# 32. IMPORT CSV
+
+Le système doit :
+
+* accepter CSV ;
+* détecter les colonnes ;
+* permettre le mapping ;
+* détecter les doublons ;
+* détecter les e-mails invalides ;
+* afficher un résumé avant import ;
+* journaliser l'import.
+
+Pour les gros fichiers :
+
+```text
+Upload
+↓
+Validation
+↓
+Queue
+↓
+Import Worker
+↓
+Résultat
+```
+
+---
+
+# 33. LISTES
+
+Les contacts peuvent être organisés par :
+
+* listes ;
+* tags ;
+* segments.
+
+Exemples :
+
+```text
+Clients
+Prospects
+Newsletter
+VIP
+Événement
+```
+
+---
+
+# 34. SEGMENTATION
+
+Les segments peuvent être basés sur :
+
+* tags ;
+* statut ;
+* date ;
+* activité ;
+* campagne ;
+* ouverture ;
+* clic.
+
+Exemple :
+
+```text
+Contacts ayant ouvert au moins une campagne
+```
+
+---
+
+# 35. AUTOMATISATIONS
+
+MailOqui doit permettre de créer des scénarios simples.
+
+Exemple :
+
+```text
+Nouveau contact
+↓
+Attendre 1 jour
+↓
+Envoyer Email A
+↓
+Attendre 3 jours
+↓
+Envoyer Email B
+```
+
+---
+
+# 36. EXÉCUTIONS D'AUTOMATISATION
+
+Chaque exécution est comptabilisée.
+
+Les limites du plan doivent être contrôlées.
+
+Le système doit empêcher :
+
+* boucle infinie ;
+* déclenchement multiple involontaire ;
+* double exécution ;
+* exécution après expiration ;
+* exécution après désactivation.
+
+---
+
+# 37. ÉVÉNEMENTS EMAIL
+
+MailOqui doit pouvoir traiter les événements disponibles liés aux messages :
+
+* envoyé ;
+* délivré ;
+* ouvert ;
+* cliqué ;
+* bounce ;
+* échec ;
+* désabonnement ;
+* plainte.
+
+---
+
+# 38. WEBHOOKS
+
+Les événements doivent être :
+
+* authentifiés ;
+* validés ;
+* enregistrés ;
+* associés au bon Workspace ;
+* traités de manière idempotente.
+
+Chaque événement doit avoir un identifiant unique.
+
+Contrainte recommandée :
+
+```text
+UNIQUE(workspace_id, event_id)
+```
+
+---
+
+# 39. TRAITEMENT DES DOUBLONS
+
+Si le même événement est reçu deux fois :
+
+```text
+event_id = abc123
+```
+
+le deuxième événement ne doit pas modifier deux fois les statistiques.
+
+---
+
+# 40. BOUNCES ET ERREURS
+
+Les adresses invalides ou définitivement rejetées peuvent être ajoutées à une liste de suppression.
+
+Objectif :
+
+* éviter les envois répétés ;
+* protéger la réputation d'envoi ;
+* améliorer la délivrabilité.
+
+---
+
+# 41. DÉSABONNEMENT
+
+Les campagnes marketing doivent prévoir un mécanisme de désabonnement conforme aux exigences applicables.
+
+Un contact désabonné ne doit plus recevoir les campagnes concernées.
+
+Il doit être impossible de contourner cette règle simplement en le réimportant.
+
+---
+
+# 42. STATISTIQUES OWNER
+
+Le propriétaire doit disposer d'un dashboard simple.
+
+Indicateurs :
+
+* e-mails envoyés ;
+* e-mails délivrés ;
+* e-mails ouverts ;
+* clics ;
+* erreurs ;
+* bounces ;
+* désabonnements ;
+* taux de délivrabilité ;
+* taux d'ouverture ;
+* taux de clic ;
+* taux d'erreur ;
+* taux de désabonnement ;
+* utilisation quotidienne du quota ;
+* campagnes actives ;
+* campagnes programmées ;
+* exécutions d'automatisation.
+
+---
+
+# 43. FILTRES STATISTIQUES
+
+Périodes :
+
+* aujourd'hui ;
+* 7 jours ;
+* 30 jours ;
+* période personnalisée.
+
+Les dates doivent respecter le fuseau horaire du Workspace.
+
+---
+
+# 44. STATISTIQUES PAR CAMPAGNE
+
+Pour chaque campagne :
+
+* destinataires ;
+* envoyés ;
+* délivrés ;
+* ouverts ;
+* cliqués ;
+* bounces ;
+* erreurs ;
+* désabonnements.
+
+---
+
+# 45. CALCUL DES TAUX
+
+Exemple :
+
+```text
+Taux de délivrabilité =
+emails délivrés / emails envoyés × 100
+```
+
+```text
+Taux d'ouverture =
+ouvertures uniques / emails délivrés × 100
+```
+
+```text
+Taux de clic =
+clics uniques / emails délivrés × 100
+```
+
+Les événements doivent être dédupliqués avant calcul.
+
+---
+
+# 46. DASHBOARD DEVELOPER
+
+Le Developer voit :
+
+* statistiques ;
+* campagnes ;
+* contacts ;
+* automatisations ;
+* modèles ;
+* quotas ;
+* configuration ;
+* domaine ;
+* intégration ;
+* abonnement ;
+* propriétaire ;
+* paiements ;
+* journaux techniques.
+
+---
+
+# 47. CONFIGURATION DU DOMAINE
+
+Le Developer doit pouvoir configurer le domaine d'envoi.
+
+Informations :
+
+* domaine ;
+* statut ;
+* SPF ;
+* DKIM ;
+* DMARC ;
+* vérification ;
+* erreurs.
+
+Statuts :
+
+```text
+NON_CONFIGURE
+EN_VERIFICATION
+VERIFIE
+ERREUR
+```
+
+---
+
+# 48. SPF / DKIM / DMARC
+
+L'interface doit expliquer clairement :
+
+* ce qui doit être ajouté ;
+* où l'ajouter ;
+* la valeur ;
+* le statut ;
+* la date de dernière vérification.
+
+Le système ne doit pas considérer un domaine comme vérifié simplement parce que l'utilisateur a déclaré l'avoir configuré.
+
+La vérification doit être effectuée techniquement lorsque possible.
+
+---
+
+# 49. API MAILOQUI
+
+Si une API publique est exposée aux applications clientes, elle doit être versionnée.
+
+Exemple :
+
+```text
+/api/v1/
+```
+
+Endpoints conceptuels :
+
+```text
+POST /api/v1/campaigns
+GET  /api/v1/campaigns
+GET  /api/v1/campaigns/:id
+POST /api/v1/campaigns/:id/send
+POST /api/v1/contacts
+GET  /api/v1/contacts
+GET  /api/v1/analytics
+```
+
+Les clés API doivent être :
+
+* générables ;
+* révocables ;
+* renouvelables ;
+* limitées au Workspace ;
+* jamais affichées au Owner.
+
+---
+
+# 50. AUTHENTIFICATION
+
+Fonctions obligatoires :
+
+* inscription ;
+* connexion ;
+* déconnexion ;
+* vérification e-mail ;
+* mot de passe oublié ;
+* réinitialisation ;
+* gestion de session.
+
+Sécurité :
+
+* hash sécurisé des mots de passe ;
+* cookies sécurisés ;
+* HTTPS ;
+* expiration de session ;
+* limitation des tentatives ;
+* protection contre brute-force.
+
+---
+
+# 51. INVITATION DU PROPRIÉTAIRE
+
+Le Developer saisit :
+
+```text
+email du propriétaire
+```
+
+Le système envoie immédiatement une invitation.
+
+Si le propriétaire possède déjà un compte :
+
+```text
+Connexion
+↓
+Acceptation invitation
+↓
+Accès Workspace
+```
+
+Sinon :
+
+```text
+Invitation
+↓
+Création compte
+↓
+Vérification
+↓
+Acceptation
+↓
+Accès Workspace
+```
+
+---
+
+# 52. INVITATION SÉCURISÉE
+
+Le token d'invitation doit être :
+
+* aléatoire ;
+* temporaire ;
+* à usage unique ;
+* stocké sous forme de hash ;
+* associé au Workspace ;
+* associé à l'e-mail invité.
+
+Une invitation expirée doit être invalidée.
+
+---
+
+# 53. MOT DE PASSE OUBLIÉ
+
+Le système doit prévoir :
+
+```text
+Email
+↓
+Lien sécurisé
+↓
+Nouveau mot de passe
+↓
+Invalidation ancienne session si nécessaire
+```
+
+Le token doit être temporaire et à usage unique.
+
+---
+
+# 54. SÉCURITÉ GÉNÉRALE
+
+Protection contre :
+
+* SQL Injection ;
+* XSS ;
+* CSRF ;
+* brute-force ;
+* session hijacking ;
+* IDOR ;
+* privilege escalation ;
+* fuite de données ;
+* exposition de secrets ;
+* upload malveillant ;
+* replay d'événements.
+
+Les contrôles de permissions doivent être effectués côté serveur.
+
+---
+
+# 55. MULTI-TENANT
+
+Toutes les requêtes doivent être filtrées par Workspace.
+
+Exemple conceptuel :
+
+```text
+WHERE workspace_id = currentWorkspaceId
+```
+
+Il ne faut jamais faire confiance à un `workspace_id` envoyé uniquement par le frontend.
+
+Le serveur doit déterminer le Workspace à partir de la session et des permissions.
+
+---
+
+# 56. JOURNAUX D'AUDIT
+
+Enregistrer les actions importantes :
+
+* connexion ;
+* invitation ;
+* changement de rôle ;
+* changement de plan ;
+* paiement ;
+* activation ;
+* suspension ;
+* création campagne ;
+* suppression campagne ;
+* changement configuration ;
+* génération clé ;
+* révocation clé ;
+* modification domaine.
+
+Structure :
+
+```text
+id
+workspace_id
+user_id
+action
+entity_type
+entity_id
+metadata
+created_at
+```
+
+---
+
+# 57. SUPPORT
+
+Système de tickets.
+
+Un ticket contient :
+
+* sujet ;
+* catégorie ;
+* message ;
+* priorité ;
+* statut ;
+* auteur ;
+* date ;
+* dernière modification.
+
+Statuts :
+
+```text
+OUVERT
+EN_COURS
+RESOLU
+FERME
+```
+
+---
+
+# 58. SITE PUBLIC
+
+Pages :
+
+```text
+Accueil
+Offres
+Fonctionnalités
+Contact
+Connexion
+Inscription
+Conditions générales
+Politique de confidentialité
+Paiement
+Statut paiement
+```
+
+---
+
+# 59. PAGE D'ACCUEIL
+
+Message principal :
+
+**Automatisez votre marketing par e-mail.**
+
+Sous-titre :
+
+**Développez votre communication, programmez vos campagnes et suivez vos performances depuis une plateforme conçue pour votre activité.**
+
+CTA :
+
+**Voir nos offres**
+
+**Commencer maintenant**
+
+---
+
+# 60. PAGE OFFRES
+
+Afficher clairement :
+
+### Starter
+
+20 USD / 3 mois
+
+### Business
+
+45 USD / 3 mois
+
+### Premium
+
+80 USD / 3 mois
+
+Comparer :
+
+* quota ;
+* automatisations ;
+* conservation ;
+* statistiques ;
+* programmation ;
+* support.
+
+---
+
+# 61. PAGE DE PAIEMENT
+
+Afficher :
+
+* Workspace ;
+* plan ;
+* durée ;
+* prix ;
+* devise ;
+* récapitulatif ;
+* moyen de paiement ;
+* bouton de paiement.
+
+Le prix doit être déterminé côté serveur.
+
+---
+
+# 62. PAGE APRÈS PAIEMENT
+
+Afficher :
+
+* paiement reçu ;
+* statut ;
+* référence si disponible ;
+* état de l'abonnement.
+
+Ne jamais activer uniquement parce que l'utilisateur arrive sur cette page.
+
+---
+
+# 63. INTERFACE
+
+Direction visuelle :
+
+* moderne ;
+* professionnelle ;
+* SaaS ;
+* claire ;
+* premium ;
+* responsive.
+
+Le design doit être cohérent avec l'identité **MailOqui**.
+
+Navigation recommandée :
+
+```text
+Dashboard
+Campagnes
+Contacts
+Automatisations
+Modèles
+Statistiques
+Abonnement
+Configuration
+Support
+```
+
+Les éléments techniques doivent uniquement apparaître au Developer.
+
+---
+
+# 64. DASHBOARD PRINCIPAL
+
+Cards :
+
+```text
+E-mails envoyés
+E-mails délivrés
+Ouvertures
+Clics
+Erreurs
+Quota
+```
+
+Graphiques :
+
+* évolution des envois ;
+* délivrabilité ;
+* ouvertures ;
+* clics.
+
+---
+
+# 65. NOTIFICATIONS
+
+Le système doit notifier :
+
+* invitation ;
+* paiement ;
+* activation ;
+* expiration prochaine ;
+* expiration ;
+* échec de campagne ;
+* problème de domaine ;
+* quota proche de la limite ;
+* ticket support.
+
+---
+
+# 66. NOTIFICATION QUOTA
+
+Exemple :
+
+À 80 % :
+
+```text
+Vous avez utilisé 80 % de votre quota quotidien.
+```
+
+À 90 % :
+
+```text
+Vous avez utilisé 90 % de votre quota quotidien.
+```
+
+À 100 % :
+
+```text
+Votre quota quotidien est atteint.
+```
+
+Les limites restent contrôlées côté serveur.
+
+---
+
+# 67. CONSERVATION DES DONNÉES
+
+Selon le plan :
+
+Starter :
+
+**30 jours**
+
+Business :
+
+**90 jours**
+
+Premium :
+
+**180 jours**
+
+Les données nécessaires à la facturation, aux obligations légales ou à la sécurité peuvent être conservées selon les règles applicables, même après expiration de la période analytique.
+
+---
+
+# 68. SUPPRESSION AUTOMATIQUE
+
+Un job planifié doit identifier les données arrivées à expiration.
+
+Avant suppression :
+
+* vérifier la politique de conservation ;
+* vérifier les obligations légales ;
+* journaliser si nécessaire ;
+* supprimer ou anonymiser les données concernées.
+
+---
+
+# 69. JOBS / WORKERS
+
+Prévoir un système de jobs pour :
+
+* envoi d'e-mails ;
+* traitement des webhooks ;
+* import CSV ;
+* automatisations ;
+* génération de rapports ;
+* notifications ;
+* rappels d'abonnement ;
+* nettoyage ;
+* agrégation statistique.
+
+---
+
+# 70. RETRY
+
+Pour les erreurs temporaires :
+
+```text
+Retry 1
+↓
+Retry 2
+↓
+Retry 3
+↓
+Échec définitif
+```
+
+Le délai peut utiliser un backoff exponentiel.
+
+Les erreurs permanentes ne doivent pas être réessayées indéfiniment.
+
+---
+
+# 71. BASE DE DONNÉES
+
+## users
+
+```text
+id
+first_name
+last_name
+email
+password_hash
+email_verified
+status
+created_at
+updated_at
+```
+
+## workspaces
+
+```text
+id
+name
+status
+created_at
+updated_at
+```
+
+## workspace_members
+
+```text
+id
+workspace_id
+user_id
+role
+status
+invited_by
+created_at
+updated_at
+```
+
+## plans
+
+```text
+id
+name
+price
+currency
+duration_months
+daily_email_limit
+automation_limit
+retention_days
+support_level
+status
+```
+
+## subscriptions
+
+```text
+id
+workspace_id
+plan_id
+status
+start_date
+end_date
+created_at
+updated_at
+```
+
+## payments
+
+```text
+id
+subscription_id
+amount
+currency
+status
+transaction_reference
+provider_reference
+payment_method
+confirmed_at
+confirmed_by
+created_at
+```
+
+## invitations
+
+```text
+id
+workspace_id
+email
+role
+token_hash
+expires_at
+accepted_at
+status
+created_at
+```
+
+## renewal_links
+
+```text
+id
+subscription_id
+workspace_id
+created_by
+operation_type
+token_hash
+expires_at
+used_at
+status
+created_at
+```
+
+## campaigns
+
+```text
+id
+workspace_id
+name
+subject
+content
+status
+scheduled_at
+sent_at
+created_by
+created_at
+updated_at
+```
+
+## contacts
+
+```text
+id
+workspace_id
+email
+first_name
+last_name
+phone
+status
+created_at
+updated_at
+```
+
+## automations
+
+```text
+id
+workspace_id
+name
+status
+configuration
+execution_count
+created_at
+updated_at
+```
+
+## email_events
+
+```text
+id
+workspace_id
+campaign_id
+message_id
+event_id
+event_type
+recipient_hash
+occurred_at
+created_at
+```
+
+Contrainte :
+
+```text
+UNIQUE(workspace_id, event_id)
+```
+
+## support_tickets
+
+```text
+id
+workspace_id
+user_id
+subject
+category
+status
+created_at
+updated_at
+```
+
+## audit_logs
+
+```text
+id
+workspace_id
+user_id
+action
+entity_type
+entity_id
+metadata
+created_at
+```
+
+---
+
+# 72. RELATIONS PRINCIPALES
+
+```text
+User
+ ↓
+WorkspaceMember
+ ↓
+Workspace
+ ├── Subscription
+ │    └── Plan
+ ├── Campaigns
+ ├── Contacts
+ ├── Automations
+ ├── Templates
+ ├── Email Events
+ ├── Analytics
+ ├── Payments
+ ├── Support Tickets
+ └── Audit Logs
+```
+
+---
+
+# 73. INDEXATION
+
+Créer des index sur les champs fréquemment recherchés :
+
+```text
+workspace_id
+email
+status
+created_at
+scheduled_at
+campaign_id
+event_id
+subscription_id
+transaction_reference
+```
+
+Les recherches multi-tenant doivent être optimisées avec des index composites lorsque nécessaire.
+
+---
+
+# 74. API ET AUTORISATIONS
+
+Chaque endpoint doit vérifier :
+
+1. authentification ;
+2. utilisateur actif ;
+3. Workspace ;
+4. appartenance au Workspace ;
+5. rôle ;
+6. abonnement ;
+7. quota ;
+8. état de la ressource.
+
+Ne jamais faire :
+
+```text
+if frontendRole === "developer"
+```
+
+comme unique protection.
+
+---
+
+# 75. GESTION DES ERREURS
+
+Les erreurs doivent être structurées.
+
+Exemple :
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "QUOTA_EXCEEDED",
+    "message": "Votre quota quotidien est atteint."
+  }
+}
+```
+
+Ne jamais retourner :
+
+* stack trace ;
+* secret ;
+* clé API ;
+* requête SQL ;
+* informations internes inutiles.
+
+---
+
+# 76. LOGIQUE D'ENVOI
+
+Pseudo-flux :
+
+```text
+Utilisateur lance campagne
+        ↓
+Authentification
+        ↓
+Vérification Workspace
+        ↓
+Vérification rôle
+        ↓
+Vérification abonnement
+        ↓
+Vérification quota
+        ↓
+Vérification domaine
+        ↓
+Vérification contacts
+        ↓
+Création job
+        ↓
+Queue
+        ↓
+Worker
+        ↓
+Envoi
+        ↓
+Message ID
+        ↓
+Événement
+        ↓
+Webhook
+        ↓
+Event Processor
+        ↓
+Analytics
+```
+
+---
+
+# 77. GESTION DES CONCURRENCES
+
+Le système doit gérer deux campagnes lancées simultanément.
+
+Exemple :
+
+Quota :
+
+1000
+
+Campagne A :
+
+700
+
+Campagne B :
+
+500
+
+Le système ne doit pas autoriser :
+
+```text
+700 + 500 = 1200
+```
+
+si le quota disponible est seulement 1000.
+
+Utiliser une stratégie atomique de réservation/consommation du quota.
+
+---
+
+# 78. GESTION DES CAMPAGNES EXPIRÉES
+
+Si une campagne est programmée pour une date où l'abonnement est expiré :
+
+```text
+ne pas envoyer
+```
+
+La campagne doit passer dans un état approprié et expliquer la raison.
+
+---
+
+# 79. CHANGEMENT DE PLAN
+
+Le changement de plan doit être traité côté serveur.
+
+Cas à prévoir :
+
+* upgrade ;
+* downgrade ;
+* renouvellement ;
+* expiration ;
+* suspension.
+
+Les limites effectives doivent être recalculées après confirmation.
+
+---
+
+# 80. RÉSILIATION
+
+La résiliation ne doit pas automatiquement supprimer toutes les données.
+
+Il faut distinguer :
+
+```text
+Résiliation
+Expiration
+Suppression du Workspace
+Suppression des données
+```
+
+Ces opérations doivent être distinctes.
+
+---
+
+# 81. SUPPRESSION D'UN WORKSPACE
+
+Opération sensible.
+
+Prévoir :
+
+* confirmation ;
+* double confirmation éventuellement ;
+* délai de grâce ;
+* journalisation ;
+* suppression/anonymisation selon politique ;
+* révocation des clés ;
+* arrêt des campagnes ;
+* arrêt des automatisations.
+
+---
+
+# 82. RESPONSIVE
+
+L'application doit fonctionner sur :
+
+* ordinateur ;
+* tablette ;
+* smartphone.
+
+Le dashboard Developer peut être plus dense sur desktop.
+
+Le dashboard Owner doit rester très lisible sur mobile.
+
+---
+
+# 83. ACCESSIBILITÉ
+
+Prévoir :
+
+* contraste suffisant ;
+* textes lisibles ;
+* boutons accessibles ;
+* navigation clavier ;
+* labels de formulaires ;
+* messages d'erreur compréhensibles ;
+* états de chargement ;
+* alternatives textuelles pour les éléments importants.
+
+---
+
+# 84. PERFORMANCE
+
+Objectifs :
+
+* chargement rapide ;
+* pagination ;
+* lazy loading ;
+* cache lorsque pertinent ;
+* requêtes DB optimisées ;
+* traitement asynchrone ;
+* pas de gros traitement directement dans le navigateur.
+
+Les statistiques lourdes doivent être pré-calculées ou agrégées lorsque nécessaire.
+
+---
+
+# 85. OBSERVABILITÉ
+
+Prévoir :
+
+* logs applicatifs ;
+* logs workers ;
+* erreurs ;
+* métriques ;
+* temps de traitement ;
+* échecs de webhook ;
+* échecs d'envoi ;
+* consommation quota ;
+* santé des queues.
+
+Les logs ne doivent pas contenir de secrets ou de données sensibles inutiles.
+
+---
+
+# 86. ENVIRONNEMENTS
+
+Prévoir au minimum :
+
+```text
+Development
+Staging
+Production
+```
+
+Les clés et secrets doivent être séparés par environnement.
+
+---
+
+# 87. VARIABLES D'ENVIRONNEMENT
+
+Les secrets doivent être stockés dans les variables d'environnement ou un gestionnaire de secrets.
+
+Exemples conceptuels :
+
+```text
+DATABASE_URL
+EMAIL_PROVIDER_API_KEY
+EMAIL_WEBHOOK_SECRET
+PAYMENT_SECRET
+SESSION_SECRET
+APP_URL
+```
+
+Ne jamais les committer dans Git.
+
+---
+
+# 88. GIT
+
+Prévoir :
+
+```text
+main
+develop
+feature/*
+fix/*
+```
+
+Les commits doivent être clairs.
+
+Aucun secret ne doit être présent dans le repository.
+
+---
+
+# 89. SAUVEGARDES
+
+La base de données doit disposer de sauvegardes régulières.
+
+Prévoir :
+
+* sauvegardes automatiques ;
+* rétention ;
+* restauration testée ;
+* séparation des sauvegardes ;
+* contrôle d'accès.
+
+---
+
+# 90. TESTS
+
+## Tests unitaires
+
+Tester :
+
+* calcul des dates ;
+* quotas ;
+* taux statistiques ;
+* permissions ;
+* tokens ;
+* expiration ;
+* renouvellement.
+
+## Tests d'intégration
+
+Tester :
+
+* paiement ;
+* campagne ;
+* webhook ;
+* import ;
+* invitation ;
+* renouvellement.
+
+## Tests E2E
+
+Tester :
+
+```text
+Inscription
+→ abonnement
+→ configuration
+→ campagne
+→ envoi
+→ événement
+→ statistiques
+```
+
+---
+
+# 91. TESTS DE SÉCURITÉ
+
+Tester notamment :
+
+* accès Owner → Developer ;
+* accès Workspace A → Workspace B ;
+* modification d'ID ;
+* token expiré ;
+* token réutilisé ;
+* clé API révoquée ;
+* quota contourné ;
+* paiement falsifié ;
+* webhook falsifié ;
+* brute-force ;
+* XSS ;
+* SQL injection ;
+* CSRF.
+
+---
+
+# 92. CAS LIMITES OBLIGATOIRES
+
+Le système doit gérer :
+
+### Cas 1
+
+Deux Developer essaient de lancer une campagne simultanément.
+
+### Cas 2
+
+Le quota est atteint pendant l'envoi.
+
+### Cas 3
+
+Le paiement est confirmé deux fois.
+
+### Cas 4
+
+Le webhook est reçu deux fois.
+
+### Cas 5
+
+Le propriétaire accepte une invitation expirée.
+
+### Cas 6
+
+Le propriétaire possède déjà un autre Workspace.
+
+### Cas 7
+
+Le domaine n'est pas vérifié.
+
+### Cas 8
+
+L'abonnement expire pendant une campagne.
+
+### Cas 9
+
+Le fournisseur d'envoi répond temporairement en erreur.
+
+### Cas 10
+
+Le fournisseur répond avec une erreur définitive.
+
+### Cas 11
+
+Un contact est désabonné puis réimporté.
+
+### Cas 12
+
+Un utilisateur tente de modifier une campagne d'un autre Workspace.
+
+### Cas 13
+
+Un token de renouvellement est utilisé deux fois.
+
+### Cas 14
+
+Un utilisateur manipule le prix dans le navigateur.
+
+### Cas 15
+
+Deux requêtes consomment simultanément le dernier quota disponible.
+
+---
+
+# 93. ADMIN GLOBAL
+
+Le Platform Admin doit avoir un dashboard global comprenant :
+
+* nombre de Workspaces ;
+* abonnements actifs ;
+* abonnements expirants ;
+* abonnements expirés ;
+* revenus ;
+* paiements en attente ;
+* utilisateurs ;
+* volume d'e-mails ;
+* erreurs ;
+* tickets ;
+* alertes.
+
+---
+
+# 94. GESTION DES ABUS
+
+MailOqui doit prévoir des mécanismes contre :
+
+* spam ;
+* envois massifs abusifs ;
+* listes achetées ;
+* taux de bounce anormal ;
+* plaintes répétées ;
+* utilisation frauduleuse ;
+* contournement de quota.
+
+Un Workspace peut être :
+
+```text
+ACTIF
+SURVEILLE
+SUSPENDU
+```
+
+---
+
+# 95. CONFIDENTIALITÉ
+
+La plateforme doit définir clairement :
+
+* données collectées ;
+* finalités ;
+* durée de conservation ;
+* sous-traitants ;
+* droits des utilisateurs ;
+* suppression ;
+* sécurité.
+
+Les documents juridiques doivent être adaptés aux pays et marchés ciblés.
+
+---
+
+# 96. SEO
+
+Le site public doit être optimisé pour :
+
+* MailOqui ;
+* email marketing ;
+* campagnes email ;
+* automatisation email ;
+* newsletter ;
+* gestion des campagnes.
+
+Prévoir :
+
+* title ;
+* meta description ;
+* Open Graph ;
+* sitemap ;
+* robots.txt ;
+* données structurées si pertinentes.
+
+---
+
+# 97. MARQUE MAILOQUI
+
+Le produit doit être présenté comme :
+
+**MailOqui**
+
+Le domaine officiel :
+
+**mail.oquitogo.com**
+
+Le branding doit être cohérent sur :
+
+* site ;
+* dashboard ;
+* e-mails système ;
+* pages de paiement ;
+* notifications ;
+* documents ;
+* support.
+
+Le nom du fournisseur technique ne doit pas apparaître dans les interfaces destinées au client.
+
+---
+
+# 98. E-MAILS SYSTÈME
+
+Prévoir des modèles pour :
+
+* bienvenue ;
+* vérification e-mail ;
+* invitation Owner ;
+* mot de passe oublié ;
+* confirmation de paiement ;
+* activation ;
+* expiration prochaine ;
+* expiration ;
+* ticket support ;
+* renouvellement.
+
+---
+
+# 99. EXPÉRIENCE OWNER
+
+Après connexion :
+
+```text
+Dashboard
+```
+
+Le propriétaire doit comprendre immédiatement :
+
+* combien d'e-mails ont été envoyés ;
+* combien ont été délivrés ;
+* combien ont été ouverts ;
+* combien ont été cliqués ;
+* combien de quota reste disponible ;
+* quand son abonnement expire.
+
+L'interface Owner doit éviter les informations techniques inutiles.
+
+---
+
+# 100. EXPÉRIENCE DEVELOPER
+
+Après connexion :
+
+```text
+Dashboard
+↓
+Configuration
+↓
+Campagnes
+↓
+Contacts
+↓
+Automatisations
+↓
+Statistiques
+↓
+Abonnement
+↓
+Owner
+↓
+Support
+```
+
+---
+
+# 101. ARCHITECTURE GÉNÉRALE FINALE
+
+```text
+                         MAILOQUI
+                            │
+              ┌─────────────┴─────────────┐
+              │                           │
+        SITE PUBLIC                  APPLICATION
+              │                           │
+      Offres / Contact             Authentification
+      Inscription / Paiement             │
+                                         │
+                              ┌──────────┴──────────┐
+                              │                     │
+                         DEVELOPER                OWNER
+                              │                     │
+                     Configuration             Statistiques
+                     Campagnes                 Rapports
+                     Contacts                  Abonnement
+                     Automations
+                     Domaine
+                     API
+                              │
+                              ▼
+                         BACKEND
+                              │
+                ┌─────────────┼─────────────┐
+                │             │             │
+             Database       Queue         Workers
+                │             │             │
+                └─────────────┼─────────────┘
+                              │
+                     Infrastructure email
+                              │
+                         DESTINATAIRES
+                              │
+                           EVENTS
+                              │
+                           WEBHOOK
+                              │
+                           MAILOQUI
+                              │
+                          ANALYTICS
+```
+
+---
+
+# 102. RÈGLE D'OR DU PROJET
+
+Le frontend ne doit jamais être considéré comme une zone de confiance.
+
+Toutes les règles importantes doivent être appliquées côté serveur :
+
+* permissions ;
+* quotas ;
+* prix ;
+* abonnement ;
+* paiement ;
+* accès Workspace ;
+* clés API ;
+* renouvellement ;
+* statistiques ;
+* envoi.
+
+---
+
+# 103. MVP OBLIGATOIRE
+
+La première version exploitable doit au minimum contenir :
+
+* site public ;
+* inscription ;
+* connexion ;
+* récupération de mot de passe ;
+* Workspace ;
+* Developer ;
+* Owner ;
+* invitation Owner ;
+* plans ;
+* abonnement ;
+* paiement par carte ;
+* campagnes ;
+* contacts ;
+* programmation ;
+* envoi ;
+* événements ;
+* statistiques ;
+* quota ;
+* configuration domaine ;
+* sécurité ;
+* support ;
+* renouvellement.
+
+Les fonctionnalités secondaires peuvent être ajoutées après validation du MVP.
+
+---
+
+# 104. ORDRE DE DÉVELOPPEMENT RECOMMANDÉ
+
+## Phase 1 — Fondation
+
+* architecture ;
+* base de données ;
+* authentification ;
+* utilisateurs ;
+* Workspace ;
+* permissions.
+
+## Phase 2 — Abonnements
+
+* plans ;
+* abonnements ;
+* paiement ;
+* activation ;
+* expiration ;
+* renouvellement.
+
+## Phase 3 — Email
+
+* intégration serveur ;
+* domaine ;
+* campagnes ;
+* contacts ;
+* envoi ;
+* queue ;
+* workers.
+
+## Phase 4 — Événements
+
+* webhooks ;
+* traitement ;
+* déduplication ;
+* statistiques.
+
+## Phase 5 — Automatisation
+
+* workflows ;
+* triggers ;
+* délais ;
+* exécutions ;
+* quotas.
+
+## Phase 6 — Dashboard
+
+* Developer ;
+* Owner ;
+* Analytics ;
+* rapports.
+
+## Phase 7 — Sécurité
+
+* audit ;
+* rate limiting ;
+* tests ;
+* isolation multi-tenant ;
+* protection API.
+
+## Phase 8 — Finalisation
+
+* responsive ;
+* UX ;
+* SEO ;
+* emails système ;
+* documentation ;
+* monitoring ;
+* sauvegardes.
+
+---
+
+# 105. CRITÈRES D'ACCEPTATION
+
+Le projet est considéré comme fonctionnel lorsque :
+
+### Authentification
+
+* un utilisateur peut créer son compte ;
+* vérifier son e-mail ;
+* se connecter ;
+* réinitialiser son mot de passe.
+
+### Workspace
+
+* un Workspace est créé ;
+* le Developer y est associé ;
+* le Owner peut être invité ;
+* les données sont isolées.
+
+### Abonnement
+
+* un plan peut être sélectionné ;
+* le paiement est enregistré ;
+* l'abonnement est activé après confirmation ;
+* l'expiration fonctionne ;
+* le renouvellement fonctionne.
+
+### Email
+
+* une campagne peut être créée ;
+* une campagne peut être programmée ;
+* l'envoi fonctionne ;
+* les événements sont reçus ;
+* les statistiques sont calculées.
+
+### Sécurité
+
+* le Owner ne peut pas accéder aux fonctions Developer ;
+* un Workspace ne peut pas accéder aux données d'un autre ;
+* les secrets ne sont pas exposés ;
+* les quotas ne peuvent pas être contournés.
+
+### Administration
+
+* le Platform Admin peut superviser les Workspaces ;
+* les paiements ;
+* les abonnements ;
+* les utilisateurs ;
+* les tickets ;
+* les journaux.
+
+---
+
+# 106. RÉSULTAT FINAL ATTENDU
+
+MailOqui doit être une véritable plateforme SaaS professionnelle, et non simplement une interface permettant d'envoyer quelques e-mails.
+
+Le système doit être :
+
+* multi-tenant ;
+* sécurisé ;
+* scalable ;
+* automatisé ;
+* administrable ;
+* auditable ;
+* responsive ;
+* commercialisable ;
+* compatible avec une évolution vers plusieurs fournisseurs d'envoi ;
+* indépendant visuellement de son infrastructure technique d'envoi.
+
+L'utilisateur final doit avoir l'impression d'utiliser un service cohérent et complet :
+
+**MailOqui — la plateforme de gestion et d'automatisation de ses communications e-mail.**
