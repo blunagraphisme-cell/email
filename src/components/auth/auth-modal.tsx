@@ -27,8 +27,8 @@ import { toast } from 'sonner'
 
 type TabKey = 'login' | 'signup' | 'forgot'
 
-const DEMO_EMAIL = 'admin@email.oquitogo.online'
-const DEMO_PASSWORD = 'EmailOqui2026!'
+const DEMO_EMAIL = 'blunagraphisme@gmail.com'
+const DEMO_PASSWORD = 'Antoine@228'
 
 function randomDemoEmail(): string {
   const n = Math.floor(Math.random() * 1_000_000)

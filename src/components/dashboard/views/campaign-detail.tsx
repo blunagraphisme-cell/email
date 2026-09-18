@@ -107,9 +107,9 @@ interface EmailEvent {
 
 const STATUS_META: Record<string, { label: string; badgeClass: string }> = {
   BROUILLON: { label: 'Brouillon', badgeClass: 'bg-slate-500 text-white' },
-  PROGRAMMEE: { label: 'Programmée', badgeClass: 'bg-amber-500 text-white' },
-  EN_COURS: { label: 'En cours', badgeClass: 'bg-emerald-600 text-white' },
-  ENVOYEE: { label: 'Envoyée', badgeClass: 'bg-emerald-600 text-white' },
+  PROGRAMMEE: { label: 'Programmée', badgeClass: 'bg-muted-foreground text-white' },
+  EN_COURS: { label: 'En cours', badgeClass: 'bg-foreground text-background' },
+  ENVOYEE: { label: 'Envoyée', badgeClass: 'bg-foreground text-background' },
   ANNULEE: { label: 'Annulée', badgeClass: 'bg-red-500 text-white' },
   ECHOUEE: { label: 'Échouée', badgeClass: 'bg-red-500 text-white' },
 }
@@ -408,7 +408,7 @@ export default function CampaignDetailView() {
               </Button>
             )}
             {isSending && (
-              <Badge variant="outline" className="border-transparent bg-amber-500 text-white">
+              <Badge variant="outline" className="border-transparent bg-muted-foreground text-white">
                 <Loader2 className="size-3 animate-spin" />
                 Envoi en cours…
               </Badge>

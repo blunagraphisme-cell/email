@@ -161,7 +161,7 @@ function KpiCard({ icon: Icon, label, value, delta, sublabel, accent }: KpiCardP
             {typeof value === 'number' ? fmtInt(value) : value}
           </span>
           {delta !== undefined && delta > 0 && (
-            <span className="flex items-center gap-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+            <span className="flex items-center gap-0.5 text-xs font-medium text-foreground">
               <ArrowUpRight className="size-3" />
               +{delta.toFixed(1)}%
             </span>

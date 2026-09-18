@@ -120,17 +120,17 @@ function mockOpenRate(id: string): number {
 const STATUS_META: Record<string, { label: string; cls: string }> = {
   BROUILLON: { label: 'Brouillon', cls: 'border-border bg-muted text-muted-foreground' },
   PROGRAMMEE: { label: 'Programmée', cls: 'border-primary/30 bg-primary/10 text-primary' },
-  EN_COURS: { label: 'En cours', cls: 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300' },
-  ENVOYEE: { label: 'Envoyée', cls: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300' },
+  EN_COURS: { label: 'En cours', cls: 'border-foreground/20 bg-muted text-muted-foreground' },
+  ENVOYEE: { label: 'Envoyée', cls: 'border-foreground/30 bg-foreground/10 text-foreground' },
   ECHOUEE: { label: 'Échouée', cls: 'border-destructive/30 bg-destructive/10 text-destructive' },
   ARCHIVEE: { label: 'Archivée', cls: 'border-border bg-muted text-muted-foreground' },
 }
 
 const SUBSCRIPTION_META: Record<string, { label: string; cls: string }> = {
-  ACTIF: { label: 'Actif', cls: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300' },
+  ACTIF: { label: 'Actif', cls: 'border-foreground/30 bg-foreground/10 text-foreground' },
   EXPIRANT_BIENTO: {
     label: 'Expire bientôt',
-    cls: 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300',
+    cls: 'border-foreground/20 bg-muted text-muted-foreground',
   },
   EXPIRE: { label: 'Expiré', cls: 'border-destructive/30 bg-destructive/10 text-destructive' },
   EN_ATTENTE: { label: 'En attente', cls: 'border-border bg-muted text-muted-foreground' },
@@ -930,7 +930,7 @@ function SubscriptionTab(props: {
               Renouveler mon abonnement
             </Button>
           ) : (
-            <div className="rounded-md border border-emerald-500/30 bg-emerald-500/5 p-3 text-sm text-emerald-700 dark:text-emerald-300">
+            <div className="rounded-md border border-foreground/30 bg-foreground/5 p-3 text-sm text-foreground">
               Votre abonnement est actif. Le renouvellement sera disponible à l&apos;approche de la date d&apos;expiration.
             </div>
           )}

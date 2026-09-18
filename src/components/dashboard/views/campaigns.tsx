@@ -96,9 +96,9 @@ const FILTERS: { key: FilterKey; label: string }[] = [
 
 const STATUS_META: Record<string, { label: string; badgeClass: string }> = {
   BROUILLON: { label: 'Brouillon', badgeClass: 'bg-slate-500 text-white' },
-  PROGRAMMEE: { label: 'Programmée', badgeClass: 'bg-amber-500 text-white' },
-  EN_COURS: { label: 'En cours', badgeClass: 'bg-emerald-600 text-white' },
-  ENVOYEE: { label: 'Envoyée', badgeClass: 'bg-emerald-600 text-white' },
+  PROGRAMMEE: { label: 'Programmée', badgeClass: 'bg-muted-foreground text-white' },
+  EN_COURS: { label: 'En cours', badgeClass: 'bg-foreground text-background' },
+  ENVOYEE: { label: 'Envoyée', badgeClass: 'bg-foreground text-background' },
   ANNULEE: { label: 'Annulée', badgeClass: 'bg-red-500 text-white' },
   ECHOUEE: { label: 'Échouée', badgeClass: 'bg-red-500 text-white' },
 }
@@ -267,17 +267,17 @@ export default function CampaignsView() {
           <SummaryCard
             label="Programmées"
             value={counts.PROGRAMMEE ?? 0}
-            accent="bg-amber-500"
+            accent="bg-muted-foreground"
           />
           <SummaryCard
             label="En cours"
             value={counts.EN_COURS ?? 0}
-            accent="bg-emerald-600"
+            accent="bg-foreground"
           />
           <SummaryCard
             label="Envoyées"
             value={counts.ENVOYEE ?? 0}
-            accent="bg-emerald-600"
+            accent="bg-foreground"
           />
           <SummaryCard
             label="Annulées"

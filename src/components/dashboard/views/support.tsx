@@ -54,15 +54,15 @@ interface Ticket {
 const CATEGORY_META: Record<string, { label: string; cls: string }> = {
   TECHNIQUE: {
     label: 'Technique',
-    cls: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
+    cls: 'border-foreground/30 bg-foreground/10 text-foreground',
   },
   FACTURATION: {
     label: 'Facturation',
-    cls: 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300',
+    cls: 'border-foreground/20 bg-muted text-muted-foreground',
   },
   COMPTE: {
     label: 'Compte',
-    cls: 'border-violet-500/30 bg-violet-500/10 text-violet-700 dark:text-violet-300',
+    cls: 'border-foreground/30 bg-foreground/10 text-foreground',
   },
   AUTRE: {
     label: 'Autre',
@@ -74,11 +74,11 @@ const PRIORITY_META: Record<string, { label: string; cls: string }> = {
   BASSE: { label: 'Basse', cls: 'border-border bg-muted text-muted-foreground' },
   NORMALE: {
     label: 'Normale',
-    cls: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
+    cls: 'border-foreground/30 bg-foreground/10 text-foreground',
   },
   HAUTE: {
     label: 'Haute',
-    cls: 'border-orange-500/30 bg-orange-500/10 text-orange-700 dark:text-orange-300',
+    cls: 'border-foreground/20 bg-muted text-muted-foreground',
   },
   URGENTE: { label: 'Urgente', cls: 'border-destructive/30 bg-destructive/10 text-destructive' },
 }
@@ -86,15 +86,15 @@ const PRIORITY_META: Record<string, { label: string; cls: string }> = {
 const STATUS_META: Record<string, { label: string; cls: string }> = {
   OUVERT: {
     label: 'Ouvert',
-    cls: 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300',
+    cls: 'border-foreground/20 bg-muted text-muted-foreground',
   },
   EN_COURS: {
     label: 'En cours',
-    cls: 'border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300',
+    cls: 'border-foreground/20 bg-muted text-muted-foreground',
   },
   RESOLU: {
     label: 'Résolu',
-    cls: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
+    cls: 'border-foreground/30 bg-foreground/10 text-foreground',
   },
   FERME: { label: 'Fermé', cls: 'border-border bg-muted text-muted-foreground' },
 }
@@ -422,9 +422,9 @@ export default function SupportView() {
                 </div>
 
                 {/* Simulated support reply */}
-                <div className="rounded-md border border-emerald-500/30 bg-emerald-500/5 p-3">
+                <div className="rounded-md border border-foreground/30 bg-foreground/5 p-3">
                   <div className="mb-2 flex items-center gap-2">
-                    <div className="flex size-7 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
+                    <div className="flex size-7 items-center justify-center rounded-full bg-foreground/15 text-foreground">
                       <CheckCircle2 className="size-3.5" />
                     </div>
                     <span className="text-xs font-medium">Support EmailOqui</span>

@@ -75,17 +75,17 @@ type ActionKey =
   | 'DEMO_DATA_SEEDED'
 
 const ACTION_META: Record<Exclude<ActionKey, 'ALL'>, { label: string; cls: string; icon: React.ComponentType<{ className?: string }> }> = {
-  LOGIN: { label: 'Connexion', cls: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300', icon: LogIn },
-  WORKSPACE_CREATED: { label: 'Workspace créé', cls: 'border-violet-500/30 bg-violet-500/10 text-violet-700 dark:text-violet-300', icon: Plus },
-  CAMPAIGN_CREATED: { label: 'Campagne créée', cls: 'border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300', icon: Mail },
-  CAMPAIGN_UPDATED: { label: 'Campagne modifiée', cls: 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300', icon: Pencil },
+  LOGIN: { label: 'Connexion', cls: 'border-foreground/30 bg-foreground/10 text-foreground', icon: LogIn },
+  WORKSPACE_CREATED: { label: 'Workspace créé', cls: 'border-foreground/30 bg-foreground/10 text-foreground', icon: Plus },
+  CAMPAIGN_CREATED: { label: 'Campagne créée', cls: 'border-foreground/20 bg-muted text-muted-foreground', icon: Mail },
+  CAMPAIGN_UPDATED: { label: 'Campagne modifiée', cls: 'border-foreground/20 bg-muted text-muted-foreground', icon: Pencil },
   CAMPAIGN_SENT: { label: 'Campagne envoyée', cls: 'border-primary/30 bg-primary/10 text-primary', icon: Send },
   CAMPAIGN_DELETED: { label: 'Campagne supprimée', cls: 'border-destructive/30 bg-destructive/10 text-destructive', icon: Trash2 },
-  PAYMENT_CONFIRMED: { label: 'Paiement confirmé', cls: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300', icon: CreditCard },
-  DOMAIN_UPDATED: { label: 'Domaine modifié', cls: 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300', icon: Globe },
-  API_KEY_GENERATED: { label: 'Clé API générée', cls: 'border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300', icon: KeyRound },
+  PAYMENT_CONFIRMED: { label: 'Paiement confirmé', cls: 'border-foreground/30 bg-foreground/10 text-foreground', icon: CreditCard },
+  DOMAIN_UPDATED: { label: 'Domaine modifié', cls: 'border-foreground/20 bg-muted text-muted-foreground', icon: Globe },
+  API_KEY_GENERATED: { label: 'Clé API générée', cls: 'border-foreground/20 bg-muted text-muted-foreground', icon: KeyRound },
   API_KEY_REVOKED: { label: 'Clé API révoquée', cls: 'border-destructive/30 bg-destructive/10 text-destructive', icon: RefreshCw },
-  RENEWAL_LINK_GENERATED: { label: 'Lien de renouvellement', cls: 'border-violet-500/30 bg-violet-500/10 text-violet-700 dark:text-violet-300', icon: CreditCard },
+  RENEWAL_LINK_GENERATED: { label: 'Lien de renouvellement', cls: 'border-foreground/30 bg-foreground/10 text-foreground', icon: CreditCard },
   DEMO_DATA_SEEDED: { label: 'Données démo peuplées', cls: 'border-border bg-muted text-muted-foreground', icon: Database },
 }
 

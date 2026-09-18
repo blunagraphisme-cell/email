@@ -218,7 +218,7 @@ export function RenewView() {
           {token && done && (
             <Card>
               <CardContent className="flex flex-col items-center justify-center gap-4 py-12 text-center">
-                <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300">
+                <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-foreground/15 text-foreground dark:text-foreground">
                   <CheckCircle2 className="size-6" />
                 </div>
                 <div>
@@ -316,7 +316,7 @@ export function RenewView() {
                     </Button>
 
                     <Alert className="border-border bg-secondary/30">
-                      <ShieldCheck className="size-4 text-emerald-600" />
+                      <ShieldCheck className="size-4 text-foreground" />
                       <AlertDescription>
                         EmailOqui ne stocke jamais les données bancaires
                         complètes. Paiement traité par prestataire sécurisé.

@@ -117,7 +117,7 @@ function MockDashboard() {
         <div className="rounded-lg border border-border bg-background/60 p-3">
           <div className="mb-2 flex items-center justify-between">
             <span className="text-xs font-medium text-foreground">Performance (30 j)</span>
-            <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600">
+            <span className="inline-flex items-center gap-1 text-[10px] font-medium text-foreground">
               <TrendingUp className="size-3" /> +12.4%
             </span>
           </div>

@@ -82,18 +82,18 @@ export async function POST() {
   const activeContacts = contacts.filter((c) => c.status === 'ACTIF')
 
   // Lists & segments
-  const listClients = await db.list.create({ data: { workspaceId: ws, name: 'Clients', color: '#10b981', description: 'Clients existants' } })
-  const listProspects = await db.list.create({ data: { workspaceId: ws, name: 'Prospects', color: '#f59e0b', description: 'Prospects qualifiés' } })
-  await db.list.create({ data: { workspaceId: ws, name: 'Newsletter', color: '#0ea5e9' } })
-  await db.list.create({ data: { workspaceId: ws, name: 'VIP', color: '#a855f7' } })
+  const listClients = await db.list.create({ data: { workspaceId: ws, name: 'Clients', color: '#000000', description: 'Clients existants' } })
+  const listProspects = await db.list.create({ data: { workspaceId: ws, name: 'Prospects', color: '#374151', description: 'Prospects qualifiés' } })
+  await db.list.create({ data: { workspaceId: ws, name: 'Newsletter', color: '#6b7280' } })
+  await db.list.create({ data: { workspaceId: ws, name: 'VIP', color: '#9ca3af' } })
   await db.segment.create({ data: { workspaceId: ws, name: 'VIP actifs', ruleType: 'TAG', ruleValue: 'VIP' } })
   await db.segment.create({ data: { workspaceId: ws, name: 'Ont ouvert au moins 1 campagne', ruleType: 'OPEN' } })
 
   // Templates
-  await db.template.create({ data: { workspaceId: ws, name: 'Newsletter mensuelle', category: 'Newsletter', content: JSON.stringify([{type:'title',text:'Notre actualité du mois'},{type:'text',text:'Bonjour {{prenom}}, voici nos dernières nouvelles.'},{type:'button',text:'Lire la suite',url:'https://oquitogo.com'}]), thumbnail: '#0ea5e9' } })
-  await db.template.create({ data: { workspaceId: ws, name: 'Promo week-end', category: 'Promotion', content: JSON.stringify([{type:'title',text:'-20% ce week-end !'},{type:'text',text:'Bonjour {{prenom}}, profitez de -20% sur tout le catalogue.'},{type:'button',text:'J\'en profite',url:'https://oquitogo.com/promo'}]), thumbnail: '#f59e0b' } })
-  await db.template.create({ data: { workspaceId: ws, name: 'Bienvenue', category: 'Bienvenue', content: JSON.stringify([{type:'title',text:'Bienvenue {{prenom}} !'},{type:'text',text:'Merci de rejoindre EmailOqui. Nous sommes ravis de vous compter parmi nous.'}]), thumbnail: '#10b981' } })
-  await db.template.create({ data: { workspaceId: ws, name: 'Confirmation paiement', category: 'Transactionnel', content: JSON.stringify([{type:'title',text:'Paiement confirmé'},{type:'text',text:'Bonjour {{prenom}}, votre paiement a bien été reçu.'}]), thumbnail: '#a855f7' } })
+  await db.template.create({ data: { workspaceId: ws, name: 'Newsletter mensuelle', category: 'Newsletter', content: JSON.stringify([{type:'title',text:'Notre actualité du mois'},{type:'text',text:'Bonjour {{prenom}}, voici nos dernières nouvelles.'},{type:'button',text:'Lire la suite',url:'https://oquitogo.com'}]), thumbnail: '#000000' } })
+  await db.template.create({ data: { workspaceId: ws, name: 'Promo week-end', category: 'Promotion', content: JSON.stringify([{type:'title',text:'-20% ce week-end !'},{type:'text',text:'Bonjour {{prenom}}, profitez de -20% sur tout le catalogue.'},{type:'button',text:'J\'en profite',url:'https://oquitogo.com/promo'}]), thumbnail: '#374151' } })
+  await db.template.create({ data: { workspaceId: ws, name: 'Bienvenue', category: 'Bienvenue', content: JSON.stringify([{type:'title',text:'Bienvenue {{prenom}} !'},{type:'text',text:'Merci de rejoindre EmailOqui. Nous sommes ravis de vous compter parmi nous.'}]), thumbnail: '#6b7280' } })
+  await db.template.create({ data: { workspaceId: ws, name: 'Confirmation paiement', category: 'Transactionnel', content: JSON.stringify([{type:'title',text:'Paiement confirmé'},{type:'text',text:'Bonjour {{prenom}}, votre paiement a bien été reçu.'}]), thumbnail: '#9ca3af' } })
 
   // Automations
   await db.automation.create({

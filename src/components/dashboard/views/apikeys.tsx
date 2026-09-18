@@ -136,7 +136,7 @@ function ApiDocCard() {
                   variant="outline"
                   className={
                     ex.method === 'GET'
-                      ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                      ? 'border-foreground/30 bg-foreground/10 text-foreground'
                       : 'border-primary/30 bg-primary/10 text-primary'
                   }
                 >
@@ -268,9 +268,9 @@ export default function ApiKeysView() {
       </header>
 
       {/* Security banner */}
-      <div className="flex items-start gap-3 rounded-md border border-amber-500/30 bg-amber-500/10 p-4">
-        <ShieldAlert className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
-        <p className="text-sm text-amber-800 dark:text-amber-200">
+      <div className="flex items-start gap-3 rounded-md border border-foreground/20 bg-muted-foreground/10 p-4">
+        <ShieldAlert className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">
           Les clés API donnent accès programmatique à votre workspace.{' '}
           <strong>Ne les partagez jamais.</strong> Elles ne sont jamais visibles par le
           propriétaire (Owner).
@@ -333,7 +333,7 @@ export default function ApiKeysView() {
                         </TableCell>
                         <TableCell>
                           {active ? (
-                            <Badge className="border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+                            <Badge className="border-foreground/30 bg-foreground/10 text-foreground">
                               <ShieldCheck className="size-3" />
                               Actif
                             </Badge>
@@ -428,7 +428,7 @@ export default function ApiKeysView() {
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
-                  <ShieldCheck className="size-4 text-emerald-600 dark:text-emerald-400" />
+                  <ShieldCheck className="size-4 text-foreground" />
                   Clé générée
                 </DialogTitle>
                 <DialogDescription>
@@ -436,7 +436,7 @@ export default function ApiKeysView() {
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-3 py-2">
-                <div className="flex items-start gap-2 rounded-md border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-800 dark:text-amber-200">
+                <div className="flex items-start gap-2 rounded-md border border-foreground/20 bg-muted-foreground/10 p-3 text-xs text-muted-foreground">
                   <ShieldAlert className="mt-0.5 size-3.5 shrink-0" />
                   <span>
                     Pour des raisons de sécurité, la clé complète n&apos;est affichée qu&apos;une

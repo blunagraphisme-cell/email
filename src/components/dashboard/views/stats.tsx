@@ -254,7 +254,7 @@ function RateTile({ label, value, formula, tone = 'default' }: RateTileProps) {
     tone === 'destructive'
       ? 'text-destructive'
       : tone === 'warning'
-        ? 'text-amber-600 dark:text-amber-400'
+        ? 'text-muted-foreground'
         : 'text-foreground'
   return (
     <div className="rounded-lg border border-border bg-secondary/30 p-4">
@@ -784,7 +784,7 @@ export default function StatsView() {
                   ? 'bg-destructive'
                   : quotaTone === 'primary'
                     ? 'bg-primary'
-                    : 'bg-emerald-500'
+                    : 'bg-foreground'
               }`}
               style={{ width: `${Math.min(100, quotaPct)}%` }}
             />

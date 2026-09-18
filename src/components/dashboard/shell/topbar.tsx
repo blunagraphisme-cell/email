@@ -89,9 +89,9 @@ function timeAgo(iso?: string | null): string {
 function notifIcon(type: string) {
   switch (type) {
     case 'SUCCESS':
-      return <CheckCircle2 className="size-4 text-emerald-500" />
+      return <CheckCircle2 className="size-4 text-foreground" />
     case 'WARNING':
-      return <AlertTriangle className="size-4 text-amber-500" />
+      return <AlertTriangle className="size-4 text-muted-foreground" />
     case 'ERROR':
       return <XCircle className="size-4 text-destructive" />
     default:
@@ -159,8 +159,8 @@ export function Topbar({ onMenu }: TopbarProps) {
     quotaPct >= 90
       ? 'bg-destructive'
       : quotaPct >= 80
-        ? 'bg-amber-500'
-        : 'bg-emerald-500'
+        ? 'bg-muted-foreground'
+        : 'bg-foreground'
 
   const title = VIEW_TITLES[view] ?? 'EmailOqui'
 

@@ -15,7 +15,7 @@ import type { Block, SampleData } from '@/components/email-editor/types'
 import { substituteVariables } from '@/components/email-editor/types'
 
 const BRAND_LOGO_URL = 'https://email.oquitogo.online/logo.png'
-const BRAND_PRIMARY = '#f59e0b' // amber-500
+const BRAND_PRIMARY = '#000000' // pure black (EmailOqui monochrome brand)
 
 /** Escape HTML special characters to prevent injection. */
 function escapeHtml(s: string): string {

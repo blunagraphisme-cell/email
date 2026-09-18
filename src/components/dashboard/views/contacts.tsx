@@ -92,9 +92,9 @@ interface ContactsResponse {
 }
 
 const STATUS_BADGE: Record<ContactStatus, string> = {
-  ACTIF: 'bg-emerald-500/15 text-emerald-700 border-emerald-500/30',
+  ACTIF: 'bg-foreground/15 text-foreground border-foreground/30',
   DESABONNE: 'bg-muted text-muted-foreground border-border',
-  BOUNCE: 'bg-amber-500/15 text-amber-700 border-amber-500/30',
+  BOUNCE: 'bg-muted text-muted-foreground border-foreground/20',
   SUPPRIME: 'bg-destructive/15 text-destructive border-destructive/30',
 }
 
@@ -489,9 +489,9 @@ function StatCard({
 }) {
   const accents: Record<string, string> = {
     primary: 'bg-primary/10 text-primary',
-    emerald: 'bg-emerald-500/10 text-emerald-600',
+    emerald: 'bg-foreground/10 text-foreground',
     muted: 'bg-muted text-muted-foreground',
-    amber: 'bg-amber-500/10 text-amber-600',
+    amber: 'bg-muted text-muted-foreground',
   }
   return (
     <Card>
@@ -961,8 +961,8 @@ function SummaryStat({
 }) {
   const tones: Record<string, string> = {
     muted: 'text-foreground',
-    amber: 'text-amber-600',
-    emerald: 'text-emerald-600',
+    amber: 'text-muted-foreground',
+    emerald: 'text-foreground',
   }
   return (
     <div className="rounded-md border bg-muted/30 p-3 text-center">

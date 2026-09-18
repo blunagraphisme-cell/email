@@ -451,7 +451,7 @@ export default function SettingsView() {
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                <span className="rounded bg-amber-500/15 px-1.5 py-0.5 text-amber-700 dark:text-amber-300">
+                <span className="rounded bg-muted-foreground/15 px-1.5 py-0.5 text-muted-foreground">
                   Bientôt disponible
                 </span>{' '}
                 — L&apos;activation de la 2FA sera proposée dans une prochaine version.
@@ -489,7 +489,7 @@ export default function SettingsView() {
                     </div>
                   </div>
                   {s.current ? (
-                    <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                    <span className="rounded-full border border-foreground/30 bg-foreground/10 px-2 py-0.5 text-xs font-medium text-foreground">
                       Cet appareil
                     </span>
                   ) : (

@@ -26,6 +26,6 @@ export async function POST(req: NextRequest) {
     const s = await db.segment.create({ data: { workspaceId: ctx.workspace.id, name: body.name, ruleType: body.ruleType ?? null, ruleValue: body.ruleValue ?? null, listId: body.listId ?? null } })
     return ok({ segment: s })
   }
-  const l = await db.list.create({ data: { workspaceId: ctx.workspace.id, name: body.name, description: body.description ?? null, color: body.color ?? '#0ea5e9' } })
+  const l = await db.list.create({ data: { workspaceId: ctx.workspace.id, name: body.name, description: body.description ?? null, color: body.color ?? '#000000' } })
   return ok({ list: l })
 }

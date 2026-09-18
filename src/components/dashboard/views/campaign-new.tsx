@@ -659,7 +659,7 @@ export default function CampaignNewView() {
             <ArrowRight className="size-3.5" />
           </Button>
         ) : (
-          <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-600">
+          <div className="flex items-center gap-1.5 text-xs font-medium text-foreground">
             <CheckCircle2 className="size-3.5" />
             Prête à l'envoi
           </div>
@@ -701,7 +701,7 @@ function Stepper({
               <span
                 className={cn(
                   'flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold',
-                  isDone && 'bg-emerald-600 text-white',
+                  isDone && 'bg-foreground text-background',
                   isActive && 'bg-primary text-primary-foreground',
                   !isDone && !isActive && 'border border-border bg-background text-muted-foreground'
                 )}

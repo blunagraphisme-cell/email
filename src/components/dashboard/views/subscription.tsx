@@ -184,7 +184,7 @@ const STATUS_META: Record<string, StatusMeta> = {
   },
   ACTIF: {
     label: 'Actif',
-    className: 'border-transparent bg-emerald-500/15 text-emerald-700 dark:text-emerald-300',
+    className: 'border-transparent bg-foreground/15 text-foreground',
   },
   EXPIRANT_BIENTOT: {
     label: 'Expirant bientôt',
@@ -196,7 +196,7 @@ const STATUS_META: Record<string, StatusMeta> = {
   },
   SUSPENDU: {
     label: 'Suspendu',
-    className: 'border-transparent bg-orange-500/15 text-orange-700 dark:text-orange-300',
+    className: 'border-foreground/20 bg-muted text-muted-foreground',
   },
   ANNULE: {
     label: 'Annulé',
@@ -557,7 +557,7 @@ export default function SubscriptionView() {
                           ? 'bg-destructive'
                           : quotaTone === 'primary'
                             ? 'bg-primary'
-                            : 'bg-emerald-500'
+                            : 'bg-foreground'
                       }`}
                       style={{ width: `${Math.min(100, quotaPct)}%` }}
                     />
@@ -667,7 +667,7 @@ export default function SubscriptionView() {
                           </code>
                           <Button size="sm" variant="ghost" onClick={copyLink}>
                             {copied ? (
-                              <Check className="size-4 text-emerald-500" />
+                              <Check className="size-4 text-foreground" />
                             ) : (
                               <Copy className="size-4" />
                             )}
@@ -757,7 +757,7 @@ export default function SubscriptionView() {
                   </Button>
 
                   <Alert className="border-border bg-secondary/30">
-                    <ShieldCheck className="size-4 text-emerald-600" />
+                    <ShieldCheck className="size-4 text-foreground" />
                     <AlertDescription>
                       EmailOqui ne stocke jamais les données bancaires complètes.
                       Paiement traité par prestataire sécurisé. Seuls les 4
@@ -900,7 +900,7 @@ export default function SubscriptionView() {
             </div>
 
             <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
-              <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-emerald-600" />
+              <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-foreground" />
               EmailOqui ne stocke pas les données bancaires complètes. Seuls les
               4 derniers chiffres de la carte seront conservés (mention légale).
             </p>

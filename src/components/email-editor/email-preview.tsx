@@ -103,7 +103,7 @@ function EmailHeader({ workspaceName, compact = false }: { workspaceName: string
   return (
     <div
       className="flex items-center justify-between px-6 py-4 text-white"
-      style={{ backgroundColor: '#f59e0b' }}
+      style={{ backgroundColor: '#000000' }}
     >
       <div className="flex items-center gap-2">
         <img
@@ -134,7 +134,7 @@ function EmailFooter({ workspaceName, compact = false }: { workspaceName: string
         Vous recevez cet e-mail car vous faites partie de notre liste de contacts.{' '}
         <a
           href="#"
-          className="font-medium text-amber-600 underline-offset-2 hover:underline"
+          className="font-medium text-black underline-offset-2 hover:underline"
           onClick={(e) => e.preventDefault()}
         >
           Se désabonner
@@ -174,7 +174,7 @@ function BlockRenderer({ block, data }: { block: Block; data: SampleData }) {
       )
 
     case 'button': {
-      const btnBg = block.bg ?? '#f59e0b'
+      const btnBg = block.bg ?? '#000000'
       const btnColor = block.color ?? '#ffffff'
       return (
         <div className={cn('my-4 w-full', ALIGN_CLASS[resolveAlign(block)])}>

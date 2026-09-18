@@ -93,8 +93,8 @@ const WAIT_UNITS: { value: WaitUnit; label: string }[] = [
 const TEMPLATES_MOCK = ['Bienvenue', 'Promo week-end', 'Relance panier', 'Newsletter mensuelle']
 
 const STATUS_STYLE: Record<string, { label: string; className: string }> = {
-  ACTIF: { label: 'Active', className: 'border-emerald-500/30 bg-emerald-500/15 text-emerald-700' },
-  EN_PAUSE: { label: 'En pause', className: 'border-amber-500/30 bg-amber-500/15 text-amber-700' },
+  ACTIF: { label: 'Active', className: 'border-foreground/30 bg-foreground/15 text-foreground' },
+  EN_PAUSE: { label: 'En pause', className: 'border-foreground/20 bg-muted text-muted-foreground' },
   BROUILLON: { label: 'Brouillon', className: 'border-border bg-muted text-muted-foreground' },
   ARCHIVE: { label: 'Archivée', className: 'border-border bg-muted text-muted-foreground' },
 }
@@ -384,7 +384,7 @@ function StepPill({ step }: { step: Step }) {
   if (step.type === 'wait') {
     const u = WAIT_UNITS.find((x) => x.value === step.unit)
     return (
-      <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-amber-500/30 bg-amber-500/10 px-2.5 py-1.5 text-xs font-medium text-amber-700">
+      <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-foreground/20 bg-muted-foreground/10 px-2.5 py-1.5 text-xs font-medium text-muted-foreground">
         <Clock className="size-3.5" />
         {step.duration} {u?.label ?? ''}
       </span>
@@ -392,7 +392,7 @@ function StepPill({ step }: { step: Step }) {
   }
   // send
   return (
-    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1.5 text-xs font-medium text-emerald-700">
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-foreground/30 bg-foreground/10 px-2.5 py-1.5 text-xs font-medium text-foreground">
       <Mail className="size-3.5" />
       Send: {step.template || '—'}
     </span>

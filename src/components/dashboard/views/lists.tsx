@@ -92,13 +92,13 @@ const RULE_TYPES = [
 ]
 
 const PRESET_COLORS = [
-  '#f59e0b', // amber
-  '#ef4444', // red
-  '#10b981', // emerald
-  '#8b5cf6', // violet
-  '#ec4899', // pink
-  '#f97316', // orange
-  '#64748b', // slate
+  '#000000', // black
+  '#1f2937', // gray-800
+  '#374151', // gray-700
+  '#6b7280', // gray-500
+  '#9ca3af', // gray-400
+  '#d1d5db', // gray-300
+  '#e5e7eb', // gray-200
 ]
 
 const RULE_LABELS: Record<string, string> = Object.fromEntries(

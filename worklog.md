@@ -615,3 +615,60 @@ Stage Summary:
   1. Verify the domain email.oquitogo.online in their Resend dashboard (SPF/DKIM/DMARC records already shown in the Domain view)
   2. Optionally add http://localhost:3000/api/auth/google/callback to authorized URIs for local testing
 - No git push needed (no code changes this turn — only .env which is gitignored)
+
+---
+Task ID: 14 (monochrome theme + new admin)
+Agent: main
+Task: Apply user-provided monochrome color palette (BLACK/GRAY/WHITE) + update Platform Admin credentials
+
+Work Log:
+- User provided color palette image (BLACK #000000, GRAY #808080, WHITE #FFFFFF) — monochrome/brutalist aesthetic
+- User provided new admin credentials: blunagraphisme@gmail.com / Antoine@228
+- Updated src/app/api/seed/init/route.ts:
+  - adminEmail: 'admin@email.oquitogo.online' → 'blunagraphisme@gmail.com'
+  - password: 'EmailOqui2026!' → 'Antoine@228'
+  - firstName/lastName: 'Platform Admin' → 'Bluna Graphisme'
+  - Added password refresh logic (updates existing admin's password on re-seed)
+- Updated src/components/auth/auth-modal.tsx: DEMO_EMAIL + DEMO_PASSWORD constants updated
+- Rewrote src/app/globals.css with monochrome palette:
+  - --primary: oklch(0 0 0) pure black (was oklch(0.62 0.18 38) amber/coral)
+  - --primary-foreground: oklch(1 0 0) white
+  - --background: white, --foreground: black
+  - --muted: light gray, --muted-foreground: medium gray
+  - --accent: light gray
+  - Charts: grayscale progression (black → dark gray → medium gray → light gray → very light gray)
+  - Sidebar: near-white bg, black primary
+  - Dark mode: inverted (black bg, white primary)
+  - .bg-mesh utility: grayscale radial gradients
+- Updated src/lib/email-render.ts: BRAND_PRIMARY #f59e0b (amber) → #000000 (black)
+- Updated src/components/email-editor/email-preview.tsx:
+  - Email header background: #f59e0b → #000000
+  - Unsubscribe link color: text-amber-600 → text-black
+  - Button default bg: #f59e0b → #000000
+- Bulk-replaced hardcoded emerald + amber color references across 17 component files:
+  - emerald (success) → foreground (black tint with /10, /15 opacity)
+  - amber (warning) → muted / muted-foreground (gray)
+  - Kept red/destructive for error states (universal UX signal)
+- Replaced violet/sky/orange status badges in audit.tsx, support.tsx, subscription.tsx with grayscale equivalents
+- Updated src/components/dashboard/views/lists.tsx PRESET_COLORS: 7 grayscale presets (black → gray-200)
+- Updated src/app/api/seed/demo/route.ts: list colors + template thumbnails → grayscale
+- Updated src/app/api/lists/route.ts: default list color → #000000
+- Re-seeded admin via POST /api/seed/init → "platform admin created (blunagraphisme@gmail.com)"
+- Lint: 0 errors, 0 warnings
+- Browser verification:
+  - Auth modal: shows "blunagraphisme@gmail.com / Antoine@228" as demo credentials
+  - Login as admin: 200 OK (auth/me returns user)
+  - Signup demo account: 200 OK, dashboard renders with monochrome sidebar + KPI cards
+  - Campaign status badges: "Brouillon" / "Programmée" / "Envoyée" all in grayscale (no more emerald/amber)
+  - Email preview header: black background with white EmailOqui logo
+- 3 screenshots saved: /tmp/monochrome-landing.png, /tmp/monochrome-dashboard.png, /tmp/monochrome-campaigns.png
+
+Stage Summary:
+- App theme is now strictly monochrome: BLACK primary, GRAY accents, WHITE backgrounds
+- Brutalist/premium aesthetic matching the user's reference image
+- Status badges use tonal grays (success=black tint, warning=gray, error=red kept for critical signals)
+- Charts use 5-step grayscale progression
+- Email HTML renderer + preview use black header (matches brand)
+- New Platform Admin: blunagraphisme@gmail.com / Antoine@228
+- Demo credentials shown in auth modal updated
+- Committing and pushing to git

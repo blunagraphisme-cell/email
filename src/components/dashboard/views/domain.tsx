@@ -60,14 +60,14 @@ function statusMeta(s: string): {
     case 'VERIFIE':
       return {
         label: 'Vérifié',
-        className: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
-        dot: 'bg-emerald-500',
+        className: 'border-foreground/30 bg-foreground/10 text-foreground',
+        dot: 'bg-foreground',
       }
     case 'EN_VERIFICATION':
       return {
         label: 'En vérification',
-        className: 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300',
-        dot: 'bg-amber-500',
+        className: 'border-foreground/20 bg-muted text-muted-foreground',
+        dot: 'bg-muted-foreground',
       }
     case 'ERREUR':
       return {
@@ -389,7 +389,7 @@ export default function DomainView() {
                   </p>
                 )}
                 {domain.status === 'VERIFIE' && (
-                  <p className="mt-1 flex items-start gap-1 text-xs text-emerald-600 dark:text-emerald-400">
+                  <p className="mt-1 flex items-start gap-1 text-xs text-foreground">
                     <CheckCircle2 className="mt-0.5 size-3.5 shrink-0" />
                     <span>Les enregistrements DNS ont été détectés. Le domaine est authentifié.</span>
                   </p>
