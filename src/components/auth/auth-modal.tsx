@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Mail, Sparkles, Loader2 } from 'lucide-react'
+import { Mail, Sparkles, Loader2, AlertCircle } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import {
   Dialog,
@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
+import { GoogleButton } from '@/components/auth/google-button'
 import { toast } from 'sonner'
 
 type TabKey = 'login' | 'signup' | 'forgot'
@@ -70,6 +71,31 @@ export function AuthModal() {
       setLoading(false)
     }
   }, [authModalOpen, storeAuthMode])
+
+  // Handle Google OAuth error redirect (?google_error=...)
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    const err = params.get('google_error')
+    if (err) {
+      const messages: Record<string, string> = {
+        access_denied: 'Connexion Google annulée.',
+        invalid_callback: 'Réponse Google invalide. Réessayez.',
+        state_mismatch: 'Session expirée. Réessayez la connexion Google.',
+        token_exchange_failed: 'Échange de code Google échoué. Vérifiez la configuration.',
+        userinfo_failed: 'Impossible de récupérer vos informations Google.',
+        no_email: 'Aucun e-mail reçu de Google.',
+        account_suspended: 'Votre compte EmailOqui est suspendu. Contactez le support.',
+      }
+      toast.error(messages[err] ?? 'Erreur de connexion Google.')
+      // Clean the URL
+      const url = new URL(window.location.href)
+      url.searchParams.delete('google_error')
+      window.history.replaceState({}, '', url.toString())
+      // Open the auth modal so the user can retry
+      useAppStore.getState().openAuth('login')
+    }
+  }, [])
 
   const resetForms = () => {
     setLoginEmail('')
@@ -231,7 +257,15 @@ export function AuthModal() {
 
           {/* LOGIN */}
           <TabsContent value="login" className="mt-4">
-            <form className="flex flex-col gap-3" onSubmit={onSubmitLogin}>
+            <div className="flex flex-col gap-3">
+              <GoogleButton label="Continuer avec Google" />
+              <div className="flex items-center gap-2">
+                <Separator className="flex-1" />
+                <span className="text-[11px] text-muted-foreground">ou</span>
+                <Separator className="flex-1" />
+              </div>
+            </div>
+            <form className="mt-3 flex flex-col gap-3" onSubmit={onSubmitLogin}>
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="login-email">E-mail</Label>
                 <Input
@@ -300,7 +334,15 @@ export function AuthModal() {
 
           {/* SIGNUP */}
           <TabsContent value="signup" className="mt-4">
-            <form className="flex flex-col gap-3" onSubmit={onSubmitSignup}>
+            <div className="flex flex-col gap-3">
+              <GoogleButton label="S'inscrire avec Google" />
+              <div className="flex items-center gap-2">
+                <Separator className="flex-1" />
+                <span className="text-[11px] text-muted-foreground">ou créez un compte avec votre e-mail</span>
+                <Separator className="flex-1" />
+              </div>
+            </div>
+            <form className="mt-3 flex flex-col gap-3" onSubmit={onSubmitSignup}>
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="su-first">Prénom</Label>
