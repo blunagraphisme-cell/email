@@ -40,6 +40,7 @@ export type ViewKey =
   | 'settings'
   | 'renew'
   | 'owner-dashboard'
+  | 'platform-admin-dashboard'
 
 export type Role = 'DEVELOPER' | 'OWNER' | 'PLATFORM_ADMIN'
 

@@ -6,6 +6,7 @@ import { MarketingSite } from '@/components/marketing/marketing-site'
 import { AuthModal } from '@/components/auth/auth-modal'
 import { DashboardShell } from '@/components/dashboard/shell/dashboard-shell'
 import { OwnerDashboard } from '@/components/dashboard/views/owner-dashboard'
+import { PlatformAdminDashboard } from '@/components/dashboard/views/platform-admin-dashboard'
 import { LegalView } from '@/components/marketing/legal-view'
 import { ContactView } from '@/components/marketing/contact-view'
 import { PricingView } from '@/components/marketing/pricing-view'
@@ -24,28 +25,50 @@ export default function Home() {
     refreshSession()
   }, [refreshSession])
 
-  // If user becomes authenticated but is on a public view, route them to dashboard
+  // Routing logic for authenticated users — reset invalid views
   useEffect(() => {
-    if (user && workspace) {
-      const publicAuthedViews: ViewKey[] = ['login', 'signup', 'forgot', 'landing']
-      if (publicAuthedViews.includes(view)) {
+    if (!user) return
+    // Platform Admin → dedicated admin dashboard
+    if (user.role === 'PLATFORM_ADMIN') {
+      // Redirect away from any non-admin view
+      if (view !== 'platform-admin-dashboard') {
+        setView('platform-admin-dashboard')
+      }
+      return
+    }
+    // Developer or Owner with workspace
+    if (workspace) {
+      const ownerViews: ViewKey[] = ['owner-dashboard', 'support']
+      const devViews: ViewKey[] = [
+        'dashboard', 'campaigns', 'campaign-new', 'campaign-detail', 'editor',
+        'contacts', 'lists', 'automations', 'templates', 'stats',
+        'subscription', 'domain', 'apikeys', 'support', 'audit', 'settings',
+      ]
+      const validViews: ViewKey[] = [...ownerViews, ...devViews]
+      // If current view isn't valid for this user, redirect to their default dashboard
+      if (!validViews.includes(view)) {
         setView(workspace.memberRole === 'OWNER' ? 'owner-dashboard' : 'dashboard')
       }
+      return
     }
-    if (user && !workspace && view !== 'signup' && view !== 'login') {
-      // utilisateur sans workspace — on le laisse voir landing
+    // User without workspace (edge case — shouldn't happen for regular users)
+    if (view !== 'signup' && view !== 'login') {
       setView('landing')
     }
   }, [user, workspace, view, setView])
 
   const isAuthed = !!user && !!workspace
+  const isPlatformAdmin = !!user && user.role === 'PLATFORM_ADMIN'
 
   return (
     <>
-      {/* Public marketing site — shown when not authed OR explicitly viewing public pages */}
-      {!isAuthed && (
-        <MarketingSite activeView={view} />
-      )}
+      {/* Platform Admin dashboard — full-screen, no MarketingSite/DashboardShell wrapper */}
+      {isPlatformAdmin && <PlatformAdminDashboard />}
+
+      {/* Public marketing site — shown when not authed */}
+      {!user && <MarketingSite activeView={view} />}
+
+      {/* Authed regular user (Developer or Owner) */}
       {isAuthed && view === 'owner-dashboard' && <OwnerDashboard />}
       {isAuthed && view !== 'owner-dashboard' && view !== 'renew' && (
         <DashboardShell />
@@ -54,10 +77,6 @@ export default function Home() {
 
       {/* Auth modal (overlay) */}
       <AuthModal />
-
-      {/* Public sub-views rendered inside MarketingSite when not authed.
-          When authed and viewing public pages (legal, contact, pricing, features),
-          we still show MarketingSite to keep the public UX consistent. */}
     </>
   )
 }

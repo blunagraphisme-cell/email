@@ -672,3 +672,57 @@ Stage Summary:
 - New Platform Admin: blunagraphisme@gmail.com / Antoine@228
 - Demo credentials shown in auth modal updated
 - Committing and pushing to git
+
+---
+Task ID: 15 (Platform Admin dashboard + routing fix)
+Agent: main
+Task: Create dedicated Platform Admin dashboard + fix post-login/post-signup routing
+
+Work Log:
+- Problem identified:
+  1. Platform Admin (blunagraphisme@gmail.com) has no WorkspaceMember record → getActiveWorkspace() returns null → user stayed on landing after login (no dashboard to show)
+  2. After signup, regular user's view state could be stale (e.g. 'platform-admin-dashboard' from previous admin session) → DashboardShell rendered with wrong main label
+- Added requirePlatformAdmin() helper in src/lib/api.ts (checks user.role === 'PLATFORM_ADMIN', no workspace needed)
+- Created 4 admin API routes (all requirePlatformAdmin-protected):
+  - GET /api/admin/stats — global KPIs: workspaces, activeSubscriptions, expiringSoon, expired, suspended, users, emailVolume, pendingPayments, confirmedPayments, tickets, openTickets, revenue + 5 recent workspaces
+  - GET /api/admin/workspaces — paginated list of all workspaces with contacts/campaigns/members counts + plan + subscription status + domain
+  - GET /api/admin/users — paginated list of all users with role/status/workspacesCount/auditLogsCount
+  - GET /api/admin/payments — last 50 payments with workspace name + plan + amount + status + reference + method + date
+  - GET /api/admin/tickets — last 50 support tickets with workspace + user + subject + category + priority + status + message
+- Created src/components/dashboard/views/platform-admin-dashboard.tsx:
+  - Full-screen layout (no DashboardShell sidebar — admin doesn't need workspace nav)
+  - Top bar with EmailOqui logo + admin name + "Platform Admin" badge + logout
+  - 5 tabs: Vue d'ensemble, Workspaces, Utilisateurs, Paiements, Tickets
+  - Overview tab: 10 KPI cards (workspaces, users, revenu, e-mails envoyés, souscriptions actives/expirant/expirées/suspendues, paiements en attente, tickets ouverts) + "Workspaces récents" card
+  - Workspaces tab: searchable paginated table (nom, statut, plan, abonn., contacts, campagnes, membres, domaine, créé le)
+  - Users tab: searchable paginated table (e-mail, nom, rôle, statut, vérifié, workspaces, actions audit, créé le)
+  - Payments tab: KPI summary + table (workspace, plan, montant, statut, méthode, référence, date)
+  - Tickets tab: list of tickets with subject + status + priority + category + workspace + user + message preview
+  - StatusBadge component with monochrome tonal palette (success=foreground/10, warning=muted, error=destructive)
+  - Sticky footer with EmailOqui branding
+- Added 'platform-admin-dashboard' to ViewKey union type in src/lib/store.ts
+- Updated src/app/page.tsx routing logic:
+  - isPlatformAdmin = !!user && user.role === 'PLATFORM_ADMIN'
+  - If isPlatformAdmin → render <PlatformAdminDashboard /> (full screen, no MarketingSite/DashboardShell)
+  - If !user → render <MarketingSite activeView={view} />
+  - If isAuthed (user + workspace) → render DashboardShell or OwnerDashboard or RenewView
+- New useEffect routing logic — resets invalid views:
+  - PLATFORM_ADMIN: if view !== 'platform-admin-dashboard' → setView('platform-admin-dashboard')
+  - Regular user with workspace: if view not in validViews list → setView(dashboard or owner-dashboard based on memberRole)
+  - This catches stale view state from previous sessions (e.g. user was admin, logged out, signed up as regular user → view was 'platform-admin-dashboard' → now correctly resets to 'dashboard')
+- Updated src/components/auth/auth-modal.tsx onSubmitLogin:
+  - role === 'PLATFORM_ADMIN' → setView('platform-admin-dashboard')
+  - else → setView('dashboard') (page.tsx useEffect will further route to owner-dashboard if needed)
+- Lint: 0 errors, 0 warnings
+- Browser verification:
+  - Admin login via UI button "Se connecter" → POST /api/auth/login 200 → refreshSession → setView('platform-admin-dashboard') → PlatformAdminDashboard renders with: heading "Tableau de bord administrateur", 5 tabs, 10 KPI cards with real data ($20.00 revenu, 80 e-mails envoyés, 1 souscription active, 1 workspace "Mon Entreprise" with 24 contacts/3 campagnes), Workspaces récents card
+  - Regular user signup via UI form (Prénom/Nom/E-mail/Password/Workspace) → POST /api/auth/signup 200 → /api/auth/me 200 → DashboardShell renders with "Bienvenue, Test sur EmailOqui 👋"
+  - Both flows work end-to-end via UI buttons (no more agent-browser ref staleness — actual UI works)
+- Committing and pushing to git
+
+Stage Summary:
+- Platform Admin now has a dedicated full-screen dashboard with global KPIs + 4 management tables (workspaces, users, payments, tickets)
+- 4 new admin API routes (requirePlatformAdmin-protected, no workspace needed)
+- Routing logic fixed: invalid views are auto-reset based on user role + workspace membership
+- Both admin login and regular user signup land on the correct dashboard
+- White-label respected (no Resend mention), monochrome theme applied to all admin components

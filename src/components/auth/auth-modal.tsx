@@ -138,7 +138,13 @@ export function AuthModal() {
       handleClose()
       toast.success('Connexion réussie. Bienvenue !')
       const role = (data.user?.role as string) || 'USER'
-      setView(role === 'PLATFORM_ADMIN' ? 'owner-dashboard' : 'dashboard')
+      if (role === 'PLATFORM_ADMIN') {
+        setView('platform-admin-dashboard')
+      } else {
+        // Regular user — wait for workspace to be populated by refreshSession
+        // The page.tsx useEffect will route to dashboard or owner-dashboard based on memberRole
+        setView('dashboard')
+      }
     } catch {
       toast.error('Une erreur réseau est survenue. Réessayez.')
     } finally {
