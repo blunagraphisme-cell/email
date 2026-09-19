@@ -159,8 +159,7 @@ export function PaymentView() {
   const [submittingCode, setSubmittingCode] = React.useState(false)
 
   const detectedType = detectCardType(cardNumber)
-  const planCode = viewParam ?? 'STARTER_3M'
-  const planInfo = getPlanInfo(planCode)
+  // planCode + planInfo are already defined above (line 117-118) from the proration logic
 
   // Visual card display values
   const displayNumber = cardNumber ? formatCardNumber(cardNumber) : '•••• •••• •••• ••••'
