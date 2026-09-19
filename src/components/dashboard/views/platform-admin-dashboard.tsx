@@ -37,6 +37,7 @@ import {
   Trash2,
   DollarSign,
   Send,
+  Edit,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -66,8 +67,10 @@ interface AdminWorkspace {
   membersCount: number
   plan: string | null
   planName: string | null
+  subscriptionId: string | null
   subscriptionStatus: string | null
   subscriptionEnd: string | null
+  subscriptionStart: string | null
   domain: string | null
   domainStatus: string | null
 }
@@ -351,6 +354,10 @@ function WorkspacesTab() {
   const [page, setPage] = React.useState(1)
   const [search, setSearch] = React.useState('')
   const [loading, setLoading] = React.useState(true)
+  const [editSub, setEditSub] = React.useState<{ id: string; workspaceName: string; endDate: string; status: string } | null>(null)
+  const [newEndDate, setNewEndDate] = React.useState('')
+  const [newStatus, setNewStatus] = React.useState('ACTIF')
+  const [savingSub, setSavingSub] = React.useState(false)
 
   const fetchPage = React.useCallback(async (p: number, q: string) => {
     setLoading(true)
@@ -377,6 +384,7 @@ function WorkspacesTab() {
   const pageCount = Math.ceil(total / 20)
 
   return (
+    <>
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">Tous les workspaces ({total})</CardTitle>
@@ -407,6 +415,7 @@ function WorkspacesTab() {
                   <th className="py-2 pr-3 text-right">Membres</th>
                   <th className="py-2 pr-3">Domaine</th>
                   <th className="py-2 pr-3">Créé le</th>
+                  <th className="py-2 pr-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -421,6 +430,22 @@ function WorkspacesTab() {
                     <td className="py-2 pr-3 text-right tabular-nums">{w.membersCount}</td>
                     <td className="py-2 pr-3 text-xs">{w.domain ?? '—'}</td>
                     <td className="py-2 pr-3 text-xs text-muted-foreground">{fmtDate(w.createdAt)}</td>
+                    <td className="py-2 pr-3 text-right">
+                      {w.subscriptionId && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setEditSub({
+                            id: w.subscriptionId!,
+                            workspaceName: w.name,
+                            endDate: w.subscriptionEnd ?? '',
+                            status: w.subscriptionStatus ?? 'EN_ATTENTE',
+                          })}
+                        >
+                          <Edit className="size-4" />
+                        </Button>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -438,6 +463,93 @@ function WorkspacesTab() {
         )}
       </CardContent>
     </Card>
+
+      {/* Edit subscription dialog */}
+      <AlertDialog open={!!editSub} onOpenChange={(open) => !open && setEditSub(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Modifier l'abonnement — {editSub?.workspaceName}</AlertDialogTitle>
+            <AlertDialogDescription>
+              Changez la date d'expiration et le statut de l'abonnement.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          {/* When dialog opens, pre-fill the values */}
+          {editSub && !newEndDate && editSub.endDate && setNewEndDate(editSub.endDate.slice(0, 16))}
+          {editSub && newStatus === 'ACTIF' && editSub.status !== 'ACTIF' && setNewStatus(editSub.status)}
+
+          <div className="flex flex-col gap-4 py-2">
+            <div className="flex flex-col gap-1.5">
+              <Label className="text-xs">Date et heure d'expiration</Label>
+              <Input
+                type="datetime-local"
+                value={newEndDate}
+                onChange={(e) => setNewEndDate(e.target.value)}
+                className="font-mono"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label className="text-xs">Statut</Label>
+              <select
+                value={newStatus}
+                onChange={(e) => setNewStatus(e.target.value)}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+              >
+                <option value="EN_ATTENTE">En attente</option>
+                <option value="ACTIF">Actif</option>
+                <option value="EXPIRANT_BIENTOT">Expirant bientôt</option>
+                <option value="EXPIRE">Expiré</option>
+                <option value="SUSPENDU">Suspendu</option>
+                <option value="ANNULE">Annulé</option>
+              </select>
+            </div>
+
+            <div className="text-xs text-muted-foreground">
+              Expération actuelle: {editSub?.endDate ? fmtDateTime(editSub.endDate) : '—'}
+            </div>
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => { setEditSub(null); setNewEndDate('') }}>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async (e) => {
+                e.preventDefault()
+                if (!editSub) return
+                setSavingSub(true)
+                try {
+                  const res = await fetch(`/api/admin/subscriptions/${editSub.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      endDate: newEndDate ? new Date(newEndDate).toISOString() : undefined,
+                      status: newStatus,
+                    }),
+                  })
+                  const data = await res.json()
+                  if (data.success) {
+                    toast.success(`Abonnement modéré. Expire le ${fmtDate(data.subscription.endDate)}.`)
+                    setEditSub(null)
+                    setNewEndDate('')
+                    await fetchPage(page, search)
+                  } else {
+                    toast.error(data.error?.message ?? 'Échec')
+                  }
+                } catch {
+                  toast.error('Erreur réseau')
+                } finally {
+                  setSavingSub(false)
+                }
+              }}
+              disabled={savingSub}
+            >
+              {savingSub ? <Loader2 className="size-4 animate-spin" /> : null}
+              Enregistrer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }
 
