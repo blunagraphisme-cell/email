@@ -32,6 +32,7 @@ const STATUS_META: Record<string, { label: string; cls: string; icon: React.Comp
 export function OwnerView() {
   const workspace = useAppStore((s) => s.workspace)
   const [invitations, setInvitations] = React.useState<Invitation[]>([])
+  const [members, setMembers] = React.useState<{ id: string; userId: string; email: string; role: string; status: string; firstName: string | null; lastName: string | null }[]>([])
   const [loading, setLoading] = React.useState(true)
   const [inviteEmail, setInviteEmail] = React.useState('')
   const [submitting, setSubmitting] = React.useState(false)
@@ -40,9 +41,14 @@ export function OwnerView() {
   const fetchInvitations = React.useCallback(async () => {
     setLoading(true)
     try {
-      const res = await fetch('/api/invitations', { cache: 'no-store' })
-      const data = await res.json()
-      if (data.success) setInvitations(data.invitations)
+      const [invRes, memRes] = await Promise.all([
+        fetch('/api/invitations', { cache: 'no-store' }),
+        fetch('/api/workspace/members', { cache: 'no-store' }),
+      ])
+      const invData = await invRes.json()
+      const memData = await memRes.json()
+      if (invData.success) setInvitations(invData.invitations)
+      if (memData.success) setMembers(memData.members)
     } catch {
       // ignore
     } finally {
@@ -53,6 +59,24 @@ export function OwnerView() {
   React.useEffect(() => {
     fetchInvitations()
   }, [fetchInvitations])
+
+  const handleRemoveMember = async (email: string) => {
+    const member = members.find((m) => m.email === email)
+    if (!member) return
+    if (!confirm(`Retirer ${email} du workspace ? Il perdra accès à son tableau de bord.`)) return
+    try {
+      const res = await fetch(`/api/workspace/members?userId=${member.userId}`, { method: 'DELETE' })
+      const data = await res.json()
+      if (data.success) {
+        toast.success(`${email} retiré du workspace.`)
+        await fetchInvitations()
+      } else {
+        toast.error(data.error?.message ?? 'Échec')
+      }
+    } catch {
+      toast.error('Erreur réseau.')
+    }
+  }
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -154,7 +178,17 @@ export function OwnerView() {
                           <div className="text-xs text-muted-foreground">Acceptée le {new Date(m.acceptedAt ?? m.createdAt).toLocaleDateString('fr-FR')}</div>
                         </div>
                       </div>
-                      <Badge variant="outline" className="border-foreground/30 bg-foreground/10 text-foreground text-xs">Propriétaire</Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="border-foreground/30 bg-foreground/10 text-foreground text-xs">Propriétaire</Badge>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => handleRemoveMember(m.email)}
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
