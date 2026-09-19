@@ -29,9 +29,9 @@ const Body = z.object({
   lastName: z.string().optional(),
   workspaceName: z.string().min(2).optional(),
   planCode: z.enum([
-    'STARTER_3M', 'STARTER_6M', 'STARTER_1Y',
-    'BUSINESS_3M', 'BUSINESS_6M', 'BUSINESS_1Y',
-    'PREMIUM_3M', 'PREMIUM_6M', 'PREMIUM_1Y',
+    'STARTER_3M', 'STARTER_6M', 'STARTER_1Y', 'STARTER_2Y',
+    'BUSINESS_3M', 'BUSINESS_6M', 'BUSINESS_1Y', 'BUSINESS_2Y',
+    'PREMIUM_3M', 'PREMIUM_6M', 'PREMIUM_1Y', 'PREMIUM_2Y',
   ]).default('STARTER_3M'),
   inviteToken: z.string().optional(),
 })

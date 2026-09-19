@@ -98,14 +98,14 @@ const PAYMENT_METHODS: PaymentMethod[] = [
 ]
 
 function getPlanInfo(code: string) {
-  const tier = code.replace(/_(3M|6M|1Y)$/, '')
-  const dur = code.match(/_(3M|6M|1Y)$/)?.[1] || '3M'
+  const tier = code.replace(/_(3M|6M|1Y|2Y)$/, '')
+  const dur = code.match(/_(3M|6M|1Y|2Y)$/)?.[1] || '3M'
   const prices: Record<string, number> = {
-    STARTER_3M: 20, STARTER_6M: 38, STARTER_1Y: 72,
-    BUSINESS_3M: 45, BUSINESS_6M: 85, BUSINESS_1Y: 162,
-    PREMIUM_3M: 80, PREMIUM_6M: 150, PREMIUM_1Y: 288,
+    STARTER_3M: 20, STARTER_6M: 38, STARTER_1Y: 74, STARTER_2Y: 120,
+    BUSINESS_3M: 20, BUSINESS_6M: 38, BUSINESS_1Y: 74, BUSINESS_2Y: 120,
+    PREMIUM_3M: 20, PREMIUM_6M: 38, PREMIUM_1Y: 74, PREMIUM_2Y: 120,
   }
-  const durations: Record<string, string> = { '3M': '3 mois', '6M': '6 mois', '1Y': '1 an' }
+  const durations: Record<string, string> = { '3M': '3 mois', '6M': '6 mois', '1Y': '1 an', '2Y': '2 ans' }
   return {
     name: tier.charAt(0) + tier.slice(1).toLowerCase(),
     price: prices[code] ?? 20,
