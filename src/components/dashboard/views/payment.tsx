@@ -120,18 +120,24 @@ export function PaymentView() {
   const currentPlanInfo = currentSub?.planCode ? getPlanInfo(currentSub.planCode) : null
   const isUpgrade = currentSub?.status === 'ACTIF' || currentSub?.status === 'EXPIRANT_BIENTOT'
 
-  // Calculate remaining value
+  // Calculate remaining value — ONLY if 24h have passed since subscription start
+  // (prevents abuse: user can't change plan immediately to get full refund)
   let remainingValue = 0
   let remainingDays = 0
-  if (isUpgrade && currentSub?.endDate && currentPlanInfo) {
+  let prorationActive = false
+  if (isUpgrade && currentSub?.endDate && currentSub?.startDate && currentPlanInfo) {
+    const start = new Date(currentSub.startDate)
     const end = new Date(currentSub.endDate)
     const now = new Date()
-    remainingDays = Math.max(0, Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
-    // Total days of the current plan
-    const currentDurationMonths = currentSub.planCode?.match(/_(\d+)(M|Y)/)?.[1] === '1Y' ? 12 : Number(currentSub.planCode?.match(/_(\d+)(M|Y)/)?.[1] || 3)
-    const totalDays = currentDurationMonths * 30
-    // Pro-rata: (remaining days / total days) * current plan price
-    remainingValue = Math.round((remainingDays / totalDays) * currentPlanInfo.price * 100) / 100
+    const hoursSinceStart = (now.getTime() - start.getTime()) / (1000 * 60 * 60)
+    prorationActive = hoursSinceStart >= 24 // proration only after 24h
+
+    if (prorationActive) {
+      remainingDays = Math.max(0, Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
+      const currentDurationMonths = currentSub.planCode?.match(/_(\d+)(M|Y)/)?.[1] === '1Y' ? 12 : Number(currentSub.planCode?.match(/_(\d+)(M|Y)/)?.[1] || 3)
+      const totalDays = currentDurationMonths * 30
+      remainingValue = Math.round((remainingDays / totalDays) * currentPlanInfo.price * 100) / 100
+    }
   }
 
   const adjustedAmount = Math.max(0, planInfo.price - remainingValue)
@@ -476,14 +482,22 @@ export function PaymentView() {
                           <span className="text-muted-foreground">Plan actuel</span>
                           <span className="font-medium">{currentPlanInfo.name}</span>
                         </div>
-                        <div className="flex justify-between text-xs">
-                          <span className="text-muted-foreground">Prix nouveau plan</span>
-                          <span className="text-muted-foreground">{fmtMoney(planInfo.price, 'USD')}</span>
-                        </div>
-                        <div className="flex justify-between text-xs">
-                          <span className="text-muted-foreground">Crédit restant ({remainingDays}j)</span>
-                          <span className="text-muted-foreground">- {fmtMoney(remainingValue, 'USD')}</span>
-                        </div>
+                        {prorationActive ? (
+                          <>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-muted-foreground">Prix nouveau plan</span>
+                              <span className="text-muted-foreground">{fmtMoney(planInfo.price, 'USD')}</span>
+                            </div>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-muted-foreground">Crédit restant ({remainingDays}j)</span>
+                              <span className="text-muted-foreground">- {fmtMoney(remainingValue, 'USD')}</span>
+                            </div>
+                          </>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">
+                            Crédit disponible après 24h d'abonnement.
+                          </p>
+                        )}
                       </>
                     )}
                   </div>
