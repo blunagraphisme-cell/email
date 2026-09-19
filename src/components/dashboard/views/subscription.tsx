@@ -724,7 +724,7 @@ export default function SubscriptionView() {
                         <Button
                           variant={p.popular ? 'default' : 'outline'}
                           className="w-full"
-                          onClick={() => setSelectedPlan(p)}
+                          onClick={() => setView('payment', p.code)}
                         >
                           Choisir {p.name}
                         </Button>
