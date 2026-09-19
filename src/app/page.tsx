@@ -92,20 +92,23 @@ export default function Home() {
 
   const isAuthed = !!user && !!workspace
   const isPlatformAdmin = !!user && user.role === 'PLATFORM_ADMIN'
+  const isOwner = !!workspace && workspace.memberRole === 'OWNER'
 
   return (
     <>
-      {/* Platform Admin dashboard — full-screen, no MarketingSite/DashboardShell wrapper */}
+      {/* Platform Admin dashboard — full-screen */}
       {isPlatformAdmin && <PlatformAdminDashboard />}
 
       {/* Public marketing site — shown when not authed */}
       {!user && <MarketingSite activeView={view} />}
 
-      {/* Authed regular user (Developer or Owner) */}
-      {isAuthed && view === 'owner-dashboard' && <OwnerDashboard />}
-      {isAuthed && view !== 'owner-dashboard' && view !== 'renew' && (
-        <DashboardShell />
-      )}
+      {/* Authed Owner → always OwnerDashboard (never DashboardShell) */}
+      {isAuthed && isOwner && view !== 'renew' && <OwnerDashboard />}
+
+      {/* Authed Developer → DashboardShell (subscription gated by useEffect above) */}
+      {isAuthed && !isOwner && view !== 'renew' && <DashboardShell />}
+
+      {/* Renew view (both roles) */}
       {isAuthed && view === 'renew' && <RenewView />}
 
       {/* Auth modal (overlay) */}
