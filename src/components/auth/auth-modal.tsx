@@ -212,13 +212,13 @@ export function AuthModal() {
       if (role === 'PLATFORM_ADMIN') {
         setView('platform-admin-dashboard')
       } else {
-        // After refreshSession, the store has the workspace with memberRole + subscriptionStatus.
-        // If subscription is not active, redirect to subscription/payment page.
         const ws = useAppStore.getState().workspace
-        const isSubActive = ws?.subscriptionStatus === 'ACTIF' || ws?.subscriptionStatus === 'EXPIRANT_BIENTOT'
+        // Owner: always go to owner-dashboard (no subscription gate for owners)
+        // Developer: go to subscription page if not paid, else dashboard
         if (ws?.memberRole === 'OWNER') {
-          setView(isSubActive ? 'owner-dashboard' : 'subscription')
+          setView('owner-dashboard')
         } else {
+          const isSubActive = ws?.subscriptionStatus === 'ACTIF' || ws?.subscriptionStatus === 'EXPIRANT_BIENTOT'
           setView(isSubActive ? 'dashboard' : 'subscription')
         }
       }
@@ -273,12 +273,13 @@ export function AuthModal() {
         ? `Invitation acceptée. Bienvenue dans « ${data.workspace?.name} ».`
         : 'Compte créé ! Votre espace est prêt.')
       handleClose()
-      // Route based on memberRole + subscription status
+      // Owner: always go to owner-dashboard
+      // Developer: go to subscription if not paid, else dashboard
       const ws = data.workspace
-      const isSubActive = ws?.subscriptionStatus === 'ACTIF' || ws?.subscriptionStatus === 'EXPIRANT_BIENTOT'
       if (ws?.memberRole === 'OWNER') {
-        setView(isSubActive ? 'owner-dashboard' : 'subscription')
+        setView('owner-dashboard')
       } else {
+        const isSubActive = ws?.subscriptionStatus === 'ACTIF' || ws?.subscriptionStatus === 'EXPIRANT_BIENTOT'
         setView(isSubActive ? 'dashboard' : 'subscription')
       }
 

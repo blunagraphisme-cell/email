@@ -51,36 +51,36 @@ export default function Home() {
     }
     // Developer or Owner with workspace
     if (workspace) {
-      // SUBSCRIPTION GATE: if the subscription is not ACTIF or EXPIRANT_BIENTOT,
-      // force the user to the payment/subscription pages. They can't access
-      // the dashboard, stats, integration, etc. until they've paid.
+      // OWNER: always has access to owner-dashboard + support (no subscription gate)
+      // The owner is a guest — they can view stats but can't pay or configure.
+      if (workspace.memberRole === 'OWNER') {
+        const ownerViews: ViewKey[] = ['owner-dashboard', 'support']
+        if (!ownerViews.includes(view)) {
+          setView('owner-dashboard')
+        }
+        return
+      }
+
+      // DEVELOPER: subscription gate applies — must pay before accessing dashboard
       const subStatus = workspace.subscriptionStatus
       const isSubscriptionActive = subStatus === 'ACTIF' || subStatus === 'EXPIRANT_BIENTOT'
-      
-      // Views accessible WITHOUT an active subscription
-      const unlockedViews: ViewKey[] = ['subscription', 'payment', 'payment-method', 'support', 'settings']
-      
-      // Views accessible WITH an active subscription (developer)
-      const devViews: ViewKey[] = [
-        'dashboard', 'stats', 'integration',
-        'subscription', 'payment', 'payment-method', 'owner', 'support', 'audit', 'settings',
-      ]
-      
-      // Views accessible WITH an active subscription (owner)
-      const ownerViews: ViewKey[] = ['owner-dashboard', 'support']
-      
+
+      const unlockedViews: ViewKey[] = ['subscription', 'payment', 'payment-method', 'owner', 'support', 'settings']
+
       if (!isSubscriptionActive) {
-        // Subscription not active → lock to payment/subscription/support/settings
         if (!unlockedViews.includes(view)) {
           setView('subscription')
         }
         return
       }
-      
-      // Subscription active → check role-based views
-      const validViews = workspace.memberRole === 'OWNER' ? ownerViews : devViews
-      if (!validViews.includes(view)) {
-        setView(workspace.memberRole === 'OWNER' ? 'owner-dashboard' : 'dashboard')
+
+      // Subscription active → full developer access
+      const devViews: ViewKey[] = [
+        'dashboard', 'stats', 'integration',
+        'subscription', 'payment', 'payment-method', 'owner', 'support', 'audit', 'settings',
+      ]
+      if (!devViews.includes(view)) {
+        setView('dashboard')
       }
       return
     }
