@@ -88,8 +88,7 @@ export function PaymentView() {
   // Card form
   const [cardNumber, setCardNumber] = React.useState('')
   const [cardHolderName, setCardHolderName] = React.useState('')
-  const [cardExpiryMonth, setCardExpiryMonth] = React.useState('')
-  const [cardExpiryYear, setCardExpiryYear] = React.useState('')
+  const [cardExpiry, setCardExpiry] = React.useState('')
   const [cardCvv, setCardCvv] = React.useState('')
   const [submittingCard, setSubmittingCard] = React.useState(false)
 
@@ -108,7 +107,7 @@ export function PaymentView() {
   // Visual card display values
   const displayNumber = cardNumber ? formatCardNumber(cardNumber) : '•••• •••• •••• ••••'
   const displayHolder = cardHolderName || 'VOTRE NOM'
-  const displayExpiry = `${cardExpiryMonth || 'MM'}/${cardExpiryYear || 'AA'}`
+  const displayExpiry = cardExpiry || 'MM/AA'
 
   const handleCardNumberChange = (v: string) => {
     setCardNumber(formatCardNumber(v))
@@ -129,8 +128,8 @@ export function PaymentView() {
       toast.error('Nom du titulaire requis.')
       return
     }
-    if (!cardExpiryMonth || !cardExpiryYear) {
-      toast.error('Date d\'expiration requise.')
+    if (!cardExpiry || !/^\d{2}\/\d{2}$/.test(cardExpiry)) {
+      toast.error('Date d\'expiration invalide (MM/AA).')
       return
     }
     if (!/^\d{3,4}$/.test(cardCvv)) {
@@ -146,8 +145,8 @@ export function PaymentView() {
           planCode,
           cardNumber: cardNumber.replace(/\s/g, ''),
           cardHolderName: cardHolderName.trim(),
-          cardExpiryMonth,
-          cardExpiryYear,
+          cardExpiryMonth: cardExpiry.split('/')[0],
+          cardExpiryYear: cardExpiry.split('/')[1],
           cardCvv,
         }),
       })
@@ -299,8 +298,26 @@ export function PaymentView() {
                     </div>
                   </div>
 
-                  {/* CVV + Expiry */}
-                  <div className="grid grid-cols-3 gap-3">
+                  {/* Expiry + CVV */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-sm font-semibold">Date d'expiration</Label>
+                      <p className="text-xs text-muted-foreground">MM/AA</p>
+                      <Input
+                        inputMode="numeric"
+                        autoComplete="cc-exp"
+                        placeholder="12/27"
+                        value={cardExpiry}
+                        onChange={(e) => {
+                          let v = e.target.value.replace(/\D/g, '')
+                          if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2, 4)
+                          setCardExpiry(v)
+                        }}
+                        className="mt-1 font-mono"
+                        maxLength={5}
+                        required
+                      />
+                    </div>
                     <div>
                       <Label className="text-sm font-semibold">CVV</Label>
                       <p className="text-xs text-muted-foreground">3 ou 4 chiffres</p>
@@ -313,34 +330,6 @@ export function PaymentView() {
                         onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
                         className="mt-1 font-mono"
                         maxLength={4}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-sm font-semibold">Mois</Label>
-                      <p className="text-xs text-muted-foreground">MM</p>
-                      <Input
-                        inputMode="numeric"
-                        autoComplete="cc-exp-month"
-                        placeholder="12"
-                        value={cardExpiryMonth}
-                        onChange={(e) => setCardExpiryMonth(e.target.value.replace(/\D/g, '').slice(0, 2))}
-                        className="mt-1 font-mono"
-                        maxLength={2}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-sm font-semibold">Année</Label>
-                      <p className="text-xs text-muted-foreground">AA</p>
-                      <Input
-                        inputMode="numeric"
-                        autoComplete="cc-exp-year"
-                        placeholder="27"
-                        value={cardExpiryYear}
-                        onChange={(e) => setCardExpiryYear(e.target.value.replace(/\D/g, '').slice(0, 2))}
-                        className="mt-1 font-mono"
-                        maxLength={2}
                         required
                       />
                     </div>
@@ -524,7 +513,7 @@ export function PaymentView() {
                   <p className="text-sm text-muted-foreground">
                     {payment.adminNote || 'Votre paiement a été refusé. Vous pouvez réessayer.'}
                   </p>
-                  <Button onClick={() => { setPayment(null); setCardNumber(''); setCardHolderName(''); setCardCvv(''); setCardExpiryMonth(''); setCardExpiryYear('') }}>
+                  <Button onClick={() => { setPayment(null); setCardNumber(''); setCardHolderName(''); setCardCvv(''); setCardExpiry('') }}>
                     Réessayer
                   </Button>
                 </div>
