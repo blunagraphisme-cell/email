@@ -410,25 +410,6 @@ export function AuthModal() {
                   'Se connecter'
                 )}
               </Button>
-
-              <div className="mt-2 rounded-md border border-dashed border-border bg-secondary/40 p-3">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex flex-col">
-                    <span className="text-xs font-medium text-foreground">Compte démo Platform Admin</span>
-                    <span className="text-[11px] text-muted-foreground">
-                      {DEMO_EMAIL} / {DEMO_PASSWORD}
-                    </span>
-                  </div>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={fillDemoCredentials}
-                  >
-                    Utiliser
-                  </Button>
-                </div>
-              </div>
             </form>
           </TabsContent>
 
