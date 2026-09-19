@@ -41,7 +41,7 @@ export default function Home() {
       const ownerViews: ViewKey[] = ['owner-dashboard', 'support']
       const devViews: ViewKey[] = [
         'dashboard', 'stats', 'integration',
-        'subscription', 'support', 'audit', 'settings',
+        'subscription', 'payment', 'support', 'audit', 'settings',
       ]
       const validViews: ViewKey[] = [...ownerViews, ...devViews]
       // If current view isn't valid for this user, redirect to their default dashboard

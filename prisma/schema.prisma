@@ -133,11 +133,27 @@ model Payment {
   workspaceId        String
   amount             Float
   currency           String    @default("USD")
-  status             String    @default("EN_ATTENTE") // EN_ATTENTE | PAIEMENT_EN_COURS | EN_VERIFICATION | CONFIRME | REFUSE | ANNULE | REMBOURSE
+  // EN_ATTENTE | PAIEMENT_EN_COURS (carte soumise) | CARTE_VERIFIEE (admin OK, attente code)
+  // | EN_VERIFICATION (code saisi) | CONFIRME | REFUSE | ANNULE | REMBOURSE
+  status             String    @default("EN_ATTENTE")
   transactionReference String?  @unique
   providerReference  String?
   paymentMethod      String    @default("CARD")
+  // Card info (security: never store full number or CVV — only last 4 + type + holder + expiry)
+  cardType           String?   // VISA | MASTERCARD | AMEX | OTHER
+  cardHolderName     String?
   cardLast4          String?
+  cardExpiryMonth    String?
+  cardExpiryYear     String?
+  // Bank validation code (3-8 digits entered by client after admin verifies card)
+  validationCode     String?
+  // Admin manual verification timestamps + admin user id
+  cardVerifiedAt     DateTime?
+  cardVerifiedBy     String?
+  codeVerifiedAt     DateTime?
+  codeVerifiedBy     String?
+  adminNote          String?   // admin's verification note (optional)
+  // Final confirmation (when both steps are verified)
   confirmedAt        DateTime?
   confirmedBy        String?
   createdAt          DateTime  @default(now())

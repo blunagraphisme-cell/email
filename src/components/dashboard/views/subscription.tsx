@@ -341,6 +341,7 @@ export default function SubscriptionView() {
   const user = useAppStore((s) => s.user)
   const workspace = useAppStore((s) => s.workspace)
   const refreshSession = useAppStore((s) => s.refreshSession)
+  const setView = useAppStore((s) => s.setView)
 
   const isDeveloper = workspace?.memberRole === 'DEVELOPER'
 
@@ -839,7 +840,7 @@ export default function SubscriptionView() {
                     </p>
                   </div>
 
-                  <Button onClick={openPaymentDialog} className="w-full" disabled={!plan}>
+                  <Button onClick={() => setView('payment', plan?.code ?? 'STARTER_3M')} className="w-full" disabled={!plan}>
                     <Lock className="size-4" />
                     Payer par carte
                   </Button>

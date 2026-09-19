@@ -26,6 +26,7 @@ export type ViewKey =
   | 'stats'
   | 'integration'
   | 'subscription'
+  | 'payment'
   | 'support'
   | 'audit'
   | 'settings'

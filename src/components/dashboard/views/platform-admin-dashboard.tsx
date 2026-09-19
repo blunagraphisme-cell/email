@@ -7,7 +7,18 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import {
   Building2,
   Users,
@@ -75,6 +86,7 @@ interface AdminUser {
 interface AdminPayment {
   id: string
   workspaceName: string
+  workspaceId: string
   planCode: string | null
   planName: string | null
   amount: number
@@ -82,7 +94,15 @@ interface AdminPayment {
   status: string
   transactionReference: string | null
   paymentMethod: string
+  cardType: string | null
+  cardHolderName: string | null
   cardLast4: string | null
+  cardExpiryMonth: string | null
+  cardExpiryYear: string | null
+  validationCode: string | null
+  adminNote: string | null
+  cardVerifiedAt: string | null
+  codeVerifiedAt: string | null
   confirmedAt: string | null
   createdAt: string
 }
@@ -200,10 +220,11 @@ export function PlatformAdminDashboard() {
         </div>
 
         <Tabs value={tab} onValueChange={setTab} className="w-full">
-          <TabsList className="grid w-full max-w-2xl grid-cols-5">
+          <TabsList className="grid w-full max-w-2xl grid-cols-6">
             <TabsTrigger value="overview" className="text-xs sm:text-sm">Vue d'ensemble</TabsTrigger>
             <TabsTrigger value="workspaces" className="text-xs sm:text-sm">Workspaces</TabsTrigger>
             <TabsTrigger value="users" className="text-xs sm:text-sm">Utilisateurs</TabsTrigger>
+            <TabsTrigger value="verifications" className="text-xs sm:text-sm">Vérifications</TabsTrigger>
             <TabsTrigger value="payments" className="text-xs sm:text-sm">Paiements</TabsTrigger>
             <TabsTrigger value="tickets" className="text-xs sm:text-sm">Tickets</TabsTrigger>
           </TabsList>
@@ -216,6 +237,9 @@ export function PlatformAdminDashboard() {
           </TabsContent>
           <TabsContent value="users" className="mt-6">
             <UsersTab />
+          </TabsContent>
+          <TabsContent value="verifications" className="mt-6">
+            <VerificationsTab />
           </TabsContent>
           <TabsContent value="payments" className="mt-6">
             <PaymentsTab />
@@ -504,6 +528,240 @@ function UsersTab() {
         )}
       </CardContent>
     </Card>
+  )
+}
+
+function VerificationsTab() {
+  const [items, setItems] = React.useState<AdminPayment[]>([])
+  const [loading, setLoading] = React.useState(true)
+  const [actioning, setActioning] = React.useState<string | null>(null)
+  const [refuseTarget, setRefuseTarget] = React.useState<AdminPayment | null>(null)
+  const [refuseReason, setRefuseReason] = React.useState('')
+
+  const fetchItems = React.useCallback(async () => {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/admin/payments?limit=50', { cache: 'no-store' })
+      const data = await res.json()
+      if (data.success) {
+        // Only show active verification states
+        setItems(data.payments.filter((p: AdminPayment) =>
+          ['PAIEMENT_EN_COURS', 'CARTE_VERIFIEE', 'EN_VERIFICATION'].includes(p.status)
+        ))
+      }
+    } catch {
+      // ignore
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  React.useEffect(() => {
+    fetchItems()
+    const interval = setInterval(fetchItems, 10_000)
+    return () => clearInterval(interval)
+  }, [fetchItems])
+
+  const verifyCard = async (id: string) => {
+    setActioning(id)
+    try {
+      const res = await fetch(`/api/admin/payments/${id}/verify-card`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+      const data = await res.json()
+      if (data.success) {
+        toast.success('Carte vérifiée. Le client peut maintenant saisir son code.')
+        await fetchItems()
+      } else {
+        toast.error(data.error?.message ?? 'Échec')
+      }
+    } catch {
+      toast.error('Erreur réseau')
+    } finally {
+      setActioning(null)
+    }
+  }
+
+  const verifyCode = async (id: string) => {
+    setActioning(id)
+    try {
+      const res = await fetch(`/api/admin/payments/${id}/verify-code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+      const data = await res.json()
+      if (data.success) {
+        toast.success(`Code vérifié. Abonnement activé jusqu'au ${new Date(data.endDate).toLocaleDateString('fr-FR')}.`)
+        await fetchItems()
+      } else {
+        toast.error(data.error?.message ?? 'Échec')
+      }
+    } catch {
+      toast.error('Erreur réseau')
+    } finally {
+      setActioning(null)
+    }
+  }
+
+  const refuse = async () => {
+    if (!refuseTarget || !refuseReason.trim()) return
+    setActioning(refuseTarget.id)
+    try {
+      const res = await fetch(`/api/admin/payments/${refuseTarget.id}/refuse`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: refuseReason.trim() }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        toast.success('Paiement refusé.')
+        setRefuseTarget(null)
+        setRefuseReason('')
+        await fetchItems()
+      } else {
+        toast.error(data.error?.message ?? 'Échec')
+      }
+    } catch {
+      toast.error('Erreur réseau')
+    } finally {
+      setActioning(null)
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Paiements à vérifier ({items.length})</CardTitle>
+          <CardDescription>
+            Vérification manuelle en deux étapes : carte → code de validation.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loading ? <Loading /> : (
+            <div className="flex flex-col gap-4">
+              {items.length === 0 && (
+                <div className="py-12 text-center text-sm text-muted-foreground">
+                  Aucun paiement en attente de vérification.
+                </div>
+              )}
+              {items.map((p) => (
+                <div key={p.id} className="rounded-md border border-border p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{p.workspaceName}</span>
+                        <StatusBadge status={p.status} />
+                      </div>
+                      <div className="mt-1 text-xs text-muted-foreground">
+                        {p.planCode} · {fmtMoney(p.amount, p.currency)} · {fmtDateTime(p.createdAt)}
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="font-mono text-xs">{p.transactionReference}</Badge>
+                  </div>
+
+                  {/* Card info */}
+                  <div className="mt-3 grid grid-cols-2 gap-2 rounded-md bg-muted/30 p-3 text-sm sm:grid-cols-4">
+                    <div>
+                      <div className="text-[10px] uppercase text-muted-foreground">Type</div>
+                      <div className="font-medium">{p.cardType ?? '—'}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase text-muted-foreground">Numéro</div>
+                      <div className="font-mono">•••• {p.cardLast4}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase text-muted-foreground">Titulaire</div>
+                      <div>{p.cardHolderName ?? '—'}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase text-muted-foreground">Expiration</div>
+                      <div className="font-mono">{p.cardExpiryMonth}/{p.cardExpiryYear}</div>
+                    </div>
+                  </div>
+
+                  {/* Validation code (if submitted) */}
+                  {p.validationCode && (
+                    <div className="mt-2 rounded-md border border-foreground/30 bg-foreground/5 p-3">
+                      <div className="text-[10px] uppercase text-muted-foreground">Code de validation saisi par le client</div>
+                      <div className="mt-1 font-mono text-2xl tracking-[0.3em]">{p.validationCode}</div>
+                    </div>
+                  )}
+
+                  {/* Admin note (if any) */}
+                  {p.adminNote && (
+                    <div className="mt-2 text-xs text-muted-foreground">
+                      Note: {p.adminNote}
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {p.status === 'PAIEMENT_EN_COURS' && (
+                      <Button size="sm" onClick={() => verifyCard(p.id)} disabled={actioning === p.id}>
+                        {actioning === p.id ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
+                        Vérifier la carte
+                      </Button>
+                    )}
+                    {p.status === 'EN_VERIFICATION' && (
+                      <Button size="sm" onClick={() => verifyCode(p.id)} disabled={actioning === p.id}>
+                        {actioning === p.id ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
+                        Vérifier le code → activer
+                      </Button>
+                    )}
+                    {p.status === 'CARTE_VERIFIEE' && (
+                      <span className="inline-flex items-center gap-2 rounded-md border border-foreground/30 bg-foreground/5 px-3 py-1.5 text-xs text-foreground">
+                        <Clock className="size-3.5" />
+                        En attente du code de validation du client
+                      </span>
+                    )}
+                    <Button size="sm" variant="outline" onClick={() => setRefuseTarget(p)} disabled={actioning === p.id} className="text-destructive hover:text-destructive">
+                      <XCircle className="size-4" />
+                      Refuser
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Refuse dialog */}
+      <AlertDialog open={!!refuseTarget} onOpenChange={(open) => !open && setRefuseTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Refuser le paiement de {refuseTarget?.workspaceName} ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Le client pourra réessayer avec une autre carte. L'abonnement ne sera PAS activé.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="refuse-reason" className="text-xs">Raison du refus (requis)</Label>
+            <Input
+              id="refuse-reason"
+              placeholder="ex: carte refusée par la banque, informations invalides…"
+              value={refuseReason}
+              onChange={(e) => setRefuseReason(e.target.value)}
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actioning === refuseTarget?.id}>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); refuse() }}
+              disabled={actioning === refuseTarget?.id || !refuseReason.trim()}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {actioning === refuseTarget?.id ? <Loader2 className="size-4 animate-spin" /> : null}
+              Refuser
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   )
 }
 

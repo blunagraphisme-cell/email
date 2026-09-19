@@ -860,3 +860,122 @@ Stage Summary:
 - Marketing repositioned: "Couche de reporting & gestion d'abonnement"
 - Old view files (campaigns.tsx, contacts.tsx, etc.) kept on disk but no longer linked (harmless, can be deleted later)
 - Committing and pushing to git
+
+---
+Task ID: 18 (manual payment verification system)
+Agent: main
+Task: Implement manual 2-step payment verification flow (card → admin verify → client enters bank code → admin verify → activate)
+
+Work Log:
+- User-specified flow:
+  1. Client selects plan + enters card info (with Visa/Mastercard auto-detection)
+  2. Client clicks "Payer" → status PAIEMENT_EN_COURS
+  3. Admin receives payment request with card info displayed
+  4. Admin manually verifies card → status CARTE_VERIFIEE
+  5. Client prompted to enter bank validation code (3-8 digits)
+  6. Client enters code → status EN_VERIFICATION
+  7. Admin receives the entered code → verifies it
+  8. Admin confirms → status CONFIRME + subscription activated
+  9. Client redirected to dashboard
+
+Schema changes (prisma/schema.prisma Payment model):
+- Added: cardType (VISA|MASTERCARD|AMEX|OTHER), cardHolderName, cardExpiryMonth, cardExpiryYear
+- Added: validationCode (3-8 digit code entered by client)
+- Added: cardVerifiedAt, cardVerifiedBy, codeVerifiedAt, codeVerifiedBy
+- Added: adminNote (admin's verification note)
+- Statuses now: EN_ATTENTE | PAIEMENT_EN_COURS | CARTE_VERIFIEE | EN_VERIFICATION | CONFIRME | REFUSE | ANNULE | REMBOURSE
+- bun run db:push + bun run db:generate + dev server restart (cleared Turbopack cache)
+
+New API routes:
+- POST /api/payment/initiate — client submits card info
+  - Body: { planCode, cardNumber, cardHolderName, cardExpiryMonth, cardExpiryYear, cardCvv }
+  - Validates card number (Luhn check) + detects type (Visa: starts 4, MC: 5[1-5] or 2221-2720, Amex: 34/37)
+  - NEVER stores full card number or CVV — only last 4 + type + holder + expiry
+  - Amount is server-determined from plan (never trusts client amount)
+  - Idempotency: refuses if there's already a payment in active state for the subscription
+  - Returns: { paymentId, status, cardType, last4, amount, currency, transactionReference }
+- POST /api/payment/validate-code — client enters bank validation code
+  - Body: { paymentId, code }
+  - Validates code is 3-8 digits
+  - Only allowed when status === CARTE_VERIFIEE (admin already verified card)
+  - Returns: { paymentId, status: 'EN_VERIFICATION' }
+- GET /api/payment/status?id=... — client polls current status
+- GET /api/payment/active — returns the active (in-progress) payment for the workspace (resume flow on page refresh)
+- POST /api/admin/payments/[id]/verify-card — admin confirms card info is valid (PAIEMENT_EN_COURS → CARTE_VERIFIEE)
+- POST /api/admin/payments/[id]/verify-code — admin confirms code (EN_VERIFICATION → CONFIRME + activates subscription + creates new period using addMonthsCal)
+- POST /api/admin/payments/[id]/refuse — admin refuses (any active state → REFUSE with required reason)
+- Updated GET /api/admin/payments — now exposes all new card fields + validationCode + adminNote + verification timestamps
+
+New payment view (src/components/dashboard/views/payment.tsx):
+- Card entry form with live Visa/Mastercard/Amex detection (badge shows in input)
+- Card number auto-formatted (groups of 4)
+- Expiry MM/AA + CVV (password type, never stored)
+- Security banner: "ne stocke jamais le numéro complet ni le CVV"
+- After submit: status card with step label + payment details (amount, card type, last4, holder, expiry, ref)
+- Timeline showing 4 steps: card submitted → card verified → code submitted → code verified
+- Auto-polls every 5s while in active states
+- On mount: fetches active payment (resumes interrupted flow)
+- Code entry form (InputOTP 8 slots) when status is CARTE_VERIFIEE
+- "Validation en cours" placeholder when status is EN_VERIFICATION
+- "Code soumis. En attente de vérification par l'administrateur." message
+- Refused state: shows admin's reason + "Réessayer" button
+- Confirmed state: toast + redirect to dashboard after 1.5s + refreshSession
+
+Updated platform-admin-dashboard.tsx:
+- New "Vérifications" tab (6 tabs total now: Vue d'ensemble, Workspaces, Utilisateurs, Vérifications, Paiements, Tickets)
+- VerificationsTab component:
+  - Lists payments in [PAIEMENT_EN_COURS, CARTE_VERIFIEE, EN_VERIFICATION] states
+  - Auto-refreshes every 10s
+  - Per payment card: workspace name + status badge + plan/amount/date + transaction ref
+  - Card info grid: Type, Number (•••• last4), Holder, Expiry
+  - Validation code displayed in large mono font with letter-spacing when submitted
+  - Admin note (if any)
+  - Action buttons (context-dependent):
+    - PAIEMENT_EN_COURS: "Vérifier la carte" + "Refuser"
+    - CARTE_VERIFIEE: "En attente du code de validation du client" (passive) + "Refuser"
+    - EN_VERIFICATION: "Vérifier le code → activer" + "Refuser"
+  - Refuse dialog: requires reason (500 char max) → calls /refuse endpoint
+- AdminPayment interface updated with all new fields
+- Imports added: AlertDialog, Label
+
+Updated subscription view:
+- "Payer par carte" button now calls setView('payment', plan.code) instead of opening the old mock dialog
+
+Updated ViewKey + page.tsx + dashboard-shell + topbar:
+- Added 'payment' to ViewKey
+- Added 'payment' to validViews for regular users
+- VIEW_MAP[view: 'payment'] = PaymentView
+- VIEW_TITLES['payment'] = 'Paiement'
+
+Lint: 0 errors, 0 warnings
+
+Browser verification (full end-to-end flow):
+1. Signup demo user (payment-test@...) → EN_ATTENTE subscription ✓
+2. Navigate to Abonnement → "Payer par carte" → payment view with STARTER_3M
+3. Fill card: 4242 4242 4242 4242 → "VISA" badge detected ✓
+4. Fill holder AWA AGBODE, expiry 12/27, CVV 123
+5. Click "Payer" → status "Paiement en cours — vérification carte" + card details shown ✓
+6. Logout + login as admin (blunagraphisme@gmail.com)
+7. Admin dashboard → "Vérifications" tab → sees payment with card info (VISA •••• 4242, AWA AGBODE) ✓
+8. Click "Vérifier la carte" → status becomes CARTE_VERIFIEE + "En attente du code de validation du client" ✓
+9. Logout + login as client
+10. Payment view auto-resumes (fetches active payment on mount) ✓
+11. Status "Carte vérifiée — saisissez le code de validation" + code entry form (InputOTP) ✓
+12. Enter code "1234" → click "Valider" → status "Validation en cours" + "Code soumis" message ✓
+13. Logout + login as admin
+14. "Vérifications" tab → sees payment with code "1234" displayed in large mono ✓
+15. Click "Vérifier le code → activer" → toast "Code vérifié. Abonnement activé jusqu'au ..." ✓
+16. Verifications list now empty (payment CONFIRME)
+17. Logout + login as client → redirected to dashboard "Bienvenue, Payment sur EmailOqui 👋" ✓
+18. Abonnement view shows STARTER_3M, STATUT: "Actif" ✓
+
+Stage Summary:
+- Full manual 2-step payment verification flow implemented
+- Client: card entry with Visa/MC/Amex detection → status polling → code entry (3-8 digits InputOTP)
+- Admin: Vérifications tab with card info + code display + verify-card/verify-code/refuse actions
+- Security: full card number + CVV never stored (only last 4 + type + holder + expiry)
+- Idempotent: only one active payment per subscription; duplicates rejected
+- Subscription activates only after admin verifies the code (not on client submit)
+- Auto-resume: payment view fetches active payment on mount (handles page refresh)
+- Auto-poll: client polls every 5s while in active states; admin polls every 10s
+- Committing and pushing to git
