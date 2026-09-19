@@ -79,6 +79,85 @@ export async function POST(req: NextRequest) {
   const baseUrl = getBaseUrl(req.headers)
   const inviteUrl = `${baseUrl}/?invite=${rawToken}`
 
+  // Send invitation email via Resend (if configured)
+  let emailSent = false
+  let emailError: string | null = null
+  try {
+    const { Resend } = await import('resend')
+    const resendKey = process.env.RESEND_API_KEY
+    if (resendKey) {
+      const resend = new Resend(resendKey)
+      const fromEmail = process.env.RESEND_FROM_EMAIL || 'no-reply@email.oquitogo.online'
+      const inviterName = [ctx.user.firstName, ctx.user.lastName].filter(Boolean).join(' ') || ctx.user.email
+
+      const html = `<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f9fafb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;">
+    <tr><td align="center" style="padding:32px 16px;">
+      <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <tr>
+          <td style="background:#000;padding:16px 24px;">
+            <img src="${baseUrl}/logo.png" alt="EmailOqui" width="28" height="28" style="display:inline-block;vertical-align:middle;border-radius:6px;background:#fff;padding:2px;" />
+            <span style="margin-left:8px;font-size:16px;font-weight:600;color:#fff;vertical-align:middle;">EmailOqui</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px 24px;">
+            <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#1a1a1a;">Invitation à rejoindre ${ctx.workspace.name}</h1>
+            <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#374151;">
+              Bonjour,<br><br>
+              <strong>${inviterName}</strong> vous invite à rejoindre le workspace
+              <strong>${ctx.workspace.name}</strong> sur EmailOqui en tant que propriétaire.<br><br>
+              Vous aurez accès à votre tableau de bord avec les statistiques de vos communications e-mail.
+            </p>
+            <div style="text-align:center;margin:24px 0;">
+              <a href="${inviteUrl}" style="display:inline-block;padding:14px 32px;background:#000;color:#fff;text-decoration:none;font-weight:600;border-radius:8px;font-size:15px;">
+                Accepter l'invitation
+              </a>
+            </div>
+            <p style="margin:16px 0 0;font-size:13px;color:#6b7280;">
+              Ou copiez ce lien :<br>
+              <span style="font-family:monospace;font-size:12px;color:#374151;word-break:break-all;">${inviteUrl}</span><br><br>
+              Ce lien expire dans 7 jours.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:20px 24px;border-top:1px solid #e5e7eb;background:#f9fafb;text-align:center;">
+            <p style="margin:0;font-size:12px;color:#9ca3af;">
+              © ${new Date().getFullYear()} EmailOqui — email.oquitogo.online<br>
+              Si vous n'attendiez pas cette invitation, ignorez cet e-mail.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
+
+      const { error: sendError } = await resend.emails.send({
+        from: `EmailOqui <${fromEmail}>`,
+        to: email,
+        subject: `Invitation à rejoindre ${ctx.workspace.name} sur EmailOqui`,
+        html,
+        tags: [{ name: 'source', value: 'emailoqui-invitation' }],
+      })
+
+      if (sendError) {
+        emailError = sendError.message
+      } else {
+        emailSent = true
+      }
+    } else {
+      emailError = 'RESEND_API_KEY not configured'
+    }
+  } catch (e: any) {
+    emailError = e?.message ?? 'unknown error'
+  }
+
   await db.auditLog.create({
     data: {
       workspaceId: ctx.workspace.id,
@@ -86,7 +165,7 @@ export async function POST(req: NextRequest) {
       action: 'OWNER_INVITED',
       entityType: 'Invitation',
       entityId: invitation.id,
-      metadata: JSON.stringify({ email }),
+      metadata: JSON.stringify({ email, emailSent, emailError }),
     },
   })
 
@@ -99,8 +178,10 @@ export async function POST(req: NextRequest) {
       expiresAt: invitation.expiresAt.toISOString(),
       createdAt: invitation.createdAt.toISOString(),
     },
-    token: rawToken, // shown ONCE to the developer
+    token: rawToken,
     inviteUrl,
+    emailSent,
+    emailError,
   })
 }
 

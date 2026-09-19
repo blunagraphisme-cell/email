@@ -35,7 +35,7 @@ export function OwnerView() {
   const [loading, setLoading] = React.useState(true)
   const [inviteEmail, setInviteEmail] = React.useState('')
   const [submitting, setSubmitting] = React.useState(false)
-  const [newlyCreated, setNewlyCreated] = React.useState<{ inviteUrl: string; email: string } | null>(null)
+  const [newlyCreated, setNewlyCreated] = React.useState<{ inviteUrl: string; email: string; emailSent: boolean } | null>(null)
 
   const fetchInvitations = React.useCallback(async () => {
     setLoading(true)
@@ -74,10 +74,14 @@ export function OwnerView() {
         toast.error(data.error?.message ?? 'Erreur lors de l’invitation.')
         return
       }
-      setNewlyCreated({ inviteUrl: data.inviteUrl, email: data.invitation.email })
+      setNewlyCreated({ inviteUrl: data.inviteUrl, email: data.invitation.email, emailSent: data.emailSent })
       setInviteEmail('')
       await fetchInvitations()
-      toast.success(`Invitation envoyée à ${email}`)
+      if (data.emailSent) {
+        toast.success(`E-mail d'invitation envoyé à ${email}`)
+      } else {
+        toast.info(`Invitation créée. Copiez le lien et envoyez-le manuellement à ${email}.`)
+      }
     } catch {
       toast.error('Erreur réseau.')
     } finally {
@@ -193,12 +197,19 @@ export function OwnerView() {
                 <div className="mt-4 rounded-md border border-foreground/30 bg-foreground/5 p-4">
                   <div className="flex items-center gap-2 text-sm font-medium">
                     <CheckCircle2 className="size-4 text-foreground" />
-                    Lien d'invitation généré pour {newlyCreated.email}
+                    {newlyCreated.emailSent
+                      ? `E-mail envoyé à ${newlyCreated.email}`
+                      : `Lien généré pour ${newlyCreated.email}`}
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Copiez ce lien et envoyez-le au propriétaire par votre canal habituel
-                    (WhatsApp, e-mail, SMS). Il expire dans 7 jours.
-                  </p>
+                  {newlyCreated.emailSent ? (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Le propriétaire recevra un e-mail avec le lien d'invitation. Il peut aussi le copier ci-dessous.
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      L'e-mail n'a pas pu être envoyé automatiquement. Copiez ce lien et envoyez-le manuellement.
+                    </p>
+                  )}
                   <div className="mt-2 flex items-center gap-2">
                     <code className="flex-1 overflow-x-auto rounded-md bg-background p-2 text-xs font-mono">
                       {newlyCreated.inviteUrl}
