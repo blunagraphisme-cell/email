@@ -4,6 +4,9 @@
 #   sudo systemctl daemon-reload
 #   sudo systemctl enable emailoqui
 #   sudo systemctl start emailoqui
+#
+# NOTE: Si le port 3001 est déjà utilisé, changez-le dans .env (PORT=xxxx)
+# et mettez à jour le reverse_proxy dans /etc/caddy/Caddyfile
 
 [Unit]
 Description=EmailOqui — Plateforme de gestion d'e-mails
@@ -15,7 +18,7 @@ User=www-data
 WorkingDirectory=/opt/emailoqui
 EnvironmentFile=/opt/emailoqui/.env
 Environment=NODE_ENV=production
-Environment=PORT=3000
+# PORT est lu depuis .env (défaut 3001 pour éviter les conflits avec d'autres apps)
 Environment=HOSTNAME=0.0.0.0
 
 ExecStart=/usr/bin/bun /opt/emailoqui/.next/standalone/server.js

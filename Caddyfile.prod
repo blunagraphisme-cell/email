@@ -1,13 +1,15 @@
-# EmailOqui — Caddy production config
-# Reverse proxy + SSL automatique (Let's Encrypt)
+# EmailOqui — Snippet Caddy à AJOUTER à votre Caddyfile existant
+# (ne remplacez PAS votre Caddyfile complet si d'autres apps tournent déjà)
 #
 # Installation:
-#   sudo cp /opt/emailoqui/Caddyfile.prod /etc/caddy/Caddyfile
-#   sudo systemctl restart caddy
+#   sudo nano /etc/caddy/Caddyfile
+#   → collez le bloc ci-dessous à la fin du fichier
+#   → changez le port 3001 si vous utilisez un autre port dans .env
+#   sudo systemctl reload caddy
 
 email.oquitogo.online {
-	# Reverse proxy vers le serveur Next.js (port 3000)
-	reverse_proxy localhost:3000 {
+	# IMPORTANT: changez le port si vous avez mis un autre PORT dans .env
+	reverse_proxy localhost:3001 {
 		header_up Host {host}
 		header_up X-Real-IP {remote_host}
 		header_up X-Forwarded-For {remote_host}
