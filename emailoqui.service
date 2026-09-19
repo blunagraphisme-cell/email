@@ -1,0 +1,38 @@
+# /etc/systemd/system/emailoqui.service
+# Installation:
+#   sudo cp /opt/emailoqui/emailoqui.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable emailoqui
+#   sudo systemctl start emailoqui
+
+[Unit]
+Description=EmailOqui — Plateforme de gestion d'e-mails
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/emailoqui
+EnvironmentFile=/opt/emailoqui/.env
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOSTNAME=0.0.0.0
+
+ExecStart=/usr/bin/bun /opt/emailoqui/.next/standalone/server.js
+
+# Redémarrage automatique
+Restart=always
+RestartSec=5
+
+# Sécurité
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+
+# Logs
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
