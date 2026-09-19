@@ -10,6 +10,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp
 import { Badge } from '@/components/ui/badge'
 import {
   CreditCard, Loader2, CheckCircle2, Clock, XCircle, ShieldCheck, ArrowLeft, Lock,
+  Wifi, Edit3, KeyRound, X,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -33,9 +34,9 @@ function formatCardNumber(num: string): string {
 
 const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.ComponentType<{ className?: string }> }> = {
   EN_ATTENTE: { label: 'En attente', color: 'border-border bg-muted text-muted-foreground', icon: Clock },
-  PAIEMENT_EN_COURS: { label: 'Paiement en cours — vérification carte', color: 'border-foreground/30 bg-foreground/10 text-foreground', icon: Clock },
-  CARTE_VERIFIEE: { label: 'Carte vérifiée — saisissez le code', color: 'border-foreground/30 bg-foreground/10 text-foreground', icon: CheckCircle2 },
-  EN_VERIFICATION: { label: 'Validation en cours — vérification code', color: 'border-foreground/30 bg-foreground/10 text-foreground', icon: Clock },
+  PAIEMENT_EN_COURS: { label: 'Paiement en cours', color: 'border-foreground/30 bg-foreground/10 text-foreground', icon: Clock },
+  CARTE_VERIFIEE: { label: 'Carte vérifiée', color: 'border-foreground/30 bg-foreground/10 text-foreground', icon: CheckCircle2 },
+  EN_VERIFICATION: { label: 'Validation en cours', color: 'border-foreground/30 bg-foreground/10 text-foreground', icon: Clock },
   CONFIRME: { label: 'Paiement confirmé', color: 'border-foreground/30 bg-foreground/15 text-foreground', icon: CheckCircle2 },
   REFUSE: { label: 'Paiement refusé', color: 'border-destructive/30 bg-destructive/10 text-destructive', icon: XCircle },
   ANNULE: { label: 'Paiement annulé', color: 'border-destructive/30 bg-destructive/10 text-destructive', icon: XCircle },
@@ -61,6 +62,23 @@ interface PaymentData {
   adminNote: string | null
 }
 
+// Get plan display info from planCode
+function getPlanInfo(code: string) {
+  const tier = code.replace(/_(3M|6M|1Y)$/, '')
+  const dur = code.match(/_(3M|6M|1Y)$/)?.[1] || '3M'
+  const prices: Record<string, number> = {
+    STARTER_3M: 20, STARTER_6M: 38, STARTER_1Y: 72,
+    BUSINESS_3M: 45, BUSINESS_6M: 85, BUSINESS_1Y: 162,
+    PREMIUM_3M: 80, PREMIUM_6M: 150, PREMIUM_1Y: 288,
+  }
+  const durations: Record<string, string> = { '3M': '3 mois', '6M': '6 mois', '1Y': '1 an' }
+  return {
+    name: tier.charAt(0) + tier.slice(1).toLowerCase(),
+    price: prices[code] ?? 20,
+    duration: durations[dur] ?? '3 mois',
+  }
+}
+
 export function PaymentView() {
   const workspace = useAppStore((s) => s.workspace)
   const viewParam = useAppStore((s) => s.viewParam)
@@ -75,7 +93,7 @@ export function PaymentView() {
   const [cardCvv, setCardCvv] = React.useState('')
   const [submittingCard, setSubmittingCard] = React.useState(false)
 
-  // Payment state (after card submitted)
+  // Payment state
   const [payment, setPayment] = React.useState<PaymentData | null>(null)
   const [polling, setPolling] = React.useState(false)
 
@@ -85,13 +103,17 @@ export function PaymentView() {
 
   const detectedType = detectCardType(cardNumber)
   const planCode = viewParam ?? 'STARTER_3M'
+  const planInfo = getPlanInfo(planCode)
 
-  // Format card number on input
+  // Visual card display values
+  const displayNumber = cardNumber ? formatCardNumber(cardNumber) : '•••• •••• •••• ••••'
+  const displayHolder = cardHolderName || 'VOTRE NOM'
+  const displayExpiry = `${cardExpiryMonth || 'MM'}/${cardExpiryYear || 'AA'}`
+
   const handleCardNumberChange = (v: string) => {
     setCardNumber(formatCardNumber(v))
   }
 
-  // Submit card info
   const onSubmitCard = async (e: React.FormEvent) => {
     e.preventDefault()
     if (submittingCard) return
@@ -107,8 +129,8 @@ export function PaymentView() {
       toast.error('Nom du titulaire requis.')
       return
     }
-    if (!cardExpiryMonth || !cardExpiryYear || Number(cardExpiryMonth) < 1 || Number(cardExpiryMonth) > 12) {
-      toast.error('Mois d\'expiration invalide (01-12).')
+    if (!cardExpiryMonth || !cardExpiryYear) {
+      toast.error('Date d\'expiration requise.')
       return
     }
     if (!/^\d{3,4}$/.test(cardCvv)) {
@@ -143,21 +165,17 @@ export function PaymentView() {
     }
   }
 
-  // Poll payment status
   const fetchPayment = React.useCallback(async (id: string) => {
     setPolling(true)
     try {
       const res = await fetch(`/api/payment/status?id=${id}`, { cache: 'no-store' })
       const data = await res.json()
-      if (data.success) {
-        setPayment(data.payment)
-      }
+      if (data.success) setPayment(data.payment)
     } catch {} finally {
       setPolling(false)
     }
   }, [])
 
-  // Auto-poll while payment is in active verification states
   React.useEffect(() => {
     if (!payment) return
     const activeStates = ['PAIEMENT_EN_COURS', 'CARTE_VERIFIEE', 'EN_VERIFICATION']
@@ -166,20 +184,16 @@ export function PaymentView() {
     return () => clearInterval(interval)
   }, [payment, fetchPayment])
 
-  // On mount: check if there's an active payment for this workspace (resume flow)
   React.useEffect(() => {
     ;(async () => {
       try {
         const res = await fetch('/api/payment/active', { cache: 'no-store' })
         const data = await res.json()
-        if (data.success && data.payment) {
-          setPayment(data.payment)
-        }
+        if (data.success && data.payment) setPayment(data.payment)
       } catch {}
     })()
   }, [])
 
-  // Submit validation code
   const onSubmitCode = async (e: React.FormEvent) => {
     e.preventDefault()
     if (submittingCode) return
@@ -197,7 +211,7 @@ export function PaymentView() {
       })
       const data = await res.json()
       if (!res.ok || !data.success) {
-        toast.error(data?.error?.message ?? 'Erreur lors de la validation.')
+        toast.error(data?.error?.message ?? 'Erreur.')
         return
       }
       toast.success('Code soumis. En attente de vérification admin.')
@@ -210,7 +224,6 @@ export function PaymentView() {
     }
   }
 
-  // When confirmed, refresh session + redirect to dashboard
   React.useEffect(() => {
     if (payment?.status === 'CONFIRME') {
       toast.success('Abonnement activé. Redirection…')
@@ -222,247 +235,262 @@ export function PaymentView() {
   const fmtMoney = (n: number, c: string) => new Intl.NumberFormat('en-US', { style: 'currency', currency: c }).format(n)
 
   return (
-    <main className="flex-1">
-      {/* Header */}
-      <div className="border-b border-border bg-muted/30">
-        <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
-          <button
-            type="button"
-            onClick={() => setView('subscription')}
-            className="mb-2 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="size-4" />
-            Retour à l'abonnement
-          </button>
-          <h1 className="text-2xl font-bold tracking-tight">Paiement de l'abonnement</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Workspace: <span className="font-medium text-foreground">{workspace?.name}</span> · Plan: <span className="font-medium text-foreground">{planCode}</span>
-          </p>
-        </div>
-      </div>
+    <main className="flex-1 bg-mesh">
+      <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+        {/* Back link */}
+        <button
+          type="button"
+          onClick={() => setView('subscription')}
+          className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" />
+          Retour à l'abonnement
+        </button>
 
-      <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* No active payment → show card form */}
-        {!payment && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <CreditCard className="size-5" />
-                Informations de carte
-              </CardTitle>
-              <CardDescription>
-                Saisissez les informations de votre carte. La vérification est manuelle côté administrateur.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form className="flex flex-col gap-4" onSubmit={onSubmitCard}>
-                {/* Card number with type detection */}
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="card-number">Numéro de carte</Label>
-                  <div className="relative">
+        {/* Payment card — modal style */}
+        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-border bg-foreground px-6 py-4 text-background">
+            <div className="flex items-center gap-2">
+              <img src="/logo.png" alt="EmailOqui" width={28} height={28} className="rounded-md bg-background p-0.5" />
+              <span className="text-lg font-bold">EmailOqui Pay</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-background/80">
+              <Clock className="size-4" />
+              <span>Paiement sécurisé</span>
+            </div>
+          </div>
+
+          {/* No active payment → show card form (two columns) */}
+          {!payment && (
+            <div className="grid grid-cols-1 lg:grid-cols-5">
+              {/* Left column — form (3/5) */}
+              <div className="col-span-3 p-6">
+                <h2 className="text-xl font-bold tracking-tight">Informations de carte</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Saisissez les informations de votre carte pour activer votre abonnement.
+                </p>
+
+                <form className="mt-6 flex flex-col gap-5" onSubmit={onSubmitCard}>
+                  {/* Card Number */}
+                  <div>
+                    <Label className="text-sm font-semibold">Numéro de carte</Label>
+                    <p className="text-xs text-muted-foreground">Entrez les 16 chiffres de votre carte</p>
+                    <div className="relative mt-1">
+                      <Input
+                        inputMode="numeric"
+                        autoComplete="cc-number"
+                        placeholder="4242 4242 4242 4242"
+                        value={cardNumber}
+                        onChange={(e) => handleCardNumberChange(e.target.value)}
+                        className="pr-20 font-mono text-lg"
+                        maxLength={19}
+                        required
+                      />
+                      {detectedType !== 'UNKNOWN' && (
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2">
+                          <Badge variant="outline" className="font-mono text-xs">
+                            {detectedType === 'VISA' && 'VISA'}
+                            {detectedType === 'MASTERCARD' && 'MC'}
+                            {detectedType === 'AMEX' && 'AMEX'}
+                          </Badge>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* CVV + Expiry */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <Label className="text-sm font-semibold">CVV</Label>
+                      <p className="text-xs text-muted-foreground">3 ou 4 chiffres</p>
+                      <Input
+                        type="password"
+                        inputMode="numeric"
+                        autoComplete="cc-csc"
+                        placeholder="•••"
+                        value={cardCvv}
+                        onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                        className="mt-1 font-mono"
+                        maxLength={4}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-sm font-semibold">Mois</Label>
+                      <p className="text-xs text-muted-foreground">MM</p>
+                      <Input
+                        inputMode="numeric"
+                        autoComplete="cc-exp-month"
+                        placeholder="12"
+                        value={cardExpiryMonth}
+                        onChange={(e) => setCardExpiryMonth(e.target.value.replace(/\D/g, '').slice(0, 2))}
+                        className="mt-1 font-mono"
+                        maxLength={2}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-sm font-semibold">Année</Label>
+                      <p className="text-xs text-muted-foreground">AA</p>
+                      <Input
+                        inputMode="numeric"
+                        autoComplete="cc-exp-year"
+                        placeholder="27"
+                        value={cardExpiryYear}
+                        onChange={(e) => setCardExpiryYear(e.target.value.replace(/\D/g, '').slice(0, 2))}
+                        className="mt-1 font-mono"
+                        maxLength={2}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Cardholder name */}
+                  <div>
+                    <Label className="text-sm font-semibold">Titulaire de la carte</Label>
+                    <p className="text-xs text-muted-foreground">Nom complet sur la carte</p>
                     <Input
-                      id="card-number"
-                      inputMode="numeric"
-                      autoComplete="cc-number"
-                      placeholder="4242 4242 4242 4242"
-                      value={cardNumber}
-                      onChange={(e) => handleCardNumberChange(e.target.value)}
-                      className="pr-24 font-mono"
-                      maxLength={19}
+                      autoComplete="cc-name"
+                      placeholder="AWA AGBODE"
+                      value={cardHolderName}
+                      onChange={(e) => setCardHolderName(e.target.value)}
+                      className="mt-1"
                       required
                     />
-                    {detectedType !== 'UNKNOWN' && (
-                      <span className="absolute right-2 top-1/2 -translate-y-1/2">
-                        <Badge variant="outline" className="font-mono text-xs">
-                          {detectedType === 'VISA' && 'VISA'}
-                          {detectedType === 'MASTERCARD' && 'MASTERCARD'}
-                          {detectedType === 'AMEX' && 'AMEX'}
-                        </Badge>
-                      </span>
+                  </div>
+
+                  <Button type="submit" disabled={submittingCard} size="lg" className="w-full">
+                    {submittingCard ? (
+                      <>
+                        <Loader2 className="size-4 animate-spin" />
+                        Traitement…
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="size-4" />
+                        Payer {fmtMoney(planInfo.price, 'USD')}
+                      </>
                     )}
+                  </Button>
+
+                  <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                    <ShieldCheck className="size-3.5" />
+                    Vérification manuelle par l'administrateur
+                  </div>
+                </form>
+              </div>
+
+              {/* Right column — visual card + summary (2/5) */}
+              <div className="col-span-2 bg-muted/30 p-6">
+                {/* Visual credit card */}
+                <div className="relative mb-6 aspect-[1.586] w-full overflow-hidden rounded-xl bg-gradient-to-br from-foreground to-foreground/70 p-5 text-background shadow-lg">
+                  {/* Top row */}
+                  <div className="flex items-start justify-between">
+                    {/* Chip */}
+                    <div className="flex size-8 items-center justify-center rounded-md bg-amber-400/80">
+                      <div className="h-4 w-5 rounded border border-amber-600/50" />
+                    </div>
+                    {/* Contactless icon */}
+                    <Wifi className="size-5 text-background/60" />
+                  </div>
+                  {/* Card number */}
+                  <div className="mt-4 font-mono text-base tracking-wider">
+                    {displayNumber}
+                  </div>
+                  {/* Bottom row */}
+                  <div className="mt-3 flex items-end justify-between">
+                    <div>
+                      <div className="text-[8px] uppercase text-background/50">Titulaire</div>
+                      <div className="text-sm font-medium uppercase">{displayHolder}</div>
+                      <div className="mt-1 font-mono text-xs text-background/70">{displayExpiry}</div>
+                    </div>
+                    <div className="text-sm font-bold">{detectedType !== 'UNKNOWN' ? detectedType : ''}</div>
                   </div>
                 </div>
 
-                {/* Holder name */}
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="card-name">Titulaire de la carte</Label>
-                  <Input
-                    id="card-name"
-                    autoComplete="cc-name"
-                    placeholder="AWA AGBODE"
-                    value={cardHolderName}
-                    onChange={(e) => setCardHolderName(e.target.value)}
-                    required
-                  />
-                </div>
-
-                {/* Expiry + CVV */}
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="card-mm">Mois (MM)</Label>
-                    <Input
-                      id="card-mm"
-                      inputMode="numeric"
-                      autoComplete="cc-exp-month"
-                      placeholder="12"
-                      value={cardExpiryMonth}
-                      onChange={(e) => setCardExpiryMonth(e.target.value.replace(/\D/g, '').slice(0, 2))}
-                      maxLength={2}
-                      required
-                    />
+                {/* Order summary */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold">Récapitulatif</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Workspace</span>
+                      <span className="font-medium">{workspace?.name}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Plan</span>
+                      <span className="font-medium">{planInfo.name}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Durée</span>
+                      <span className="font-medium">{planInfo.duration}</span>
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="card-yy">Année (AA)</Label>
-                    <Input
-                      id="card-yy"
-                      inputMode="numeric"
-                      autoComplete="cc-exp-year"
-                      placeholder="27"
-                      value={cardExpiryYear}
-                      onChange={(e) => setCardExpiryYear(e.target.value.replace(/\D/g, '').slice(0, 2))}
-                      maxLength={2}
-                      required
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="card-cvv">CVV</Label>
-                    <Input
-                      id="card-cvv"
-                      type="password"
-                      inputMode="numeric"
-                      autoComplete="cc-csc"
-                      placeholder="•••"
-                      value={cardCvv}
-                      onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                      maxLength={4}
-                      required
-                    />
+                  <div className="border-t border-border pt-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Montant à payer</span>
+                      <span className="text-2xl font-bold">{fmtMoney(planInfo.price, 'USD')}</span>
+                    </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          )}
 
-                {/* Security note */}
-                <div className="flex items-start gap-2 rounded-md border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
-                  <Lock className="mt-0.5 size-3.5 shrink-0 text-foreground" />
-                  <span>
-                    EmailOqui ne stocke jamais le numéro complet ni le CVV. Seuls les 4 derniers chiffres,
-                    le type, le titulaire et l'expiration sont conservés pour vérification admin.
-                  </span>
-                </div>
-
-                <Button type="submit" disabled={submittingCard} className="h-11">
-                  {submittingCard ? (
-                    <>
-                      <Loader2 className="size-4 animate-spin" />
-                      Soumission…
-                    </>
-                  ) : (
-                    <>
-                      <CreditCard className="size-4" />
-                      Payer
-                    </>
-                  )}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Active payment → show status */}
-        {payment && (
-          <div className="flex flex-col gap-4">
-            {/* Status card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
+          {/* Active payment → status view */}
+          {payment && (
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <Badge variant="outline" className={STATUS_LABELS[payment.status]?.color}>
                   {(() => {
                     const StatusIcon = STATUS_LABELS[payment.status]?.icon ?? Clock
-                    return <StatusIcon className="size-5" />
+                    return <StatusIcon className="mr-1 size-3.5" />
                   })()}
-                  Statut du paiement
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <Badge variant="outline" className={STATUS_LABELS[payment.status]?.color}>
-                    {STATUS_LABELS[payment.status]?.label ?? payment.status}
-                  </Badge>
-                  {polling && (
-                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Loader2 className="size-3 animate-spin" />
-                      Mise à jour…
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground">{payment.stepLabel}</p>
-
-                {/* Payment details */}
-                <dl className="grid grid-cols-2 gap-2 rounded-md border border-border bg-muted/30 p-3 text-sm">
-                  <dt className="text-xs uppercase text-muted-foreground">Montant</dt>
-                  <dd className="font-medium text-right">{fmtMoney(payment.amount, payment.currency)}</dd>
-                  <dt className="text-xs uppercase text-muted-foreground">Carte</dt>
-                  <dd className="font-mono text-right">{payment.cardType} •••• {payment.cardLast4}</dd>
-                  <dt className="text-xs uppercase text-muted-foreground">Titulaire</dt>
-                  <dd className="text-right">{payment.cardHolderName}</dd>
-                  <dt className="text-xs uppercase text-muted-foreground">Expiration</dt>
-                  <dd className="font-mono text-right">{payment.cardExpiryMonth}/{payment.cardExpiryYear}</dd>
-                  <dt className="text-xs uppercase text-muted-foreground">Référence</dt>
-                  <dd className="font-mono text-xs text-right">{payment.transactionReference}</dd>
-                </dl>
-
-                {/* Admin note (if refused) */}
-                {payment.status === 'REFUSE' && payment.adminNote && (
-                  <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
-                    <span className="font-medium">Raison du refus: </span>{payment.adminNote}
-                  </div>
+                  {STATUS_LABELS[payment.status]?.label ?? payment.status}
+                </Badge>
+                {polling && (
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Loader2 className="size-3 animate-spin" />
+                    Mise à jour…
+                  </span>
                 )}
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">{payment.stepLabel}</p>
 
-                {/* Timeline */}
-                <ol className="flex flex-col gap-2 text-xs">
-                  <TimelineStep
-                    done={!!payment.cardVerifiedAt}
-                    label="Carte soumise"
-                    date={payment.createdAt}
-                  />
-                  <TimelineStep
-                    done={!!payment.cardVerifiedAt}
-                    label="Carte vérifiée par l'admin"
-                    date={payment.cardVerifiedAt}
-                  />
-                  <TimelineStep
-                    done={payment.status === 'EN_VERIFICATION' || payment.status === 'CONFIRME'}
-                    label="Code de validation saisi"
-                    date={payment.status === 'EN_VERIFICATION' || payment.status === 'CONFIRME' ? payment.cardVerifiedAt : null}
-                  />
-                  <TimelineStep
-                    done={payment.status === 'CONFIRME'}
-                    label="Code vérifié — abonnement activé"
-                    date={payment.confirmedAt}
-                  />
-                </ol>
-              </CardContent>
-            </Card>
+              {/* Payment details */}
+              <dl className="mt-4 grid grid-cols-2 gap-2 rounded-md border border-border bg-muted/30 p-3 text-sm">
+                <dt className="text-xs uppercase text-muted-foreground">Montant</dt>
+                <dd className="font-medium text-right">{fmtMoney(payment.amount, payment.currency)}</dd>
+                <dt className="text-xs uppercase text-muted-foreground">Carte</dt>
+                <dd className="font-mono text-right">{payment.cardType} •••• {payment.cardLast4}</dd>
+                <dt className="text-xs uppercase text-muted-foreground">Titulaire</dt>
+                <dd className="text-right">{payment.cardHolderName}</dd>
+                <dt className="text-xs uppercase text-muted-foreground">Référence</dt>
+                <dd className="font-mono text-xs text-right">{payment.transactionReference}</dd>
+              </dl>
 
-            {/* Code entry (when card verified) */}
-            {(payment.status === 'CARTE_VERIFIEE' || payment.status === 'EN_VERIFICATION') && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <ShieldCheck className="size-5" />
-                    Code de validation
-                  </CardTitle>
-                  <CardDescription>
-                    Saisissez le code (3 à 8 chiffres) envoyé par votre banque.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
+              {/* Timeline */}
+              <ol className="mt-4 flex flex-col gap-2 text-xs">
+                <TimelineStep done={!!payment.cardVerifiedAt} label="Carte soumise" date={payment.createdAt} />
+                <TimelineStep done={!!payment.cardVerifiedAt} label="Carte vérifiée par l'admin" date={payment.cardVerifiedAt} />
+                <TimelineStep done={payment.status === 'EN_VERIFICATION' || payment.status === 'CONFIRME'} label="Code de validation saisi" date={null} />
+                <TimelineStep done={payment.status === 'CONFIRME'} label="Abonnement activé" date={payment.confirmedAt} />
+              </ol>
+
+              {/* Code entry */}
+              {(payment.status === 'CARTE_VERIFIEE' || payment.status === 'EN_VERIFICATION') && (
+                <div className="mt-6 rounded-lg border border-foreground/30 bg-foreground/5 p-4">
                   {payment.status === 'CARTE_VERIFIEE' ? (
-                    <form className="flex flex-col gap-4" onSubmit={onSubmitCode}>
+                    <form className="flex flex-col gap-3" onSubmit={onSubmitCode}>
+                      <h3 className="flex items-center gap-2 font-semibold">
+                        <ShieldCheck className="size-5" />
+                        Code de validation
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Saisissez le code (3 à 8 chiffres) envoyé par votre banque.
+                      </p>
                       <div className="flex justify-center">
-                        <InputOTP
-                          maxLength={8}
-                          value={code}
-                          onChange={(v) => setCode(v)}
-                        >
+                        <InputOTP maxLength={8} value={code} onChange={(v) => setCode(v)}>
                           <InputOTPGroup>
                             <InputOTPSlot index={0} />
                             <InputOTPSlot index={1} />
@@ -475,49 +503,35 @@ export function PaymentView() {
                           </InputOTPGroup>
                         </InputOTP>
                       </div>
-                      <p className="text-center text-xs text-muted-foreground">
-                        3 à 8 chiffres. L'admin vérifiera le code saisi avant activation.
-                      </p>
-                      <Button type="submit" disabled={submittingCode || code.length < 3} className="h-11">
-                        {submittingCode ? (
-                          <>
-                            <Loader2 className="size-4 animate-spin" />
-                            Validation…
-                          </>
-                        ) : (
-                          <>
-                            <ShieldCheck className="size-4" />
-                            Valider
-                          </>
-                        )}
+                      <Button type="submit" disabled={submittingCode || code.length < 3} className="w-full">
+                        {submittingCode ? <Loader2 className="size-4 animate-spin" /> : <ShieldCheck className="size-4" />}
+                        Valider
                       </Button>
                     </form>
                   ) : (
-                    <div className="flex items-center gap-3 rounded-md border border-foreground/30 bg-foreground/5 p-4 text-sm">
+                    <div className="flex items-center gap-3 text-sm">
                       <Loader2 className="size-4 animate-spin" />
                       <span>Code soumis. En attente de vérification par l'administrateur.</span>
                     </div>
                   )}
-                </CardContent>
-              </Card>
-            )}
+                </div>
+              )}
 
-            {/* Refused → retry */}
-            {payment.status === 'REFUSE' && (
-              <Card>
-                <CardContent className="flex flex-col items-center gap-3 py-8 text-center">
+              {/* Refused */}
+              {payment.status === 'REFUSE' && (
+                <div className="mt-6 flex flex-col items-center gap-3 text-center">
                   <XCircle className="size-10 text-destructive" />
                   <p className="text-sm text-muted-foreground">
-                    Votre paiement a été refusé. Vous pouvez réessayer avec une autre carte.
+                    {payment.adminNote || 'Votre paiement a été refusé. Vous pouvez réessayer.'}
                   </p>
                   <Button onClick={() => { setPayment(null); setCardNumber(''); setCardHolderName(''); setCardCvv(''); setCardExpiryMonth(''); setCardExpiryYear('') }}>
                     Réessayer
                   </Button>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </main>
   )
@@ -535,7 +549,7 @@ function TimelineStep({ done, label, date }: { done: boolean; label: string; dat
         {label}
         {done && date && (
           <span className="ml-2 text-xs text-muted-foreground">
-            {new Date(date).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+            {new Date(date).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
           </span>
         )}
       </span>
