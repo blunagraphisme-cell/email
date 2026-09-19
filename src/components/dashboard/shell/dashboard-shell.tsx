@@ -15,6 +15,7 @@ import StatsView from '@/components/dashboard/views/stats'
 import IntegrationView from '@/components/dashboard/views/integration'
 import SubscriptionView from '@/components/dashboard/views/subscription'
 import PaymentView from '@/components/dashboard/views/payment'
+import OwnerView from '@/components/dashboard/views/owner'
 import SupportView from '@/components/dashboard/views/support'
 import AuditView from '@/components/dashboard/views/audit'
 import SettingsView from '@/components/dashboard/views/settings'
@@ -30,6 +31,7 @@ const VIEW_MAP: Partial<Record<ViewKey, React.ComponentType>> = {
   integration: IntegrationView,
   subscription: SubscriptionView,
   payment: PaymentView,
+  owner: OwnerView,
   support: SupportView,
   audit: AuditView,
   settings: SettingsView,

@@ -48,6 +48,7 @@ export function AuthModal() {
 
   const [tab, setTab] = React.useState<TabKey>('login')
   const [loading, setLoading] = React.useState(false)
+  const [inviteInfo, setInviteInfo] = React.useState<{ workspaceName: string; invitedBy: string; email: string; role: string } | null>(null)
 
   // login form
   const [loginEmail, setLoginEmail] = React.useState('')
@@ -72,9 +73,11 @@ export function AuthModal() {
     }
   }, [authModalOpen, storeAuthMode])
 
-  // Handle Google OAuth error redirect (?google_error=...)
+  // Handle ?google_error=... + ?invite=TOKEN detection
   React.useEffect(() => {
     if (typeof window === 'undefined') return
+
+    // 1. Google OAuth error
     const params = new URLSearchParams(window.location.search)
     const err = params.get('google_error')
     if (err) {
@@ -89,12 +92,40 @@ export function AuthModal() {
         oauth_not_configured: 'Connexion Google non configurée. Ajoutez GOOGLE_CLIENT_ID et GOOGLE_CLIENT_SECRET au .env.',
       }
       toast.error(messages[err] ?? 'Erreur de connexion Google.')
-      // Clean the URL
       const url = new URL(window.location.href)
       url.searchParams.delete('google_error')
       window.history.replaceState({}, '', url.toString())
-      // Open the auth modal so the user can retry
       useAppStore.getState().openAuth('login')
+    }
+
+    // 2. Invitation token — validate + open auth modal + show banner
+    const inviteToken = params.get('invite') ?? sessionStorage.getItem('eo_invite_token')
+    if (inviteToken) {
+      sessionStorage.setItem('eo_invite_token', inviteToken)
+      // Clean URL
+      const url = new URL(window.location.href)
+      url.searchParams.delete('invite')
+      window.history.replaceState({}, '', url.toString())
+      // Validate the token (get workspace info)
+      ;(async () => {
+        try {
+          const res = await fetch(`/api/invitations/validate?token=${encodeURIComponent(inviteToken)}`, { cache: 'no-store' })
+          const data = await res.json()
+          if (data.success) {
+            const inv = data.invitation
+            setInviteInfo(inv)
+            setLoginEmail(inv.email)
+            setSuEmail(inv.email)
+            useAppStore.getState().openAuth(inv.hasAccount ? 'login' : 'signup')
+            toast.info(`Invitation à rejoindre « ${inv.workspaceName} »`)
+          } else {
+            toast.error(data?.error?.message ?? 'Invitation invalide.')
+            sessionStorage.removeItem('eo_invite_token')
+          }
+        } catch {
+          // network error — ignore
+        }
+      })()
     }
   }, [])
 
@@ -116,6 +147,41 @@ export function AuthModal() {
     closeAuth()
   }
 
+  // Accept a pending invitation (if a token is stored in sessionStorage)
+  const acceptInvitationIfPending = async (): Promise<boolean> => {
+    const token = sessionStorage.getItem('eo_invite_token')
+    if (!token) return false
+    try {
+      // Validate first to get the invitation id
+      const valRes = await fetch(`/api/invitations/validate?token=${encodeURIComponent(token)}`, { cache: 'no-store' })
+      const valData = await valRes.json()
+      if (!valData.success) {
+        sessionStorage.removeItem('eo_invite_token')
+        return false
+      }
+      const invitationId = valData.invitation.id
+      // Accept
+      const accRes = await fetch(`/api/invitations/${invitationId}/accept`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      })
+      const accData = await accRes.json()
+      if (accData.success) {
+        sessionStorage.removeItem('eo_invite_token')
+        toast.success(`Invitation acceptée. Bienvenue dans « ${valData.invitation.workspaceName} ».`)
+        return true
+      } else {
+        toast.error(accData?.error?.message ?? 'Échec de l’acceptation de l’invitation.')
+        sessionStorage.removeItem('eo_invite_token')
+        return false
+      }
+    } catch {
+      sessionStorage.removeItem('eo_invite_token')
+      return false
+    }
+  }
+
   const onSubmitLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     if (loading) return
@@ -134,6 +200,11 @@ export function AuthModal() {
       }
       // refresh session to populate user + workspace
       await refreshSession()
+      // Accept pending invitation if any
+      const accepted = await acceptInvitationIfPending()
+      if (accepted) {
+        await refreshSession()
+      }
       setUser(data.user)
       handleClose()
       toast.success('Connexion réussie. Bienvenue !')
@@ -141,9 +212,10 @@ export function AuthModal() {
       if (role === 'PLATFORM_ADMIN') {
         setView('platform-admin-dashboard')
       } else {
-        // Regular user — wait for workspace to be populated by refreshSession
-        // The page.tsx useEffect will route to dashboard or owner-dashboard based on memberRole
-        setView('dashboard')
+        // After refreshSession, the store has the workspace with memberRole.
+        // Route based on memberRole (OWNER → owner-dashboard, DEVELOPER → dashboard).
+        const ws = useAppStore.getState().workspace
+        setView(ws?.memberRole === 'OWNER' ? 'owner-dashboard' : 'dashboard')
       }
     } catch {
       toast.error('Une erreur réseau est survenue. Réessayez.')
@@ -155,16 +227,18 @@ export function AuthModal() {
   const onSubmitSignup = async (e: React.FormEvent) => {
     e.preventDefault()
     if (loading) return
+    const inviteToken = typeof window !== 'undefined' ? sessionStorage.getItem('eo_invite_token') : null
     if (suPassword.length < 6) {
       toast.error('Le mot de passe doit contenir au moins 6 caractères.')
       return
     }
-    if (suWorkspaceName.trim().length < 2) {
+    if (!inviteToken && suWorkspaceName.trim().length < 2) {
       toast.error('Le nom du workspace est trop court.')
       return
     }
     setLoading(true)
     try {
+      const inviteToken = sessionStorage.getItem('eo_invite_token')
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -173,8 +247,9 @@ export function AuthModal() {
           password: suPassword,
           firstName: suFirstName.trim() || undefined,
           lastName: suLastName.trim() || undefined,
-          workspaceName: suWorkspaceName.trim(),
+          workspaceName: inviteToken ? undefined : suWorkspaceName.trim(),
           planCode: suPlanCode,
+          inviteToken: inviteToken || undefined,
         }),
       })
       const data = await res.json()
@@ -183,11 +258,18 @@ export function AuthModal() {
         toast.error(msg)
         return
       }
+      // Clear invite token if used
+      if (inviteToken) {
+        sessionStorage.removeItem('eo_invite_token')
+      }
       setUser(data.user)
       setWorkspace(data.workspace)
-      toast.success('Compte créé ! Votre espace est prêt.')
+      toast.success(inviteToken
+        ? `Invitation acceptée. Bienvenue dans « ${data.workspace?.name} ».`
+        : 'Compte créé ! Votre espace est prêt.')
       handleClose()
-      setView('dashboard')
+      // Route based on memberRole: OWNER → owner-dashboard, DEVELOPER → dashboard
+      setView(data.workspace?.memberRole === 'OWNER' ? 'owner-dashboard' : 'dashboard')
 
       // Seed demo data so dashboard displays stats immediately
       try {

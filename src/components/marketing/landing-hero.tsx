@@ -31,16 +31,15 @@ export function LandingHero() {
         <div className="flex flex-col items-start justify-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
             <span className="size-1.5 rounded-full bg-primary" aria-hidden />
-            Couche de reporting & gestion d'abonnement
+            Plateforme de gestion d'e-mails pour propriétaires
           </span>
           <h1 className="mt-5 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-            Vos statistiques e-mail,{' '}
-            <span className="text-primary">centralisées et claires</span>.
+            Gérez et programmez{' '}
+            <span className="text-primary">vos e-mails</span>.
           </h1>
           <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-            Votre application envoie les e-mails. EmailOqui agrège les événements,
-            calcule les taux et les présente au propriétaire — sans jamais exposer
-            la configuration technique.
+            Suivez vos envois, consultez vos statistiques, programmez vos campagnes et
+            gardez un œil sur votre délivrabilité — depuis un tableau de bord simple et clair.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Button size="lg" onClick={() => setView('pricing')} className="h-11 px-6">

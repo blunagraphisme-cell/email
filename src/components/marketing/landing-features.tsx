@@ -2,12 +2,12 @@
 
 import * as React from 'react'
 import {
+  Send,
+  Calendar,
   BarChart3,
-  Code2,
-  CreditCard,
   Users,
   ShieldCheck,
-  Zap,
+  Smartphone,
   type LucideIcon,
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -19,46 +19,46 @@ const FEATURES: {
   bullets: string[]
 }[] = [
   {
-    title: 'Reporting temps réel',
+    title: 'Gestion des e-mails',
     description:
-      'Centralisez les événements de vos envois e-mail : envoyés, délivrés, ouverts, cliqués, rebonds, désabonnements.',
+      'Centralisez toutes vos communications e-mail : campagnes, newsletters, e-mails transactionnels — tout au même endroit.',
+    icon: Send,
+    bullets: ['Suivi des envois en temps réel', 'Historique des campagnes', 'Statuts clairs (envoyé, livré, ouvert, cliqué)'],
+  },
+  {
+    title: 'Envoi programmé',
+    description:
+      'Planifiez vos envois à la date et l’heure de votre choix. Vos campagnes partent automatiquement, même quand vous dormez.',
+    icon: Calendar,
+    bullets: ['Programmation par date et heure', 'Fuseau horaire du workspace', 'Annulation possible avant envoi'],
+  },
+  {
+    title: 'Statistiques détaillées',
+    description:
+      'Taux de délivrabilité, d’ouverture, de clic, de désabonnement — suivez la performance de chaque campagne.',
     icon: BarChart3,
-    bullets: ['Taux de délivrabilité, ouverture, clic', 'Tendances sur 7/30 jours', 'Détail par campagne'],
+    bullets: ['Taux calculés automatiquement', 'Vue d’ensemble 7/30 jours', 'Détail par campagne'],
   },
   {
-    title: 'Intégration API simple',
+    title: 'Tableau de bord propriétaire',
     description:
-      'Votre backend reçoit les événements de votre infrastructure d\'envoi et les pousse vers EmailOqui via une API REST.',
-    icon: Code2,
-    bullets: ['POST /api/v1/events — batch jusqu\'à 1000', 'Idempotent (déduplication par event_id)', 'Exemples cURL, Node.js, Python'],
-  },
-  {
-    title: 'Gestion d\'abonnement',
-    description:
-      'Trois plans (Starter, Business, Premium) × trois durées (3 mois, 6 mois, 1 an). Paiement par carte, renouvellement sécurisé.',
-    icon: CreditCard,
-    bullets: ['9 offres avec remise sur la durée', 'Activation après confirmation serveur', 'Liens de renouvellement à usage unique'],
-  },
-  {
-    title: 'Tableau de bord Owner',
-    description:
-      'Le propriétaire voit une vue simplifiée : KPIs, performances, abonnement. Aucune configuration technique exposée.',
+      'Une vue simple et claire pour le propriétaire : combien d’e-mails envoyés, livrés, ouverts, cliqués. Aucune compétence technique requise.',
     icon: Users,
-    bullets: ['Vue read-only pour le client final', 'Pas de clés API, DNS, webhooks visibles', 'Responsive mobile-first'],
+    bullets: ['Interface simplifiée pour le propriétaire', 'Aucune configuration technique visible', 'Accessible sur mobile et desktop'],
   },
   {
-    title: 'Multi-tenant isolé',
+    title: 'Abonnement flexible',
     description:
-      'Chaque workspace est strictement isolé. Les données d\'un client ne sont jamais accessibles depuis un autre workspace.',
+      'Trois plans (Starter, Business, Premium) × trois durées (3 mois, 6 mois, 1 an). Choisissez ce qui convient à votre activité.',
     icon: ShieldCheck,
-    bullets: ['Isolation par workspace_id', 'Permissions serveur (Developer vs Owner)', 'Journaux d\'audit complets'],
+    bullets: ['9 offres avec remise sur la durée', 'Renouvellement à usage unique', 'Quotas quotidiens contrôlés'],
   },
   {
-    title: 'White-label total',
+    title: 'Accessible partout',
     description:
-      'Le fournisseur technique d\'envoi reste invisible. Le propriétaire ne voit que la marque EmailOqui — jamais l\'infra sous-jacente.',
-    icon: Zap,
-    bullets: ['Aucune mention du prestataire d\'envoi', 'Emails système brandés EmailOqui', 'Domaine email.oquitogo.online'],
+      'Interface responsive qui fonctionne sur ordinateur, tablette et smartphone. Consultez vos statistiques où que vous soyez.',
+    icon: Smartphone,
+    bullets: ['Design mobile-first', 'Notifications en temps réel', 'Support par ticket'],
   },
 ]
 
@@ -69,11 +69,11 @@ export function LandingFeatures() {
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-primary">Fonctionnalités</p>
           <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Une couche de reporting et d'abonnement
+            Tout pour piloter vos communications e-mail
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Votre application gère l'envoi. EmailOqui gère les statistiques, l'abonnement et le
-            tableau de bord du propriétaire.
+            EmailOqui est la plateforme qui permet au propriétaire de gérer, programmer et
+            analyser ses e-mails — sans se soucier de la technique.
           </p>
         </div>
 

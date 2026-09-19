@@ -46,6 +46,7 @@ export const VIEW_TITLES: Partial<Record<ViewKey, string>> = {
   integration: 'Intégration',
   subscription: 'Abonnement',
   payment: 'Paiement',
+  owner: 'Propriétaire',
   support: 'Support',
   audit: 'Journaux',
   settings: 'Paramètres',

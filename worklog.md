@@ -979,3 +979,82 @@ Stage Summary:
 - Auto-resume: payment view fetches active payment on mount (handles page refresh)
 - Auto-poll: client polls every 5s while in active states; admin polls every 10s
 - Committing and pushing to git
+
+---
+Task ID: 19 (owner-oriented marketing + invitation system)
+Agent: main
+Task: Reframe landing page for owner (email management + scheduling) + build developer→owner invitation flow
+
+Work Log:
+- User feedback: landing page should talk about email management + scheduled sending (oriented toward the OWNER, not the technical layer)
+- User also noted the owner invitation feature was missing
+
+Marketing refactor (owner-oriented):
+- Hero badge: "Plateforme de gestion d'e-mails pour propriétaires"
+- Hero heading: "Gérez et programmez vos e-mails."
+- Hero subtitle: "Suivez vos envois, consultez vos statistiques, programmez vos campagnes et gardez un œil sur votre délivrabilité — depuis un tableau de bord simple et clair."
+- Features (6 cards, owner-perspective):
+  1. Gestion des e-mails (suivi des envois, historique, statuts)
+  2. Envoi programmé (planification par date/heure, fuseau horaire, annulation)
+  3. Statistiques détaillées (taux délivrabilité/ouverture/clic/désabonnement)
+  4. Tableau de bord propriétaire (vue simple, aucune compétence technique)
+  5. Abonnement flexible (9 offres, renouvellement, quotas)
+  6. Accessible partout (mobile-first, notifications, support)
+
+Invitation system (developer → owner):
+- New API routes:
+  - POST /api/invitations — Developer creates invitation by email (generates token, 7-day expiry)
+    - Returns the raw invite URL (one-time display): {baseUrl}/?invite={token}
+  - GET /api/invitations — List invitations for current workspace
+  - DELETE /api/invitations?id=... — Cancel/revoke a pending invitation
+  - GET /api/invitations/validate?token=... — Public: validate token, return workspace name + inviter + hasAccount
+  - POST /api/invitations/[id]/accept — Authed user accepts (validates email match + creates WorkspaceMember role=OWNER)
+- Updated POST /api/auth/signup — accepts optional `inviteToken`:
+  - If present: validates invitation → creates user (NO new workspace) → accepts invitation → returns the INVITED workspace with memberRole=OWNER
+  - If absent: normal signup (creates user + workspace + subscription)
+- Updated auth-modal:
+  - ?invite=TOKEN detection on mount → validates → opens auth modal with email pre-filled → toast "Invitation à rejoindre « workspace »"
+  - sessionStorage stores the token across the auth flow
+  - After login: acceptInvitationIfPending() → if token, validate + accept → refresh session
+  - After signup: passes inviteToken in the request body → server creates user + accepts invitation
+  - Workspace name field validation skipped when inviteToken is present
+  - Post-signup routing: memberRole=OWNER → setView('owner-dashboard'), else → 'dashboard'
+  - Post-login routing: same logic (checks workspace.memberRole from store)
+- page.tsx: ?invite=TOKEN param → stored in sessionStorage → URL cleaned
+
+New "Propriétaire" view (src/components/dashboard/views/owner.tsx):
+- "Propriétaire actuel" card: shows accepted owners (with Crown icon)
+- "Inviter un propriétaire" form: email input + "Inviter" button
+- Newly created invitation: displays the invite URL (one-time) with copy button + 7-day expiry note
+- "Invitations en attente" list: pending invitations with status + expiry + cancel button
+- "Historique des invitations" table: all invitations with status/created/expires/accepted
+- StatusBadge for EN_ATTENTE/ACCEPTEE/EXPIREE/ANNULE
+
+Sidebar + routing:
+- Added 'owner' to ViewKey
+- Added "Propriétaire" to sidebar NAV_ITEMS (between Intégration and Abonnement, Crown icon)
+- VIEW_MAP['owner'] = OwnerView
+- VIEW_TITLES['owner'] = 'Propriétaire'
+- page.tsx validViews includes 'owner'
+
+Lint: 0 errors, 0 warnings
+
+Browser verification (full invitation flow):
+1. Signup developer (dev-invite@...) → workspace "Entreprise Test" ✓
+2. Navigate to "Propriétaire" view → see invitation form ✓
+3. Enter owner email + "Inviter" → invite link generated: http://localhost:3000/?invite=b6eb93... ✓
+4. Logout developer
+5. Visit invite link → auth modal opens with signup tab + email pre-filled to owner2@... ✓
+6. Toast: "Invitation à rejoindre « Entreprise Test »" ✓
+7. Fill name + password → "Créer mon compte" ✓
+8. Session: role=USER, workspace="Entreprise Test", memberRole=OWNER ✓ (joined existing workspace, no new one created)
+9. Owner dashboard renders: "Bienvenue sur EmailOqui" + main "Tableau de bord" ✓
+
+Stage Summary:
+- Landing page reframed for the OWNER: email management, scheduling, statistics, simple dashboard
+- Developer can invite the owner via the "Propriétaire" view (email → unique link → 7-day expiry)
+- Owner visits the link → auth modal with email pre-filled → signup → joins workspace as OWNER
+- Owner lands in the simplified OwnerDashboard (no technical config visible)
+- Login flow also handles invitations: acceptInvitationIfPending() after login
+- Signup route handles inviteToken: skips workspace creation, joins invited workspace
+- Committing and pushing to git

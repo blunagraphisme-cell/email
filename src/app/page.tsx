@@ -25,6 +25,20 @@ export default function Home() {
     refreshSession()
   }, [refreshSession])
 
+  // Handle ?invite=TOKEN param — store it for the auth-modal to pick up after login/signup
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    const inviteToken = params.get('invite')
+    if (inviteToken) {
+      sessionStorage.setItem('eo_invite_token', inviteToken)
+      // Clean the URL
+      const url = new URL(window.location.href)
+      url.searchParams.delete('invite')
+      window.history.replaceState({}, '', url.toString())
+    }
+  }, [])
+
   // Routing logic for authenticated users — reset invalid views
   useEffect(() => {
     if (!user) return
@@ -41,7 +55,7 @@ export default function Home() {
       const ownerViews: ViewKey[] = ['owner-dashboard', 'support']
       const devViews: ViewKey[] = [
         'dashboard', 'stats', 'integration',
-        'subscription', 'payment', 'support', 'audit', 'settings',
+        'subscription', 'payment', 'owner', 'support', 'audit', 'settings',
       ]
       const validViews: ViewKey[] = [...ownerViews, ...devViews]
       // If current view isn't valid for this user, redirect to their default dashboard

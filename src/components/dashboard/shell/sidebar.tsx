@@ -11,15 +11,15 @@ import {
   BarChart3,
   CreditCard,
   Webhook,
+  Crown,
   LifeBuoy,
   ScrollText,
   Settings,
   LogOut,
-  Crown,
-  Sparkles,
   ChevronLeft,
   ChevronRight,
   Eye,
+  Sparkles,
 } from 'lucide-react'
 
 interface NavItem {
@@ -33,6 +33,7 @@ const NAV_ITEMS: NavItem[] = [
   { view: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { view: 'stats', label: 'Statistiques', icon: BarChart3 },
   { view: 'integration', label: 'Intégration', icon: Webhook },
+  { view: 'owner', label: 'Propriétaire', icon: Crown },
   { view: 'subscription', label: 'Abonnement', icon: CreditCard },
   { view: 'support', label: 'Support', icon: LifeBuoy },
   { view: 'audit', label: 'Journaux', icon: ScrollText },
