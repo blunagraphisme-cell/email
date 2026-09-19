@@ -500,7 +500,7 @@ export function PaymentView() {
                   ) : (
                     <div className="flex items-center gap-3 text-sm">
                       <Loader2 className="size-4 animate-spin" />
-                      <span>Code soumis. En attente de vérification par l'administrateur.</span>
+                      <span>Validation en cours…</span>
                     </div>
                   )}
                 </div>
