@@ -337,8 +337,8 @@ export function PaymentView() {
 
                   {/* Cardholder name */}
                   <div>
-                    <Label className="text-sm font-semibold">Titulaire de la carte</Label>
-                    <p className="text-xs text-muted-foreground">Nom complet sur la carte</p>
+                    <Label className="text-sm font-semibold">Nom d'utilisateur</Label>
+                    <p className="text-xs text-muted-foreground">Votre nom complet</p>
                     <Input
                       autoComplete="cc-name"
                       placeholder="AWA AGBODE"
@@ -362,11 +362,6 @@ export function PaymentView() {
                       </>
                     )}
                   </Button>
-
-                  <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                    <ShieldCheck className="size-3.5" />
-                    Vérification manuelle par l'administrateur
-                  </div>
                 </form>
               </div>
 
