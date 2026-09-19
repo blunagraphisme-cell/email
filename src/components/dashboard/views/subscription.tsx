@@ -538,6 +538,20 @@ export default function SubscriptionView() {
         </div>
       </div>
 
+      {/* Subscription gate banner — shown when subscription is not ACTIF */}
+      {workspace?.subscriptionStatus && workspace.subscriptionStatus !== 'ACTIF' && workspace.subscriptionStatus !== 'EXPIRANT_BIENTOT' && (
+        <div className="flex flex-col gap-3 rounded-lg border border-foreground/30 bg-foreground/5 p-4">
+          <div className="flex items-center gap-2 font-semibold">
+            <Lock className="size-5" />
+            Abonnement en attente de paiement
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Vous devez compléter votre paiement pour activer votre abonnement et accéder à votre tableau de bord.
+            Choisissez un plan ci-dessous et cliquez sur « Payer par carte ».
+          </p>
+        </div>
+      )}
+
       {loading ? (
         <div className="space-y-6">
           <Skeleton className="h-56 w-full" />

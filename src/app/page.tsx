@@ -44,7 +44,6 @@ export default function Home() {
     if (!user) return
     // Platform Admin → dedicated admin dashboard
     if (user.role === 'PLATFORM_ADMIN') {
-      // Redirect away from any non-admin view
       if (view !== 'platform-admin-dashboard') {
         setView('platform-admin-dashboard')
       }
@@ -52,13 +51,34 @@ export default function Home() {
     }
     // Developer or Owner with workspace
     if (workspace) {
-      const ownerViews: ViewKey[] = ['owner-dashboard', 'support']
+      // SUBSCRIPTION GATE: if the subscription is not ACTIF or EXPIRANT_BIENTOT,
+      // force the user to the payment/subscription pages. They can't access
+      // the dashboard, stats, integration, etc. until they've paid.
+      const subStatus = workspace.subscriptionStatus
+      const isSubscriptionActive = subStatus === 'ACTIF' || subStatus === 'EXPIRANT_BIENTOT'
+      
+      // Views accessible WITHOUT an active subscription
+      const unlockedViews: ViewKey[] = ['subscription', 'payment', 'support', 'settings']
+      
+      // Views accessible WITH an active subscription (developer)
       const devViews: ViewKey[] = [
         'dashboard', 'stats', 'integration',
         'subscription', 'payment', 'owner', 'support', 'audit', 'settings',
       ]
-      const validViews: ViewKey[] = [...ownerViews, ...devViews]
-      // If current view isn't valid for this user, redirect to their default dashboard
+      
+      // Views accessible WITH an active subscription (owner)
+      const ownerViews: ViewKey[] = ['owner-dashboard', 'support']
+      
+      if (!isSubscriptionActive) {
+        // Subscription not active → lock to payment/subscription/support/settings
+        if (!unlockedViews.includes(view)) {
+          setView('subscription')
+        }
+        return
+      }
+      
+      // Subscription active → check role-based views
+      const validViews = workspace.memberRole === 'OWNER' ? ownerViews : devViews
       if (!validViews.includes(view)) {
         setView(workspace.memberRole === 'OWNER' ? 'owner-dashboard' : 'dashboard')
       }

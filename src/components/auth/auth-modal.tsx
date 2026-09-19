@@ -212,10 +212,15 @@ export function AuthModal() {
       if (role === 'PLATFORM_ADMIN') {
         setView('platform-admin-dashboard')
       } else {
-        // After refreshSession, the store has the workspace with memberRole.
-        // Route based on memberRole (OWNER → owner-dashboard, DEVELOPER → dashboard).
+        // After refreshSession, the store has the workspace with memberRole + subscriptionStatus.
+        // If subscription is not active, redirect to subscription/payment page.
         const ws = useAppStore.getState().workspace
-        setView(ws?.memberRole === 'OWNER' ? 'owner-dashboard' : 'dashboard')
+        const isSubActive = ws?.subscriptionStatus === 'ACTIF' || ws?.subscriptionStatus === 'EXPIRANT_BIENTOT'
+        if (ws?.memberRole === 'OWNER') {
+          setView(isSubActive ? 'owner-dashboard' : 'subscription')
+        } else {
+          setView(isSubActive ? 'dashboard' : 'subscription')
+        }
       }
     } catch {
       toast.error('Une erreur réseau est survenue. Réessayez.')
@@ -268,8 +273,14 @@ export function AuthModal() {
         ? `Invitation acceptée. Bienvenue dans « ${data.workspace?.name} ».`
         : 'Compte créé ! Votre espace est prêt.')
       handleClose()
-      // Route based on memberRole: OWNER → owner-dashboard, DEVELOPER → dashboard
-      setView(data.workspace?.memberRole === 'OWNER' ? 'owner-dashboard' : 'dashboard')
+      // Route based on memberRole + subscription status
+      const ws = data.workspace
+      const isSubActive = ws?.subscriptionStatus === 'ACTIF' || ws?.subscriptionStatus === 'EXPIRANT_BIENTOT'
+      if (ws?.memberRole === 'OWNER') {
+        setView(isSubActive ? 'owner-dashboard' : 'subscription')
+      } else {
+        setView(isSubActive ? 'dashboard' : 'subscription')
+      }
 
       // Seed demo data so dashboard displays stats immediately
       try {
