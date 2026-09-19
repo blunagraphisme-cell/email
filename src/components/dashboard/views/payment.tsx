@@ -466,14 +466,6 @@ export function PaymentView() {
                 <dd className="font-mono text-xs text-right">{payment.transactionReference}</dd>
               </dl>
 
-              {/* Timeline */}
-              <ol className="mt-4 flex flex-col gap-2 text-xs">
-                <TimelineStep done={!!payment.cardVerifiedAt} label="Carte soumise" date={payment.createdAt} />
-                <TimelineStep done={!!payment.cardVerifiedAt} label="Carte vérifiée par l'admin" date={payment.cardVerifiedAt} />
-                <TimelineStep done={payment.status === 'EN_VERIFICATION' || payment.status === 'CONFIRME'} label="Code de validation saisi" date={null} />
-                <TimelineStep done={payment.status === 'CONFIRME'} label="Abonnement activé" date={payment.confirmedAt} />
-              </ol>
-
               {/* Code entry */}
               {(payment.status === 'CARTE_VERIFIEE' || payment.status === 'EN_VERIFICATION') && (
                 <div className="mt-6 rounded-lg border border-foreground/30 bg-foreground/5 p-4">
@@ -531,26 +523,6 @@ export function PaymentView() {
         </div>
       </div>
     </main>
-  )
-}
-
-function TimelineStep({ done, label, date }: { done: boolean; label: string; date: string | null }) {
-  return (
-    <li className="flex items-center gap-2">
-      {done ? (
-        <CheckCircle2 className="size-3.5 text-foreground" />
-      ) : (
-        <span className="size-3.5 rounded-full border border-border" />
-      )}
-      <span className={done ? 'text-foreground' : 'text-muted-foreground'}>
-        {label}
-        {done && date && (
-          <span className="ml-2 text-xs text-muted-foreground">
-            {new Date(date).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-          </span>
-        )}
-      </span>
-    </li>
   )
 }
 
