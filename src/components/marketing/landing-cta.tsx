@@ -22,8 +22,7 @@ export function LandingCta() {
               Prêt à automatiser vos e-mails ?
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm text-primary-foreground/90 sm:text-base">
-              Créez votre compte EmailOqui en moins de 5 minutes. Aucune carte requise pour
-              configurer votre espace.
+              Créez votre compte EmailOqui en moins de 5 minutes et commencez à suivre vos envois.
             </p>
             <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
               <Button

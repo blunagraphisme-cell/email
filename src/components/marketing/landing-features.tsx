@@ -40,11 +40,11 @@ const FEATURES: {
     bullets: ['Taux calculés automatiquement', 'Vue d’ensemble 7/30 jours', 'Détail par campagne'],
   },
   {
-    title: 'Tableau de bord propriétaire',
+    title: 'Tableau de bord simple',
     description:
-      'Une vue simple et claire pour le propriétaire : combien d’e-mails envoyés, livrés, ouverts, cliqués. Aucune compétence technique requise.',
+      'Une vue simple et claire : combien d’e-mails envoyés, livrés, ouverts, cliqués. Aucune compétence technique requise.',
     icon: Users,
-    bullets: ['Interface simplifiée pour le propriétaire', 'Aucune configuration technique visible', 'Accessible sur mobile et desktop'],
+    bullets: ['Interface simplifiée', 'Aucune configuration technique visible', 'Accessible sur mobile et desktop'],
   },
   {
     title: 'Abonnement flexible',
@@ -72,7 +72,7 @@ export function LandingFeatures() {
             Tout pour piloter vos communications e-mail
           </h2>
           <p className="mt-4 text-muted-foreground">
-            EmailOqui est la plateforme qui permet au propriétaire de gérer, programmer et
+            EmailOqui est la plateforme qui permet de gérer, programmer et
             analyser ses e-mails — sans se soucier de la technique.
           </p>
         </div>

@@ -3,7 +3,6 @@
 import * as React from 'react'
 import {
   ArrowRight,
-  CheckCircle2,
   Mail,
   Send,
   Users,
@@ -29,11 +28,7 @@ export function LandingHero() {
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-4 pb-16 pt-14 sm:px-6 lg:grid-cols-2 lg:gap-10 lg:px-8 lg:pb-24 lg:pt-20">
         {/* Left copy */}
         <div className="flex flex-col items-start justify-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-            <span className="size-1.5 rounded-full bg-primary" aria-hidden />
-            Plateforme de gestion d'e-mails pour propriétaires
-          </span>
-          <h1 className="mt-5 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
             Gérez et programmez{' '}
             <span className="text-primary">vos e-mails</span>.
           </h1>
@@ -54,10 +49,6 @@ export function LandingHero() {
             >
               Commencer maintenant
             </Button>
-          </div>
-          <div className="mt-8 flex items-center gap-2 text-sm text-muted-foreground">
-            <CheckCircle2 className="size-4 text-primary" />
-            Aucune carte requise pour l'essai. Configurez en moins de 5 minutes.
           </div>
         </div>
 
