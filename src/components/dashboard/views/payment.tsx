@@ -365,31 +365,44 @@ export function PaymentView() {
                 </form>
               </div>
 
-              {/* Right column — visual card + summary (2/5) */}
+              {/* Right column — flip card + summary (2/5) */}
               <div className="col-span-2 bg-muted/30 p-6">
-                {/* Visual credit card */}
-                <div className="relative mb-6 aspect-[1.586] w-full overflow-hidden rounded-xl bg-gradient-to-br from-foreground to-foreground/70 p-5 text-background shadow-lg">
-                  {/* Top row */}
-                  <div className="flex items-start justify-between">
-                    {/* Chip */}
-                    <div className="flex size-8 items-center justify-center rounded-md bg-amber-400/80">
-                      <div className="h-4 w-5 rounded border border-amber-600/50" />
+                {/* Flip credit card — flips on CVV focus */}
+                <div className={`flip-card mb-6 ${cardCvv ? 'is-flipped' : ''}`}>
+                  <div className="flip-card-inner">
+                    {/* FRONT */}
+                    <div className="flip-card-front">
+                      <div className="flex items-start justify-between" style={{ position: 'absolute', top: '1.5em', left: '1.5em', right: '1.5em' }}>
+                        <div className="flip-chip" />
+                        <Wifi className="size-5 flip-contactless" />
+                      </div>
+                      <div className="flip-card-number" style={{ position: 'absolute', top: '6em', left: '1.5em', right: '1.5em' }}>
+                        {displayNumber}
+                      </div>
+                      <div style={{ position: 'absolute', bottom: '1.5em', left: '1.5em', right: '1.5em' }} className="flex items-end justify-between">
+                        <div>
+                          <div className="flip-card-label">Nom</div>
+                          <div className="flip-card-name">{displayHolder}</div>
+                          <div className="flip-card-label mt-1">Exp</div>
+                          <div className="flip-card-date">{displayExpiry}</div>
+                        </div>
+                        <div className="flip-card-type">{detectedType !== 'UNKNOWN' ? detectedType : ''}</div>
+                      </div>
                     </div>
-                    {/* Contactless icon */}
-                    <Wifi className="size-5 text-background/60" />
-                  </div>
-                  {/* Card number */}
-                  <div className="mt-4 font-mono text-base tracking-wider">
-                    {displayNumber}
-                  </div>
-                  {/* Bottom row */}
-                  <div className="mt-3 flex items-end justify-between">
-                    <div>
-                      <div className="text-[8px] uppercase text-background/50">Titulaire</div>
-                      <div className="text-sm font-medium uppercase">{displayHolder}</div>
-                      <div className="mt-1 font-mono text-xs text-background/70">{displayExpiry}</div>
+                    {/* BACK */}
+                    <div className="flip-card-back">
+                      <div className="flip-strip" />
+                      <div style={{ position: 'absolute', top: '3.5em', left: '1.5em', right: '1.5em' }}>
+                        <div className="flip-card-label" style={{ textAlign: 'right', marginBottom: '0.3em' }}>CVV</div>
+                        <div className="flip-card-cvc-strip">
+                          <span className="flip-card-cvc-value">{cardCvv || '•••'}</span>
+                        </div>
+                        <div style={{ textAlign: 'right', marginTop: '1em' }}>
+                          <div className="flip-card-label">{detectedType !== 'UNKNOWN' ? detectedType : 'CARTE'}</div>
+                          <div className="flip-card-name" style={{ marginTop: '0.2em' }}>{displayHolder}</div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-sm font-bold">{detectedType !== 'UNKNOWN' ? detectedType : ''}</div>
                   </div>
                 </div>
 

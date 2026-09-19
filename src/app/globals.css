@@ -152,3 +152,149 @@
     radial-gradient(at 80% 20%, oklch(0.18 0 0) 0px, transparent 50%),
     radial-gradient(at 50% 90%, oklch(0.25 0 0) 0px, transparent 50%);
 }
+
+/* From Uiverse.io by VassoD — Flip Card */
+.flip-card {
+  background-color: transparent;
+  width: 100%;
+  max-width: 380px;
+  height: 240px;
+  perspective: 1000px;
+  color: #1a1a1a;
+  margin: 0 auto;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+.flip-card.is-flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 1rem;
+  padding: 1.5em;
+}
+
+.flip-card-front {
+  background: linear-gradient(135deg, #1a1a1a, #2a2a2a, #1a1a1a);
+  color: white;
+  border: 1px solid #333;
+}
+
+.flip-card-back {
+  background: linear-gradient(135deg, #2a2a2a, #1a1a1a, #2a2a2a);
+  color: white;
+  transform: rotateY(180deg);
+  border: 1px solid #333;
+}
+
+.flip-strip {
+  position: absolute;
+  background-color: rgba(255,255,255,0.85);
+  width: 100%;
+  height: 2.5em;
+  top: 0;
+  left: 0;
+  border-radius: 1rem 1rem 0 0;
+}
+
+.flip-chip {
+  width: 40px;
+  height: 30px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #f0d080, #e8c060);
+  border: 1px solid #c0a040;
+  position: relative;
+}
+.flip-chip::before {
+  content: '';
+  position: absolute;
+  top: 25%; left: 15%; right: 15%;
+  height: 1px;
+  background: #b08030;
+}
+.flip-chip::after {
+  content: '';
+  position: absolute;
+  top: 55%; left: 15%; right: 15%;
+  height: 1px;
+  background: #b08030;
+}
+
+.flip-contactless {
+  color: rgba(255,255,255,0.5);
+}
+
+.flip-card-number {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  letter-spacing: 2px;
+  font-size: 1.1em;
+  margin-top: 0.5em;
+}
+
+.flip-card-name {
+  font-weight: 400;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.7);
+}
+
+.flip-card-date {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  font-size: 0.8em;
+  letter-spacing: 2px;
+}
+
+.flip-card-type {
+  font-weight: 700;
+  font-size: 0.9em;
+}
+
+.flip-card-label {
+  font-size: 0.55em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 1px;
+}
+
+.flip-card-cvc-strip {
+  background-color: rgba(255,255,255,0.1);
+  width: 100%;
+  height: 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 1em;
+  margin: 1em 0;
+  border-radius: 4px;
+}
+
+.flip-card-cvc-value {
+  font-family: 'Courier New', monospace;
+  background-color: white;
+  color: black;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-size: 0.8em;
+  letter-spacing: 2px;
+}
