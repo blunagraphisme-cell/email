@@ -166,6 +166,13 @@ function fmtMoney(amount: number, currency: string) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount)
 }
 
+// Convert USD to FCFA (taux fixe: 1 USD = 600 FCFA)
+function fmtFCFA(amount: number, currency: string = 'USD') {
+  const usdAmount = currency === 'USD' ? amount : amount
+  const fcfa = Math.round(usdAmount * 600)
+  return new Intl.NumberFormat('fr-FR').format(fcfa) + ' FCFA'
+}
+
 export function PlatformAdminDashboard() {
   const user = useAppStore((s) => s.user)
   const logout = useAppStore((s) => s.logout)
@@ -305,7 +312,7 @@ function Overview({ stats, recentWorkspaces }: { stats: AdminStats | null; recen
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
         <KpiCard icon={Building2} label="Workspaces" value={stats.workspaces} hint={`${stats.activeSubscriptions} actifs`} />
         <KpiCard icon={Users} label="Utilisateurs" value={stats.users} />
-        <KpiCard icon={DollarSign} label="Revenu total" value={fmtMoney(stats.revenue, 'USD')} hint={`${stats.confirmedPayments} paiements confirmés`} />
+        <KpiCard icon={DollarSign} label="Revenu total" value={fmtFCFA(stats.revenue)} hint={`${stats.confirmedPayments} paiements confirmés`} />
         <KpiCard icon={Send} label="E-mails envoyés" value={stats.emailVolume.toLocaleString('fr-FR')} />
         <KpiCard icon={CheckCircle2} label="Souscriptions actives" value={stats.activeSubscriptions} tone="default" />
         <KpiCard icon={Clock} label="Expirant bientôt" value={stats.expiringSoon} tone="warning" />
@@ -815,7 +822,7 @@ function VerificationsTab() {
                         <StatusBadge status={p.status} />
                       </div>
                       <div className="mt-1 text-xs text-muted-foreground">
-                        {p.planCode} · {fmtMoney(p.amount, p.currency)} · {fmtDateTime(p.createdAt)}
+                        {p.planCode} · {fmtFCFA(p.amount, p.currency)} · {fmtDateTime(p.createdAt)}
                       </div>
                     </div>
                     <Badge variant="outline" className="font-mono text-xs">{p.transactionReference}</Badge>
@@ -950,7 +957,7 @@ function PaymentsTab() {
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <KpiCard icon={DollarSign} label="Revenu confirmé" value={fmtMoney(totalConfirmed, 'USD')} />
+        <KpiCard icon={DollarSign} label="Revenu confirmé" value={fmtFCFA(totalConfirmed)} />
         <KpiCard icon={CheckCircle2} label="Confirmés" value={items.filter((p) => p.status === 'CONFIRME').length} />
         <KpiCard icon={Clock} label="En attente" value={items.filter((p) => p.status === 'EN_ATTENTE').length} tone="warning" />
         <KpiCard icon={XCircle} label="Refusés/remboursés" value={items.filter((p) => ['REFUSE', 'ANNULE', 'REMBOURSE'].includes(p.status)).length} tone="error" />
@@ -979,7 +986,7 @@ function PaymentsTab() {
                     <tr key={p.id} className="border-b border-border/60 hover:bg-muted/40">
                       <td className="py-2 pr-3 font-medium">{p.workspaceName}</td>
                       <td className="py-2 pr-3">{p.planCode ? <Badge variant="outline" className="text-xs">{p.planCode}</Badge> : '—'}</td>
-                      <td className="py-2 pr-3 text-right tabular-nums font-medium">{fmtMoney(p.amount, p.currency)}</td>
+                      <td className="py-2 pr-3 text-right tabular-nums font-medium">{fmtFCFA(p.amount, p.currency)}</td>
                       <td className="py-2 pr-3"><StatusBadge status={p.status} /></td>
                       <td className="py-2 pr-3 text-xs">{p.paymentMethod}{p.cardLast4 ? ` •••• ${p.cardLast4}` : ''}</td>
                       <td className="py-2 pr-3 font-mono text-xs">{p.transactionReference ?? '—'}</td>
