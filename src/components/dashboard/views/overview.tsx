@@ -17,9 +17,9 @@ import {
   Gauge,
   ArrowUpRight,
   Plus,
-  Upload,
-  Globe,
   BarChart3,
+  CreditCard,
+  LifeBuoy,
   Sparkles,
 } from 'lucide-react'
 import {
@@ -258,7 +258,7 @@ export default function OverviewView() {
           firstName={user?.firstName}
           workspaceName={workspace.name}
           planName={workspace.planName}
-          onCreateCampaign={() => setView('campaign-new')}
+          onCreateCampaign={() => setView('integration')}
         />
       </div>
     )
@@ -330,9 +330,9 @@ export default function OverviewView() {
               {stats.activeCampaigns} active{stats.activeCampaigns > 1 ? 's' : ''}
             </Badge>
           )}
-          <Button size="sm" onClick={() => setView('campaign-new')}>
+          <Button size="sm" onClick={() => setView('integration')}>
             <Plus className="size-4" />
-            Nouvelle campagne
+            Configurer l'intégration
           </Button>
         </div>
       </div>
@@ -551,7 +551,7 @@ export default function OverviewView() {
             <CardTitle className="text-base">Campagnes récentes</CardTitle>
             <CardDescription>Vos 3 dernières campagnes</CardDescription>
           </div>
-          <Button variant="outline" size="sm" onClick={() => setView('campaigns')}>
+          <Button variant="outline" size="sm" onClick={() => setView('stats')}>
             Voir tout
           </Button>
         </CardHeader>
@@ -566,7 +566,7 @@ export default function OverviewView() {
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <Mail className="mb-2 size-8 text-muted-foreground/50" />
               <p className="text-sm text-muted-foreground">Aucune campagne pour le moment.</p>
-              <Button size="sm" className="mt-3" onClick={() => setView('campaign-new')}>
+              <Button size="sm" className="mt-3" onClick={() => setView('integration')}>
                 <Plus className="size-4" />
                 Créer une campagne
               </Button>
@@ -580,7 +580,7 @@ export default function OverviewView() {
                   <button
                     key={c.id}
                     type="button"
-                    onClick={() => setView('campaign-detail', c.id)}
+                    onClick={() => setView('stats')}
                     className="group flex flex-col gap-2 rounded-lg border border-border bg-card p-4 text-left transition-colors hover:border-primary/40 hover:bg-accent/30"
                   >
                     <div className="flex items-start justify-between gap-2">
@@ -624,27 +624,27 @@ export default function OverviewView() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <QuickAction
               icon={Plus}
-              label="Nouvelle campagne"
-              description="Rédigez et envoyez"
-              onClick={() => setView('campaign-new')}
-            />
-            <QuickAction
-              icon={Upload}
-              label="Importer contacts"
-              description="CSV ou intégration"
-              onClick={() => setView('contacts')}
-            />
-            <QuickAction
-              icon={Globe}
-              label="Configurer le domaine"
-              description="Authentifiez votre envoi"
-              onClick={() => setView('domain')}
+              label="Configurer l'intégration"
+              description="Clé API + endpoint + exemples"
+              onClick={() => setView('integration')}
             />
             <QuickAction
               icon={BarChart3}
               label="Voir statistiques"
               description="Rapports détaillés"
               onClick={() => setView('stats')}
+            />
+            <QuickAction
+              icon={CreditCard}
+              label="Gérer l'abonnement"
+              description="Plan, renouvellement"
+              onClick={() => setView('subscription')}
+            />
+            <QuickAction
+              icon={LifeBuoy}
+              label="Support"
+              description="Ouvrir un ticket"
+              onClick={() => setView('support')}
             />
           </div>
         </CardContent>
@@ -709,16 +709,16 @@ function EmptyState({
             <>
               {' '}au plan <span className="font-medium text-foreground">{planName}</span>
             </>
-          )}. Créez votre première campagne en quelques minutes.
+          )}. Configurez l'intégration pour remonter vos statistiques de communication.
         </p>
         <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
           <Button onClick={onCreateCampaign}>
             <Plus className="size-4" />
-            Créez votre première campagne
+            Configurer l'intégration
           </Button>
-          <Button variant="outline" onClick={() => {}}>
-            <Upload className="size-4" />
-            Importer des contacts
+          <Button variant="outline" onClick={() => setView('stats')}>
+            <BarChart3 className="size-4" />
+            Voir les statistiques
           </Button>
         </div>
       </CardContent>

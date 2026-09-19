@@ -777,3 +777,86 @@ Stage Summary:
 - All UI surfaces updated: pricing page (with duration selector), pricing teaser, signup modal, subscription view
 - API routes use new codes (STARTER_3M default fallback everywhere)
 - planLimit() correctly extracts tier from suffixed codes (quotas unchanged per tier)
+
+---
+Task ID: 17 (pivot to reporting + subscription layer)
+Agent: main
+Task: Pivot EmailOqui from email-sending platform to reporting + subscription layer (client app handles sending)
+
+Work Log:
+- User clarified the architecture: the client's own app integrates the email provider directly; EmailOqui becomes a reporting + subscription management layer
+- Flow: client app sends via their infra → events generated → client backend receives via webhook → pushes to EmailOqui via /api/v1/events → Owner sees stats in dashboard
+- White-label rule reinforced: Owner never sees provider name, API keys, DNS, webhooks, technical config
+
+New API endpoint:
+- POST /api/v1/events — ingestion endpoint (auth: Bearer API key)
+  - Body: { events: [{ event_id, email, type, campaign_name?, occurred_at? }] }
+  - Idempotent by (workspace_id, event_id) — UNIQUE constraint, duplicates silently ignored
+  - Max 1000 events per request
+  - Auto-creates lightweight Campaign records per unique campaign_name for grouping
+  - Updates API key lastUsedAt on each call
+  - Returns { success, received, duplicates, errors }
+- GET /api/v1/events — health check + documentation (no auth)
+- POST /api/test/event?email=... — helper to inject test events (uses Developer session)
+
+New "Intégration" view (replaces Domaine + Clés API):
+- Architecture diagram (4 steps: send → events → push → dashboard)
+- API key management (generate/revoke, raw shown once with copy button)
+  - White-label banner: "Le propriétaire ne peut jamais la voir ni la générer"
+- Endpoint URL display (POST https://email.oquitogo.online/api/v1/events)
+- Event types supported (8: SENT/DELIVERED/OPENED/CLICKED/BOUNCE/FAILED/UNSUBSCRIBE/COMPLAINT)
+- JSON body format documentation
+- Idempotency note (event_id unique, max 1000/request)
+- Code examples (cURL, Node.js, Python) with tabs + copy button
+  - Node.js example shows how to forward Resend webhook events to EmailOqui
+- Test integration (inject test event via /api/test/event)
+- Flow diagram (text-based ASCII)
+
+Sidebar cleanup:
+- REMOVED: Campagnes, Contacts, Listes & Segments, Automatisations, Modèles, Domaine, Clés API
+- ADDED: Intégration (between Statistiques and Abonnement)
+- KEPT: Dashboard, Statistiques, Abonnement, Support, Journaux, Paramètres
+- Removed campaign count polling (no longer needed)
+
+ViewKey + routing:
+- Removed views: campaigns, campaign-new, campaign-detail, editor, contacts, lists, automations, templates, domain, apikeys
+- Added view: 'integration'
+- Updated page.tsx validViews list for regular users
+- Updated dashboard-shell VIEW_MAP (7 views: dashboard, stats, integration, subscription, support, audit, settings)
+
+Topbar VIEW_TITLES:
+- Removed titles for deleted views
+- Added 'integration': 'Intégration'
+- Made Partial<Record> (was Record)
+
+Dashboard overview:
+- "Configurer l'intégration" button replaces "Nouvelle campagne"
+- Quick actions: Configurer l'intégration, Voir statistiques, Gérer l'abonnement, Support
+- Empty state CTA: "Configurer l'intégration" + "Voir les statistiques"
+- Recent campaigns section: click goes to stats (not campaign-detail)
+
+Marketing refactor:
+- Hero: "Vos statistiques e-mail, centralisées et claires." + new subtitle about app sending + EmailOqui aggregating
+- Features (6 cards): Reporting temps réel, Intégration API simple, Gestion d'abonnement, Tableau de bord Owner, Multi-tenant isolé, White-label total
+- Layout metadata: "EmailOqui — Reporting & gestion d'abonnement e-mail"
+
+Lint: 0 errors, 0 warnings
+Browser verification:
+- New hero + features render correctly
+- Signup → dashboard with new sidebar (7 items, no campaigns/contacts/lists/etc.)
+- Integration view: full flow (architecture + API key gen + endpoint + code examples + test)
+- Generated API key: moq_live_f848...
+- POST /api/v1/events with Bearer auth: { received: 3, duplicates: 0, errors: [] } ✓
+- Idempotency test: re-pushed same events → { received: 0, duplicates: 2 } ✓
+- Stats view: 21 envoyés, 21 délivrés, 14 ouvertures, 8 clics (includes the 3 pushed events)
+
+Stage Summary:
+- EmailOqui is now a reporting + subscription layer (not an email sender)
+- The client's app integrates Resend directly; EmailOqui receives events via /api/v1/events
+- White-label: Owner sees only stats dashboard, never the technical config
+- Sidebar simplified to 7 items (Dashboard, Stats, Integration, Subscription, Support, Audit, Settings)
+- New Integration view with API key mgmt + endpoint + code examples + test
+- Idempotent ingestion endpoint (duplicates silently ignored)
+- Marketing repositioned: "Couche de reporting & gestion d'abonnement"
+- Old view files (campaigns.tsx, contacts.tsx, etc.) kept on disk but no longer linked (harmless, can be deleted later)
+- Committing and pushing to git

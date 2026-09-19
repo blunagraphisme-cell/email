@@ -8,24 +8,18 @@ import { Progress } from '@/components/ui/progress'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard,
-  Mail,
-  Users,
-  ListTree,
-  Workflow,
-  LayoutTemplate,
   BarChart3,
   CreditCard,
-  Globe,
-  KeyRound,
+  Webhook,
   LifeBuoy,
   ScrollText,
   Settings,
   LogOut,
   Crown,
+  Sparkles,
   ChevronLeft,
   ChevronRight,
   Eye,
-  Sparkles,
 } from 'lucide-react'
 
 interface NavItem {
@@ -37,15 +31,9 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { view: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { view: 'campaigns', label: 'Campagnes', icon: Mail, aliases: ['campaign-new', 'campaign-detail', 'editor'] },
-  { view: 'contacts', label: 'Contacts', icon: Users },
-  { view: 'lists', label: 'Listes & Segments', icon: ListTree },
-  { view: 'automations', label: 'Automatisations', icon: Workflow },
-  { view: 'templates', label: 'Modèles', icon: LayoutTemplate },
   { view: 'stats', label: 'Statistiques', icon: BarChart3 },
+  { view: 'integration', label: 'Intégration', icon: Webhook },
   { view: 'subscription', label: 'Abonnement', icon: CreditCard },
-  { view: 'domain', label: 'Domaine', icon: Globe },
-  { view: 'apikeys', label: 'Clés API', icon: KeyRound },
   { view: 'support', label: 'Support', icon: LifeBuoy },
   { view: 'audit', label: 'Journaux', icon: ScrollText },
   { view: 'settings', label: 'Paramètres', icon: Settings },
@@ -146,7 +134,7 @@ export function SidebarContent({
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon
             const active = isItemActive(item)
-            const showBadge = item.view === 'campaigns' && activeCampaigns > 0
+            const showBadge = false  // no per-nav badges in the reporting-focused sidebar
             return (
               <li key={item.view}>
                 <button
@@ -172,7 +160,7 @@ export function SidebarContent({
                           variant="default"
                           className="h-5 px-1.5 text-[10px]"
                         >
-                          {activeCampaigns}
+                          {0}
                         </Badge>
                       )}
                     </>
@@ -257,31 +245,6 @@ export function SidebarContent({
 export function Sidebar() {
   const collapsed = useAppStore((s) => s.sidebarCollapsed)
   const toggleSidebar = useAppStore((s) => s.toggleSidebar)
-  const [activeCampaigns, setActiveCampaigns] = React.useState(0)
-
-  // Poll programmed campaigns count for the badge.
-  React.useEffect(() => {
-    let cancelled = false
-    const load = async () => {
-      try {
-        const res = await fetch('/api/stats/overview?days=30', { cache: 'no-store' })
-        if (!res.ok) return
-        const data = await res.json()
-        const stats = data?.stats
-        if (!cancelled && stats && typeof stats.activeCampaigns === 'number') {
-          setActiveCampaigns(stats.activeCampaigns)
-        }
-      } catch {
-        /* ignore */
-      }
-    }
-    void load()
-    const t = setInterval(load, 60_000)
-    return () => {
-      cancelled = true
-      clearInterval(t)
-    }
-  }, [])
 
   return (
     <aside
@@ -293,7 +256,7 @@ export function Sidebar() {
     >
       <SidebarContent
         collapsed={collapsed}
-        activeCampaigns={activeCampaigns}
+        activeCampaigns={0}
       />
       {/* Collapse toggle — floats at the right edge */}
       <button

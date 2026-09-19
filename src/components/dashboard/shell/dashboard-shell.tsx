@@ -11,17 +11,9 @@ import { Eye, X } from 'lucide-react'
 // View components — the overview is fully implemented; the others are stubs
 // that will be overwritten by later agents (5-a / 5-b / 5-c / 5-d).
 import OverviewView from '@/components/dashboard/views/overview'
-import CampaignsView from '@/components/dashboard/views/campaigns'
-import CampaignNewView from '@/components/dashboard/views/campaign-new'
-import CampaignDetailView from '@/components/dashboard/views/campaign-detail'
-import TemplatesView from '@/components/dashboard/views/templates'
-import ContactsView from '@/components/dashboard/views/contacts'
-import ListsView from '@/components/dashboard/views/lists'
-import AutomationsView from '@/components/dashboard/views/automations'
 import StatsView from '@/components/dashboard/views/stats'
+import IntegrationView from '@/components/dashboard/views/integration'
 import SubscriptionView from '@/components/dashboard/views/subscription'
-import DomainView from '@/components/dashboard/views/domain'
-import ApiKeysView from '@/components/dashboard/views/apikeys'
 import SupportView from '@/components/dashboard/views/support'
 import AuditView from '@/components/dashboard/views/audit'
 import SettingsView from '@/components/dashboard/views/settings'
@@ -29,22 +21,13 @@ import SettingsView from '@/components/dashboard/views/settings'
 const APP_VERSION = 'v0.1.0'
 
 /** View registry — only developer views are mapped here.
- *  Public views (landing/login/…), owner-dashboard and renew are handled
- *  outside the shell by `src/app/page.tsx`. */
+ *  Public views (landing/login/…), owner-dashboard, renew and platform-admin
+ *  are handled outside the shell by `src/app/page.tsx`. */
 const VIEW_MAP: Partial<Record<ViewKey, React.ComponentType>> = {
   dashboard: OverviewView,
-  campaigns: CampaignsView,
-  'campaign-new': CampaignNewView,
-  'campaign-detail': CampaignDetailView,
-  editor: CampaignNewView, // editor is an alias for the campaign builder
-  templates: TemplatesView,
-  contacts: ContactsView,
-  lists: ListsView,
-  automations: AutomationsView,
   stats: StatsView,
+  integration: IntegrationView,
   subscription: SubscriptionView,
-  domain: DomainView,
-  apikeys: ApiKeysView,
   support: SupportView,
   audit: AuditView,
   settings: SettingsView,

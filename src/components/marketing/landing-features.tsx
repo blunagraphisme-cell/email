@@ -2,12 +2,12 @@
 
 import * as React from 'react'
 import {
-  Send,
-  Workflow,
-  LayoutTemplate,
   BarChart3,
-  ShieldCheck,
   Code2,
+  CreditCard,
+  Users,
+  ShieldCheck,
+  Zap,
   type LucideIcon,
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -19,46 +19,46 @@ const FEATURES: {
   bullets: string[]
 }[] = [
   {
-    title: 'Campagnes',
+    title: 'Reporting temps réel',
     description:
-      'Créez, programmez et envoyez des campagnes en quelques minutes, avec ou sans template.',
-    icon: Send,
-    bullets: ['Envoyez immédiatement ou programmez', 'Test A/B sur les objets', 'Prévisualisation en direct'],
-  },
-  {
-    title: 'Automatisations',
-    description:
-      'Construisez des workflows visuels pour relancer, accueillir et réengager vos contacts sans effort.',
-    icon: Workflow,
-    bullets: ['Triggers: nouveau contact, ouverture, inactivité', 'Étapes: attendre, envoyer, condition', 'Exécutions mesurées'],
-  },
-  {
-    title: 'Templates',
-    description:
-      'Bibliothèque de modèles réutilisables par catégorie: newsletter, promo, bienvenue, transactionnel.',
-    icon: LayoutTemplate,
-    bullets: ['Catégories prédéfinies', 'Variables {{prenom}}, {{nom}}', 'Aperçu miniature'],
-  },
-  {
-    title: 'Statistiques',
-    description:
-      'Suivez la délivrabilité, les ouvertures, les clics, les rebonds et les désabonnements en temps réel.',
+      'Centralisez les événements de vos envois e-mail : envoyés, délivrés, ouverts, cliqués, rebonds, désabonnements.',
     icon: BarChart3,
-    bullets: ['Vue d’ensemble 30 jours', 'Détail par campagne', 'Tendance des conversions'],
+    bullets: ['Taux de délivrabilité, ouverture, clic', 'Tendances sur 7/30 jours', 'Détail par campagne'],
   },
   {
-    title: 'Domaine sécurisé',
+    title: 'Intégration API simple',
     description:
-      'Configurez SPF, DKIM et DMARC pour une délivrabilité optimale et une réputation d’envoi saine.',
-    icon: ShieldCheck,
-    bullets: ['Vérification SPF / DKIM / DMARC', 'Statut en temps réel', 'Alertes de configuration'],
-  },
-  {
-    title: 'API & webhooks',
-    description:
-      'Intégrez EmailOqui à votre stack via une API REST documentée et des webhooks d’événements.',
+      'Votre backend reçoit les événements de votre infrastructure d\'envoi et les pousse vers EmailOqui via une API REST.',
     icon: Code2,
-    bullets: ['Clés API révocables', 'Webhooks SENT / DELIVERED / OPENED', 'Quotas journaliers'],
+    bullets: ['POST /api/v1/events — batch jusqu\'à 1000', 'Idempotent (déduplication par event_id)', 'Exemples cURL, Node.js, Python'],
+  },
+  {
+    title: 'Gestion d\'abonnement',
+    description:
+      'Trois plans (Starter, Business, Premium) × trois durées (3 mois, 6 mois, 1 an). Paiement par carte, renouvellement sécurisé.',
+    icon: CreditCard,
+    bullets: ['9 offres avec remise sur la durée', 'Activation après confirmation serveur', 'Liens de renouvellement à usage unique'],
+  },
+  {
+    title: 'Tableau de bord Owner',
+    description:
+      'Le propriétaire voit une vue simplifiée : KPIs, performances, abonnement. Aucune configuration technique exposée.',
+    icon: Users,
+    bullets: ['Vue read-only pour le client final', 'Pas de clés API, DNS, webhooks visibles', 'Responsive mobile-first'],
+  },
+  {
+    title: 'Multi-tenant isolé',
+    description:
+      'Chaque workspace est strictement isolé. Les données d\'un client ne sont jamais accessibles depuis un autre workspace.',
+    icon: ShieldCheck,
+    bullets: ['Isolation par workspace_id', 'Permissions serveur (Developer vs Owner)', 'Journaux d\'audit complets'],
+  },
+  {
+    title: 'White-label total',
+    description:
+      'Le fournisseur technique d\'envoi reste invisible. Le propriétaire ne voit que la marque EmailOqui — jamais l\'infra sous-jacente.',
+    icon: Zap,
+    bullets: ['Aucune mention du prestataire d\'envoi', 'Emails système brandés EmailOqui', 'Domaine email.oquitogo.online'],
   },
 ]
 
@@ -69,11 +69,11 @@ export function LandingFeatures() {
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-primary">Fonctionnalités</p>
           <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Tout ce qu’il vous faut pour réussir vos e-mails
+            Une couche de reporting et d'abonnement
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Une plateforme complète qui couvre l’intégralité du cycle: création, envoi, suivi,
-            automatisation, sécurité.
+            Votre application gère l'envoi. EmailOqui gère les statistiques, l'abonnement et le
+            tableau de bord du propriétaire.
           </p>
         </div>
 

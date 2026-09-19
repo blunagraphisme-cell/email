@@ -32,7 +32,7 @@ import {
 } from 'lucide-react'
 
 /** Maps a view key to a human-readable French title for the topbar. */
-export const VIEW_TITLES: Record<ViewKey, string> = {
+export const VIEW_TITLES: Partial<Record<ViewKey, string>> = {
   landing: 'Accueil',
   features: 'Fonctionnalités',
   pricing: 'Tarifs',
@@ -42,18 +42,9 @@ export const VIEW_TITLES: Record<ViewKey, string> = {
   signup: 'Inscription',
   forgot: 'Mot de passe oublié',
   dashboard: 'Tableau de bord',
-  campaigns: 'Campagnes',
-  'campaign-new': 'Nouvelle campagne',
-  'campaign-detail': 'Détail de campagne',
-  editor: 'Éditeur de campagne',
-  contacts: 'Contacts',
-  lists: 'Listes & Segments',
-  automations: 'Automatisations',
-  templates: 'Modèles',
   stats: 'Statistiques',
+  integration: 'Intégration',
   subscription: 'Abonnement',
-  domain: 'Domaine',
-  apikeys: 'Clés API',
   support: 'Support',
   audit: 'Journaux',
   settings: 'Paramètres',

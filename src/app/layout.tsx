@@ -15,16 +15,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EmailOqui — Automatisez votre marketing par e-mail",
+  title: "EmailOqui — Reporting & gestion d'abonnement e-mail",
   description:
-    "EmailOqui est la plateforme africaine de gestion et d'automatisation des e-mails. Siège au Nigeria, agences au Bénin, Togo et Ghana. Créez des campagnes, gérez vos contacts, programmez vos envois et suivez vos performances.",
+    "EmailOqui est la couche africaine de reporting et de gestion d'abonnement pour vos communications e-mail. Votre application envoie, EmailOqui agrège les statistiques et les présente au propriétaire. Siège au Nigeria, agences au Bénin, Togo et Ghana.",
   keywords: [
     "EmailOqui",
-    "email marketing",
-    "campagnes email",
-    "automatisation email",
-    "newsletter",
-    "gestion des campagnes",
+    "reporting e-mail",
+    "statistiques e-mail",
+    "gestion d'abonnement",
+    "API ingestion événements",
+    "tableau de bord e-mail",
     "SaaS email",
     "Nigeria",
     "Togo",
