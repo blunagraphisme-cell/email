@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}))
   const sub = await db.subscription.findFirst({ where: { workspaceId: ctx.workspace.id }, orderBy: { createdAt: 'desc' } })
   if (!sub) return fail('NO_SUBSCRIPTION', 'Aucun abonnement.', 400)
-  const plan = await db.plan.findUnique({ where: { code: body.planCode ?? ctx.plan?.code ?? 'STARTER' } })
+  const plan = await db.plan.findUnique({ where: { code: body.planCode ?? ctx.plan?.code ?? 'STARTER_3M' } })
   if (!plan) return fail('PLAN_NOT_FOUND', 'Plan introuvable.', 400)
   const token = randomToken(24)
   const tokenHash = hashToken(token)

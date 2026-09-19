@@ -156,12 +156,24 @@ export async function getQuotaUsageToday(workspaceId: string) {
 }
 
 export function planLimit(code: string) {
-  switch (code) {
+  // Les codes ont désormais un suffixe de durée (_3M, _6M, _1Y).
+  // Les quotas quotidiens dépendent du tier (Starter/Business/Premium),
+  // pas de la durée — la durée affecte juste le prix et la période.
+  const tier = code?.replace(/_(3M|6M|1Y)$/, '')
+  switch (tier) {
     case 'STARTER': return { daily: 1000, automation: 10000, retention: 30 }
     case 'BUSINESS': return { daily: 5000, automation: 50000, retention: 90 }
     case 'PREMIUM': return { daily: 10000, automation: 100000, retention: 180 }
     default: return { daily: 0, automation: 0, retention: 30 }
   }
+}
+
+/** Retourne le libellé humain d'une durée en mois (3 → "3 mois", 12 → "1 an"). */
+export function durationLabel(months: number): string {
+  if (months === 12) return '1 an'
+  if (months === 6) return '6 mois'
+  if (months === 3) return '3 mois'
+  return `${months} mois`
 }
 
 export function addMonthsCal(date: Date, months: number): Date {

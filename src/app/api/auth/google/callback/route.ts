@@ -152,7 +152,7 @@ export async function GET(req: NextRequest) {
       },
     })
 
-    const plan = await db.plan.findUnique({ where: { code: 'STARTER' } })
+    const plan = await db.plan.findUnique({ where: { code: 'STARTER_3M' } })
     if (plan) {
       const startDate = new Date()
       const endDate = addMonthsCal(startDate, plan.durationMonths)

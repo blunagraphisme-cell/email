@@ -7,9 +7,18 @@ import { db } from '@/lib/db'
 import { hashPassword } from '@/lib/auth'
 
 const PLANS = [
-  { code: 'STARTER', name: 'Starter', price: 20, currency: 'USD', durationMonths: 3, dailyEmailLimit: 1000, automationLimit: 10000, retentionDays: 30, supportLevel: 'STANDARD', features: JSON.stringify({ scheduling: true, stats: 'essential', support: 'ticket' }) },
-  { code: 'BUSINESS', name: 'Business', price: 45, currency: 'USD', durationMonths: 3, dailyEmailLimit: 5000, automationLimit: 50000, retentionDays: 90, supportLevel: 'PRIORITY', features: JSON.stringify({ scheduling: true, stats: 'advanced', support: 'priority' }) },
-  { code: 'PREMIUM', name: 'Premium', price: 80, currency: 'USD', durationMonths: 3, dailyEmailLimit: 10000, automationLimit: 100000, retentionDays: 180, supportLevel: 'PRIORITY', features: JSON.stringify({ scheduling: 'advanced', stats: 'advanced', reports: 'advanced', support: 'priority' }) },
+  // STARTER — 3 mois, 6 mois, 1 an
+  { code: 'STARTER_3M', name: 'Starter', price: 20, currency: 'USD', durationMonths: 3, dailyEmailLimit: 1000, automationLimit: 10000, retentionDays: 30, supportLevel: 'STANDARD', features: JSON.stringify({ scheduling: true, stats: 'essential', support: 'ticket' }) },
+  { code: 'STARTER_6M', name: 'Starter', price: 38, currency: 'USD', durationMonths: 6, dailyEmailLimit: 1000, automationLimit: 10000, retentionDays: 30, supportLevel: 'STANDARD', features: JSON.stringify({ scheduling: true, stats: 'essential', support: 'ticket' }) },
+  { code: 'STARTER_1Y', name: 'Starter', price: 72, currency: 'USD', durationMonths: 12, dailyEmailLimit: 1000, automationLimit: 10000, retentionDays: 30, supportLevel: 'STANDARD', features: JSON.stringify({ scheduling: true, stats: 'essential', support: 'ticket' }) },
+  // BUSINESS — 3 mois, 6 mois, 1 an
+  { code: 'BUSINESS_3M', name: 'Business', price: 45, currency: 'USD', durationMonths: 3, dailyEmailLimit: 5000, automationLimit: 50000, retentionDays: 90, supportLevel: 'PRIORITY', features: JSON.stringify({ scheduling: true, stats: 'advanced', support: 'priority' }) },
+  { code: 'BUSINESS_6M', name: 'Business', price: 85, currency: 'USD', durationMonths: 6, dailyEmailLimit: 5000, automationLimit: 50000, retentionDays: 90, supportLevel: 'PRIORITY', features: JSON.stringify({ scheduling: true, stats: 'advanced', support: 'priority' }) },
+  { code: 'BUSINESS_1Y', name: 'Business', price: 162, currency: 'USD', durationMonths: 12, dailyEmailLimit: 5000, automationLimit: 50000, retentionDays: 90, supportLevel: 'PRIORITY', features: JSON.stringify({ scheduling: true, stats: 'advanced', support: 'priority' }) },
+  // PREMIUM — 3 mois, 6 mois, 1 an
+  { code: 'PREMIUM_3M', name: 'Premium', price: 80, currency: 'USD', durationMonths: 3, dailyEmailLimit: 10000, automationLimit: 100000, retentionDays: 180, supportLevel: 'PRIORITY', features: JSON.stringify({ scheduling: 'advanced', stats: 'advanced', reports: 'advanced', support: 'priority' }) },
+  { code: 'PREMIUM_6M', name: 'Premium', price: 150, currency: 'USD', durationMonths: 6, dailyEmailLimit: 10000, automationLimit: 100000, retentionDays: 180, supportLevel: 'PRIORITY', features: JSON.stringify({ scheduling: 'advanced', stats: 'advanced', reports: 'advanced', support: 'priority' }) },
+  { code: 'PREMIUM_1Y', name: 'Premium', price: 288, currency: 'USD', durationMonths: 12, dailyEmailLimit: 10000, automationLimit: 100000, retentionDays: 180, supportLevel: 'PRIORITY', features: JSON.stringify({ scheduling: 'advanced', stats: 'advanced', reports: 'advanced', support: 'priority' }) },
 ]
 
 export async function POST() {

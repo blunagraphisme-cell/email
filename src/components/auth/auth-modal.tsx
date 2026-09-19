@@ -59,7 +59,7 @@ export function AuthModal() {
   const [suEmail, setSuEmail] = React.useState('')
   const [suPassword, setSuPassword] = React.useState('')
   const [suWorkspaceName, setSuWorkspaceName] = React.useState('')
-  const [suPlanCode, setSuPlanCode] = React.useState<'STARTER' | 'BUSINESS' | 'PREMIUM'>('STARTER')
+  const [suPlanCode, setSuPlanCode] = React.useState<'STARTER_3M' | 'STARTER_6M' | 'STARTER_1Y' | 'BUSINESS_3M' | 'BUSINESS_6M' | 'BUSINESS_1Y' | 'PREMIUM_3M' | 'PREMIUM_6M' | 'PREMIUM_1Y'>('STARTER_3M')
 
   // forgot form
   const [forgotEmail, setForgotEmail] = React.useState('')
@@ -106,7 +106,7 @@ export function AuthModal() {
     setSuEmail('')
     setSuPassword('')
     setSuWorkspaceName('')
-    setSuPlanCode('STARTER')
+    setSuPlanCode('STARTER_3M')
     setForgotEmail('')
   }
 
@@ -235,7 +235,7 @@ export function AuthModal() {
     setSuFirstName('Utilisateur')
     setSuLastName('Démo')
     setSuWorkspaceName('Mon Entreprise')
-    setSuPlanCode('STARTER')
+    setSuPlanCode('STARTER_3M')
     toast.info('Compte démo pré-rempli — cliquez sur « Créer mon compte ».')
   }
 
@@ -408,15 +408,21 @@ export function AuthModal() {
                 <Label htmlFor="su-plan">Plan souhaité</Label>
                 <Select
                   value={suPlanCode}
-                  onValueChange={(v) => setSuPlanCode(v as 'STARTER' | 'BUSINESS' | 'PREMIUM')}
+                  onValueChange={(v) => setSuPlanCode(v as 'STARTER_3M' | 'STARTER_6M' | 'STARTER_1Y' | 'BUSINESS_3M' | 'BUSINESS_6M' | 'BUSINESS_1Y' | 'PREMIUM_3M' | 'PREMIUM_6M' | 'PREMIUM_1Y')}
                 >
                   <SelectTrigger id="su-plan" className="w-full">
                     <SelectValue placeholder="Choisir un plan" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="STARTER">Starter — 20 USD / 3 mois</SelectItem>
-                    <SelectItem value="BUSINESS">Business — 45 USD / 3 mois</SelectItem>
-                    <SelectItem value="PREMIUM">Premium — 80 USD / 3 mois</SelectItem>
+                    <SelectItem value="STARTER_3M">Starter — 20 USD / 3 mois</SelectItem>
+                    <SelectItem value="STARTER_6M">Starter — 38 USD / 6 mois</SelectItem>
+                    <SelectItem value="STARTER_1Y">Starter — 72 USD / 1 an</SelectItem>
+                    <SelectItem value="BUSINESS_3M">Business — 45 USD / 3 mois</SelectItem>
+                    <SelectItem value="BUSINESS_6M">Business — 85 USD / 6 mois</SelectItem>
+                    <SelectItem value="BUSINESS_1Y">Business — 162 USD / 1 an</SelectItem>
+                    <SelectItem value="PREMIUM_3M">Premium — 80 USD / 3 mois</SelectItem>
+                    <SelectItem value="PREMIUM_6M">Premium — 150 USD / 6 mois</SelectItem>
+                    <SelectItem value="PREMIUM_1Y">Premium — 288 USD / 1 an</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

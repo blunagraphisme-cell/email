@@ -15,23 +15,26 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
+type Duration = '3M' | '6M' | '1Y'
+
+const DURATIONS: { key: Duration; label: string; short: string }[] = [
+  { key: '3M', label: '3 mois', short: '3 mois' },
+  { key: '6M', label: '6 mois', short: '6 mois' },
+  { key: '1Y', label: '1 an', short: '1 an' },
+]
+
 type Plan = {
-  code: string
   name: string
-  price: string
-  period: string
   tagline: string
   popular?: boolean
   features: string[]
   highlightFeatures: { label: string; value: string }[]
+  prices: Record<Duration, { price: string; period: string }>
 }
 
 const PLANS: Plan[] = [
   {
-    code: 'STARTER',
     name: 'Starter',
-    price: '20',
-    period: '3 mois',
     tagline: 'Idéal pour démarrer et tester le canal e-mail.',
     features: [
       '1 000 e-mails / jour',
@@ -47,12 +50,14 @@ const PLANS: Plan[] = [
       { label: 'Conservation', value: '30 jours' },
       { label: 'Support', value: 'Ticket' },
     ],
+    prices: {
+      '3M': { price: '20', period: '3 mois' },
+      '6M': { price: '38', period: '6 mois' },
+      '1Y': { price: '72', period: '1 an' },
+    },
   },
   {
-    code: 'BUSINESS',
     name: 'Business',
-    price: '45',
-    period: '3 mois',
     tagline: 'Pour les équipes qui automatisent à grande échelle.',
     popular: true,
     features: [
@@ -69,12 +74,14 @@ const PLANS: Plan[] = [
       { label: 'Conservation', value: '90 jours' },
       { label: 'Support', value: 'Prioritaire' },
     ],
+    prices: {
+      '3M': { price: '45', period: '3 mois' },
+      '6M': { price: '85', period: '6 mois' },
+      '1Y': { price: '162', period: '1 an' },
+    },
   },
   {
-    code: 'PREMIUM',
     name: 'Premium',
-    price: '80',
-    period: '3 mois',
     tagline: 'Volume élevé, rapports et automatisation avancés.',
     features: [
       '10 000 e-mails / jour',
@@ -90,6 +97,11 @@ const PLANS: Plan[] = [
       { label: 'Conservation', value: '180 jours' },
       { label: 'Support', value: 'Prioritaire' },
     ],
+    prices: {
+      '3M': { price: '80', period: '3 mois' },
+      '6M': { price: '150', period: '6 mois' },
+      '1Y': { price: '288', period: '1 an' },
+    },
   },
 ]
 
@@ -104,11 +116,12 @@ const COMPARISON: { label: string; starter: string; business: string; premium: s
   { label: 'Support', starter: 'Ticket', business: 'Prioritaire', premium: 'Prioritaire' },
   { label: 'API & webhooks', starter: 'Oui', business: 'Oui', premium: 'Oui' },
   { label: 'Domaine sécurisé SPF/DKIM/DMARC', starter: 'Oui', business: 'Oui', premium: 'Oui' },
-  { label: 'Durée', starter: '3 mois calendaires', business: '3 mois calendaires', premium: '3 mois calendaires' },
+  { label: 'Durée', starter: '3 / 6 / 12 mois', business: '3 / 6 / 12 mois', premium: '3 / 6 / 12 mois' },
 ]
 
 export function PricingView() {
   const openAuth = useAppStore((s) => s.openAuth)
+  const [duration, setDuration] = React.useState<Duration>('3M')
 
   return (
     <main className="flex-1">
@@ -119,7 +132,7 @@ export function PricingView() {
             Choisissez l’offre adaptée à votre activité
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-            Tarification simple et transparente, par période de 3 mois calendaires.
+            Tarification simple et transparente. Choisissez la durée : 3 mois, 6 mois ou 1 an.
           </p>
         </div>
       </section>
@@ -127,26 +140,48 @@ export function PricingView() {
       {/* Plan cards */}
       <section className="bg-background py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          {/* Duration selector */}
+          <div className="mb-10 flex justify-center">
+            <div className="inline-flex rounded-lg border border-border bg-muted p-1">
+              {DURATIONS.map((d) => (
+                <button
+                  key={d.key}
+                  type="button"
+                  onClick={() => setDuration(d.key)}
+                  className={`px-5 py-2 text-sm font-medium rounded-md transition-colors ${
+                    duration === d.key
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {d.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="grid gap-6 md:grid-cols-3">
-            {PLANS.map((p) => (
-              <Card
-                key={p.code}
-                className={`relative flex flex-col ${p.popular ? 'border-primary/60 shadow-md' : ''}`}
-              >
-                {p.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-primary text-primary-foreground">Populaire</Badge>
-                  </div>
-                )}
-                <CardHeader>
-                  <CardTitle className="text-xl">{p.name}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{p.tagline}</p>
-                </CardHeader>
-                <CardContent className="flex flex-1 flex-col gap-5">
-                  <div className="flex items-end gap-1">
-                    <span className="text-4xl font-bold text-foreground">{p.price}</span>
-                    <span className="text-sm text-muted-foreground">USD / {p.period}</span>
-                  </div>
+            {PLANS.map((p) => {
+              const pricing = p.prices[duration]
+              return (
+                <Card
+                  key={p.name}
+                  className={`relative flex flex-col ${p.popular ? 'border-primary/60 shadow-md' : ''}`}
+                >
+                  {p.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <Badge className="bg-primary text-primary-foreground">Populaire</Badge>
+                    </div>
+                  )}
+                  <CardHeader>
+                    <CardTitle className="text-xl">{p.name}</CardTitle>
+                    <p className="text-sm text-muted-foreground">{p.tagline}</p>
+                  </CardHeader>
+                  <CardContent className="flex flex-1 flex-col gap-5">
+                    <div className="flex items-end gap-1">
+                      <span className="text-4xl font-bold text-foreground">{pricing.price}</span>
+                      <span className="text-sm text-muted-foreground">USD / {pricing.period}</span>
+                    </div>
 
                   <dl className="grid grid-cols-2 gap-2 rounded-lg border border-border bg-secondary/30 p-3">
                     {p.highlightFeatures.map((h) => (
@@ -175,12 +210,13 @@ export function PricingView() {
                   </Button>
                 </CardContent>
               </Card>
-            ))}
+              )
+            })}
           </div>
 
           <div className="mt-8 flex items-center justify-center gap-2 text-xs text-muted-foreground">
             <Info className="size-3.5" />
-            Tous les plans: durée 3 mois calendaires. Paiement par carte.
+            Tarifs par période (3 mois, 6 mois ou 1 an). Remise sur les durées longues. Paiement par carte.
           </div>
         </div>
       </section>

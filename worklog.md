@@ -726,3 +726,54 @@ Stage Summary:
 - Routing logic fixed: invalid views are auto-reset based on user role + workspace membership
 - Both admin login and regular user signup land on the correct dashboard
 - White-label respected (no Resend mention), monochrome theme applied to all admin components
+
+---
+Task ID: 16 (6-month + 1-year plan durations)
+Agent: main
+Task: Add 6-month and 1-year duration variants for Starter/Business/Premium plans
+
+Work Log:
+- User noted all plans were 3-month only — needed 6-month and 1-year options
+- Updated src/app/api/seed/init/route.ts: 3 plans → 9 plans with suffix codes:
+  - STARTER_3M ($20/3mo), STARTER_6M ($38/6mo), STARTER_1Y ($72/1an)
+  - BUSINESS_3M ($45/3mo), BUSINESS_6M ($85/6mo), BUSINESS_1Y ($162/1an) [popular]
+  - PREMIUM_3M ($80/3mo), PREMIUM_6M ($150/6mo), PREMIUM_1Y ($288/1an)
+  - Pricing reflects ~5% discount on 6mo, ~10% discount on 1an vs 2x/4x 3mo
+- Updated src/lib/auth.ts planLimit(): extracts tier from code by stripping _3M/_6M/_1Y suffix; quotas depend on tier (Starter/Business/Premium) not duration
+- Added durationLabel(months) helper: 3 → "3 mois", 6 → "6 mois", 12 → "1 an"
+- Updated src/app/api/auth/signup/route.ts zod schema: enum of all 9 plan codes (default STARTER_3M)
+- Updated src/app/api/auth/google/callback/route.ts: default plan code STARTER → STARTER_3M
+- Updated src/app/api/subscription/route.ts: fallback plan code STARTER → STARTER_3M
+- Updated src/components/auth/auth-modal.tsx:
+  - suPlanCode state type: union of all 9 plan codes (default STARTER_3M)
+  - Select dropdown: 9 options (Starter/Business/Premium × 3mo/6mo/1an) with price labels
+- Updated src/components/marketing/landing-pricing-teaser.tsx:
+  - Added Duration type + DURATIONS array (3M, 6M, 1Y)
+  - Added duration selector tabs (3 mois / 6 mois / 1 an)
+  - PLANS restructured as TIERS with prices per duration
+  - Cards show price for selected duration dynamically
+- Updated src/components/marketing/pricing-view.tsx:
+  - Added Duration type + DURATIONS array
+  - PLANS restructured with prices: Record<Duration, {price, period}>
+  - Duration selector tabs above plan cards
+  - Comparison table "Durée" row updated: "3 / 6 / 12 mois"
+  - Info note: "Tarifs par période (3 mois, 6 mois ou 1 an). Remise sur les durées longues."
+- Updated src/components/dashboard/views/subscription.tsx PLANS array: 3 plans → 9 plans with all duration variants
+  - Fixed apostrophe encoding issue (typographic ' vs regular ') via Python UTF-8 replacement
+  - Fixed missing closing brace for last plan object
+- Re-seeded: POST /api/seed/init created all 9 plans + refreshed admin password
+- Lint: 0 errors, 0 warnings
+- Browser verification:
+  - Pricing page: duration selector (3 mois / 6 mois / 1 an) works
+    - 3 mois: Starter $20, Business $45, Premium $80
+    - 6 mois: Starter $38, Business $85, Premium $150
+    - 1 an: Starter $72, Business $162, Premium $288
+  - Signup modal plan dropdown: all 9 options visible (Starter/Business/Premium × 3mo/6mo/1an with prices)
+- Committing and pushing to git
+
+Stage Summary:
+- 9 plan variants now available (3 tiers × 3 durations)
+- Pricing reflects volume discount on longer durations (~5% on 6mo, ~10% on 1an)
+- All UI surfaces updated: pricing page (with duration selector), pricing teaser, signup modal, subscription view
+- API routes use new codes (STARTER_3M default fallback everywhere)
+- planLimit() correctly extracts tier from suffixed codes (quotas unchanged per tier)
