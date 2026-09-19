@@ -85,6 +85,58 @@ export function PaymentView() {
   const setView = useAppStore((s) => s.setView)
   const refreshSession = useAppStore((s) => s.refreshSession)
 
+  // Current subscription info (for proration calculation)
+  const [currentSub, setCurrentSub] = React.useState<{
+    planCode: string | null
+    planName: string | null
+    status: string | null
+    endDate: string | null
+    startDate: string | null
+  } | null>(null)
+
+  React.useEffect(() => {
+    // Fetch current subscription for proration
+    ;(async () => {
+      try {
+        const res = await fetch('/api/subscription', { cache: 'no-store' })
+        const data = await res.json()
+        if (data.success && data.subscription) {
+          setCurrentSub({
+            planCode: data.plan?.code ?? null,
+            planName: data.plan?.name ?? null,
+            status: data.subscription.status,
+            endDate: data.subscription.endDate,
+            startDate: data.subscription.startDate,
+          })
+        }
+      } catch {}
+    })()
+  }, [])
+
+  // Calculate proration: remaining value of current subscription
+  const planCode = viewParam ?? 'STARTER_3M'
+  const planInfo = getPlanInfo(planCode)
+
+  const currentPlanInfo = currentSub?.planCode ? getPlanInfo(currentSub.planCode) : null
+  const isUpgrade = currentSub?.status === 'ACTIF' || currentSub?.status === 'EXPIRANT_BIENTOT'
+
+  // Calculate remaining value
+  let remainingValue = 0
+  let remainingDays = 0
+  if (isUpgrade && currentSub?.endDate && currentPlanInfo) {
+    const end = new Date(currentSub.endDate)
+    const now = new Date()
+    remainingDays = Math.max(0, Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
+    // Total days of the current plan
+    const currentDurationMonths = currentSub.planCode?.match(/_(\d+)(M|Y)/)?.[1] === '1Y' ? 12 : Number(currentSub.planCode?.match(/_(\d+)(M|Y)/)?.[1] || 3)
+    const totalDays = currentDurationMonths * 30
+    // Pro-rata: (remaining days / total days) * current plan price
+    remainingValue = Math.round((remainingDays / totalDays) * currentPlanInfo.price * 100) / 100
+  }
+
+  const adjustedAmount = Math.max(0, planInfo.price - remainingValue)
+  const isSamePlan = currentSub?.planCode === planCode
+
   // Card form
   const [cardNumber, setCardNumber] = React.useState('')
   const [cardHolderName, setCardHolderName] = React.useState('')
@@ -358,7 +410,7 @@ export function PaymentView() {
                     ) : (
                       <>
                         <Lock className="size-4" />
-                        Payer {fmtMoney(planInfo.price, 'USD')}
+                        Payer {fmtMoney(adjustedAmount, 'USD')}
                       </>
                     )}
                   </Button>
@@ -415,19 +467,41 @@ export function PaymentView() {
                       <span className="font-medium">{workspace?.name}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Plan</span>
-                      <span className="font-medium">{planInfo.name}</span>
+                      <span className="text-muted-foreground">Nouveau plan</span>
+                      <span className="font-medium">{planInfo.name} — {planInfo.duration}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Durée</span>
-                      <span className="font-medium">{planInfo.duration}</span>
-                    </div>
+                    {isUpgrade && currentPlanInfo && !isSamePlan && (
+                      <>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Plan actuel</span>
+                          <span className="font-medium">{currentPlanInfo.name}</span>
+                        </div>
+                        <div className="flex justify-between text-xs">
+                          <span className="text-muted-foreground">Prix nouveau plan</span>
+                          <span className="text-muted-foreground">{fmtMoney(planInfo.price, 'USD')}</span>
+                        </div>
+                        <div className="flex justify-between text-xs">
+                          <span className="text-muted-foreground">Crédit restant ({remainingDays}j)</span>
+                          <span className="text-muted-foreground">- {fmtMoney(remainingValue, 'USD')}</span>
+                        </div>
+                      </>
+                    )}
                   </div>
                   <div className="border-t border-border pt-3">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Montant à payer</span>
-                      <span className="text-2xl font-bold">{fmtMoney(planInfo.price, 'USD')}</span>
+                      <span className="text-2xl font-bold">{fmtMoney(adjustedAmount, 'USD')}</span>
                     </div>
+                    {isUpgrade && remainingValue > 0 && !isSamePlan && (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Crédit de {fmtMoney(remainingValue, 'USD')} déduit de votre abonnement actuel.
+                      </p>
+                    )}
+                    {adjustedAmount === 0 && (
+                      <p className="mt-1 text-xs text-foreground">
+                        Aucun paiement requis — votre crédit couvre le nouveau plan.
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
