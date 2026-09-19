@@ -18,6 +18,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import {
   Building2,
@@ -33,6 +34,7 @@ import {
   Loader2,
   LogOut,
   Search,
+  Trash2,
   DollarSign,
   Send,
 } from 'lucide-react'
@@ -464,6 +466,21 @@ function UsersTab() {
     }
   }, [])
 
+  const deleteUser = async (id: string) => {
+    try {
+      const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE' })
+      const data = await res.json()
+      if (data.success) {
+        toast.success(`Compte ${data.email} supprimé.`)
+        await fetchPage(page, search)
+      } else {
+        toast.error(data.error?.message ?? 'Échec de la suppression.')
+      }
+    } catch {
+      toast.error('Erreur réseau.')
+    }
+  }
+
   React.useEffect(() => { fetchPage(page, search) }, [page, search, fetchPage])
 
   const pageCount = Math.ceil(total / 20)
@@ -498,6 +515,7 @@ function UsersTab() {
                   <th className="py-2 pr-3 text-right">Workspaces</th>
                   <th className="py-2 pr-3 text-right">Actions audit</th>
                   <th className="py-2 pr-3">Créé le</th>
+                  <th className="py-2 pr-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -511,6 +529,32 @@ function UsersTab() {
                     <td className="py-2 pr-3 text-right tabular-nums">{u.workspacesCount}</td>
                     <td className="py-2 pr-3 text-right tabular-nums">{u.auditLogsCount}</td>
                     <td className="py-2 pr-3 text-xs text-muted-foreground">{fmtDate(u.createdAt)}</td>
+                    <td className="py-2 pr-3 text-right">
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive">
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Supprimer {u.email} ?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Cette action est irréversible. L'utilisateur sera déconnecté et supprimé de tous ses workspaces. Les données des workspaces sont conservées.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={(e) => { e.preventDefault(); deleteUser(u.id) }}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Supprimer
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </td>
                   </tr>
                 ))}
               </tbody>
