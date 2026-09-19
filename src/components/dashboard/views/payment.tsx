@@ -341,7 +341,7 @@ export function PaymentView() {
                     <p className="text-xs text-muted-foreground">Votre nom complet</p>
                     <Input
                       autoComplete="cc-name"
-                      placeholder="AWA AGBODE"
+                      placeholder="Votre nom complet"
                       value={cardHolderName}
                       onChange={(e) => setCardHolderName(e.target.value)}
                       className="mt-1"
