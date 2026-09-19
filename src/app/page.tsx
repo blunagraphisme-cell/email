@@ -58,12 +58,12 @@ export default function Home() {
       const isSubscriptionActive = subStatus === 'ACTIF' || subStatus === 'EXPIRANT_BIENTOT'
       
       // Views accessible WITHOUT an active subscription
-      const unlockedViews: ViewKey[] = ['subscription', 'payment', 'support', 'settings']
+      const unlockedViews: ViewKey[] = ['subscription', 'payment', 'payment-method', 'support', 'settings']
       
       // Views accessible WITH an active subscription (developer)
       const devViews: ViewKey[] = [
         'dashboard', 'stats', 'integration',
-        'subscription', 'payment', 'owner', 'support', 'audit', 'settings',
+        'subscription', 'payment', 'payment-method', 'owner', 'support', 'audit', 'settings',
       ]
       
       // Views accessible WITH an active subscription (owner)
