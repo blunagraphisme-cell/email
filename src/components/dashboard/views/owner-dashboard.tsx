@@ -108,6 +108,22 @@ function fmtDay(d: string): string {
   }
 }
 
+// Plan price in USD (1 USD = 600 FCFA)
+function getPlanPriceUSD(code: string): number {
+  const prices: Record<string, number> = {
+    STARTER_3M: 20, STARTER_6M: 38, STARTER_1Y: 74, STARTER_2Y: 120,
+    BUSINESS_3M: 20, BUSINESS_6M: 38, BUSINESS_1Y: 74, BUSINESS_2Y: 120,
+    PREMIUM_3M: 20, PREMIUM_6M: 38, PREMIUM_1Y: 74, PREMIUM_2Y: 120,
+  }
+  return prices[code] ?? 0
+}
+
+function getPlanDurationLabel(code: string): string {
+  const dur = code.match(/_(3M|6M|1Y|2Y)$/)?.[1] || '3M'
+  const labels: Record<string, string> = { '3M': '3 mois', '6M': '6 mois', '1Y': '1 an', '2Y': '2 ans' }
+  return labels[dur] ?? '3 mois'
+}
+
 /** deterministic mock open rate per campaign (since the API doesn't expose per-campaign opens). */
 function mockOpenRate(id: string): number {
   let h = 0
@@ -883,35 +899,52 @@ function SubscriptionTab(props: {
 }) {
   const { subscription, subMeta, expiringSoon, sentToday, dailyLimit, quotaPct, setView } = props
   const workspace = useAppStore((s) => s.workspace)
+
+  // Get plan price in FCFA (1 USD = 600 FCFA)
+  const planPriceUSD = subscription?.planCode ? getPlanPriceUSD(subscription.planCode) : 0
+  const planPriceFCFA = planPriceUSD * 600
+  const planDuration = subscription?.planCode ? getPlanDurationLabel(subscription.planCode) : '—'
+
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-xl font-semibold tracking-tight">Abonnement</h1>
-        <p className="text-sm text-muted-foreground">Votre plan, votre statut et votre quota.</p>
+        <h1 className="text-xl font-semibold tracking-tight">Mon abonnement</h1>
+        <p className="text-sm text-muted-foreground">Votre plan, votre période et votre quota.</p>
       </header>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <CreditCard className="size-4 text-primary" />
-            Plan {subscription?.planName ?? workspace?.planName ?? '—'}
-          </CardTitle>
-          <CardDescription>Statut de votre abonnement EmailOqui.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+
+      {/* Plan summary card */}
+      <Card className="overflow-hidden">
+        <div className="bg-foreground px-6 py-4 text-background">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-background/60 uppercase tracking-wide">Plan actuel</p>
+              <p className="text-xl font-bold">{subscription?.planName ?? workspace?.planName ?? '—'}</p>
+              <p className="text-xs text-background/60 mt-1">{planDuration}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold">{planPriceFCFA.toLocaleString('fr-FR')} FCFA</p>
+              <p className="text-xs text-background/60">par période</p>
+            </div>
+          </div>
+        </div>
+        <CardContent className="space-y-4 pt-6">
+          {/* Status */}
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Statut</span>
-            <span
-              className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${subMeta.cls}`}
-            >
+            <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium ${subMeta.cls}`}>
               {subMeta.label}
             </span>
           </div>
+
+          {/* Period */}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Date d&apos;expiration</span>
+            <span className="text-sm text-muted-foreground">Expire le</span>
             <span className="text-sm font-medium">
               {fmtDate(subscription?.endDate ?? workspace?.subscriptionEnd)}
             </span>
           </div>
+
+          {/* Quota */}
           <div>
             <div className="mb-1 flex items-center justify-between text-xs">
               <span className="text-muted-foreground">Quota quotidien</span>
@@ -924,16 +957,46 @@ function SubscriptionTab(props: {
               {fmtInt(Math.max(0, dailyLimit - sentToday))} envois restants aujourd&apos;hui.
             </p>
           </div>
+
+          {/* Action */}
           {expiringSoon ? (
             <Button type="button" className="w-full" onClick={() => setView('renew')}>
               <RefreshCw className="size-4" />
               Renouveler mon abonnement
             </Button>
           ) : (
-            <div className="rounded-md border border-foreground/30 bg-foreground/5 p-3 text-sm text-foreground">
+            <div className="rounded-md border border-foreground/20 bg-muted/30 p-3 text-sm text-muted-foreground">
               Votre abonnement est actif. Le renouvellement sera disponible à l&apos;approche de la date d&apos;expiration.
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Available plans */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Nos tarifs</CardTitle>
+          <CardDescription>Choisissez la durée qui convient à votre activité.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {[
+              { duration: '3 mois', price: 20, fcfa: 12000 },
+              { duration: '6 mois', price: 38, fcfa: 22800 },
+              { duration: '1 an', price: 74, fcfa: 44400 },
+              { duration: '2 ans', price: 120, fcfa: 72000 },
+            ].map((p) => (
+              <div key={p.duration} className="rounded-lg border border-border p-4 text-center">
+                <p className="text-sm font-medium">{p.duration}</p>
+                <p className="mt-1 text-lg font-bold">{p.fcfa.toLocaleString('fr-FR')}</p>
+                <p className="text-xs text-muted-foreground">FCFA</p>
+                <p className="mt-1 text-xs text-muted-foreground">{p.price} USD</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Pour changer de plan ou de durée, contactez votre développeur ou le support.
+          </p>
         </CardContent>
       </Card>
     </div>
@@ -951,10 +1014,9 @@ function EmptyState() {
           <Mail className="size-7" />
         </div>
         <div>
-          <p className="text-base font-semibold">Bienvenue sur EmailOqui</p>
+          <p className="text-base font-semibold">Aucune donnée disponible</p>
           <p className="mt-1 max-w-md text-sm text-muted-foreground">
-            Aucune campagne n&apos;a encore été envoyée. Vos statistiques apparaîtront ici dès que
-            votre équipe aura expédié la première campagne.
+            Vos statistiques apparaîtront ici dès que votre équipe aura envoyé vos premières communications e-mail.
           </p>
         </div>
         <Button type="button" variant="outline" onClick={() => setView('support' as ViewKey)}>
