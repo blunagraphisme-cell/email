@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Mail, Sparkles, Loader2, AlertCircle } from 'lucide-react'
+import { Mail, Loader2, AlertCircle } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import {
   Dialog,
@@ -26,16 +26,6 @@ import { GoogleButton } from '@/components/auth/google-button'
 import { toast } from 'sonner'
 
 type TabKey = 'login' | 'signup' | 'forgot'
-
-const DEMO_EMAIL = 'blunagraphisme@gmail.com'
-const DEMO_PASSWORD = 'Antoine@228'
-
-function randomDemoEmail(): string {
-  const n = Math.floor(Math.random() * 1_000_000)
-    .toString(36)
-    .padStart(6, '0')
-  return `demo-${n}@email.oquitogo.online`
-}
 
 export function AuthModal() {
   const authModalOpen = useAppStore((s) => s.authModalOpen)
@@ -283,18 +273,7 @@ export function AuthModal() {
         setView(isSubActive ? 'dashboard' : 'subscription')
       }
 
-      // Seed demo data so dashboard displays stats immediately
-      try {
-        await fetch('/api/seed/demo', { method: 'POST' })
-        toast('Données démo chargées', {
-          description: 'Vos contacts, campagnes et templates sont prêts.',
-          icon: <Sparkles className="size-4 text-primary" />,
-        })
-      } catch {
-        // best effort
-      } finally {
-        await refreshSession()
-      }
+      // No demo seed for invitation signups
     } catch {
       toast.error('Une erreur réseau est survenue. Réessayez.')
     } finally {
@@ -314,23 +293,6 @@ export function AuthModal() {
     } finally {
       setLoading(false)
     }
-  }
-
-  const fillDemoCredentials = () => {
-    setLoginEmail(DEMO_EMAIL)
-    setLoginPassword(DEMO_PASSWORD)
-    toast.info('Identifiants Platform Admin renseignés.')
-  }
-
-  const fillDemoSignup = () => {
-    const email = randomDemoEmail()
-    setSuEmail(email)
-    setSuPassword('demo1234')
-    setSuFirstName('Utilisateur')
-    setSuLastName('Démo')
-    setSuWorkspaceName('Mon Entreprise')
-    setSuPlanCode('STARTER_3M')
-    toast.info('Compte démo pré-rempli — cliquez sur « Créer mon compte ».')
   }
 
   return (
@@ -469,41 +431,45 @@ export function AuthModal() {
                   required
                 />
               </div>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="su-workspace">Nom du workspace</Label>
-                <Input
-                  id="su-workspace"
-                  placeholder="Mon Entreprise"
-                  value={suWorkspaceName}
-                  onChange={(e) => setSuWorkspaceName(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="su-plan">Plan souhaité</Label>
-                <Select
-                  value={suPlanCode}
-                  onValueChange={(v) => setSuPlanCode(v as 'STARTER_3M' | 'STARTER_6M' | 'STARTER_1Y' | 'STARTER_2Y' | 'BUSINESS_3M' | 'BUSINESS_6M' | 'BUSINESS_1Y' | 'BUSINESS_2Y' | 'PREMIUM_3M' | 'PREMIUM_6M' | 'PREMIUM_1Y' | 'PREMIUM_2Y')}
-                >
-                  <SelectTrigger id="su-plan" className="w-full">
-                    <SelectValue placeholder="Choisir un plan" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="STARTER_3M">Starter — 20 USD / 3 mois</SelectItem>
-                    <SelectItem value="STARTER_6M">Starter — 38 USD / 6 mois</SelectItem>
-                    <SelectItem value="STARTER_1Y">Starter — 74 USD / 1 an</SelectItem>
-                    <SelectItem value="STARTER_2Y">Starter — 120 USD / 2 ans</SelectItem>
-                    <SelectItem value="BUSINESS_3M">Business — 20 USD / 3 mois</SelectItem>
-                    <SelectItem value="BUSINESS_6M">Business — 38 USD / 6 mois</SelectItem>
-                    <SelectItem value="BUSINESS_1Y">Business — 74 USD / 1 an</SelectItem>
-                    <SelectItem value="BUSINESS_2Y">Business — 120 USD / 2 ans</SelectItem>
-                    <SelectItem value="PREMIUM_3M">Premium — 20 USD / 3 mois</SelectItem>
-                    <SelectItem value="PREMIUM_6M">Premium — 38 USD / 6 mois</SelectItem>
-                    <SelectItem value="PREMIUM_1Y">Premium — 74 USD / 1 an</SelectItem>
-                    <SelectItem value="PREMIUM_2Y">Premium — 120 USD / 2 ans</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {!inviteInfo && (
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="su-workspace">Nom du workspace</Label>
+                  <Input
+                    id="su-workspace"
+                    placeholder="Mon Entreprise"
+                    value={suWorkspaceName}
+                    onChange={(e) => setSuWorkspaceName(e.target.value)}
+                    required={!inviteInfo}
+                  />
+                </div>
+              )}
+              {!inviteInfo && (
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="su-plan">Plan souhaité</Label>
+                  <Select
+                    value={suPlanCode}
+                    onValueChange={(v) => setSuPlanCode(v as 'STARTER_3M' | 'STARTER_6M' | 'STARTER_1Y' | 'STARTER_2Y' | 'BUSINESS_3M' | 'BUSINESS_6M' | 'BUSINESS_1Y' | 'BUSINESS_2Y' | 'PREMIUM_3M' | 'PREMIUM_6M' | 'PREMIUM_1Y' | 'PREMIUM_2Y')}
+                  >
+                    <SelectTrigger id="su-plan" className="w-full">
+                      <SelectValue placeholder="Choisir un plan" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="STARTER_3M">Starter — 20 USD / 3 mois</SelectItem>
+                      <SelectItem value="STARTER_6M">Starter — 38 USD / 6 mois</SelectItem>
+                      <SelectItem value="STARTER_1Y">Starter — 74 USD / 1 an</SelectItem>
+                      <SelectItem value="STARTER_2Y">Starter — 120 USD / 2 ans</SelectItem>
+                      <SelectItem value="BUSINESS_3M">Business — 20 USD / 3 mois</SelectItem>
+                      <SelectItem value="BUSINESS_6M">Business — 38 USD / 6 mois</SelectItem>
+                      <SelectItem value="BUSINESS_1Y">Business — 74 USD / 1 an</SelectItem>
+                      <SelectItem value="BUSINESS_2Y">Business — 120 USD / 2 ans</SelectItem>
+                      <SelectItem value="PREMIUM_3M">Premium — 20 USD / 3 mois</SelectItem>
+                      <SelectItem value="PREMIUM_6M">Premium — 38 USD / 6 mois</SelectItem>
+                      <SelectItem value="PREMIUM_1Y">Premium — 74 USD / 1 an</SelectItem>
+                      <SelectItem value="PREMIUM_2Y">Premium — 120 USD / 2 ans</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               <Button type="submit" disabled={loading} className="h-10 mt-1">
                 {loading ? (
@@ -521,15 +487,6 @@ export function AuthModal() {
                 <span className="text-[11px] text-muted-foreground">ou</span>
                 <Separator className="flex-1" />
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={fillDemoSignup}
-                disabled={loading}
-              >
-                <Sparkles className="size-4" />
-                Créer un compte de démo
-              </Button>
             </form>
           </TabsContent>
 
