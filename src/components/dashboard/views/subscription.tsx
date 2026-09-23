@@ -155,7 +155,7 @@ const PLANS: PlanDisplay[] = [
   {
     code: 'STARTER_1Y',
     name: 'Starter',
-    price: '72',
+    price: '74',
     period: '1 an',
     tagline: 'Starter annuel — meilleure remise.',
     features: [
@@ -168,9 +168,24 @@ const PLANS: PlanDisplay[] = [
     ],
   },
   {
+    code: 'STARTER_2Y',
+    name: 'Starter',
+    price: '120',
+    period: '2 ans',
+    tagline: 'Starter 2 ans — meilleur tarif.',
+    features: [
+      '1 000 e-mails / jour',
+      '10 000 exécutions d’automatisation',
+      'Conservation 30 jours',
+      'Programmation de campagnes',
+      'Statistiques essentielles',
+      'Support par ticket',
+    ],
+  },
+  {
     code: 'BUSINESS_3M',
     name: 'Business',
-    price: '45',
+    price: '20',
     period: '3 mois',
     tagline: 'Pour les équipes qui automatisent à grande échelle.',
     popular: true,
@@ -186,7 +201,7 @@ const PLANS: PlanDisplay[] = [
   {
     code: 'BUSINESS_6M',
     name: 'Business',
-    price: '85',
+    price: '38',
     period: '6 mois',
     tagline: 'Business sur 6 mois — remise sur la durée.',
     features: [
@@ -200,7 +215,7 @@ const PLANS: PlanDisplay[] = [
   {
     code: 'BUSINESS_1Y',
     name: 'Business',
-    price: '162',
+    price: '74',
     period: '1 an',
     tagline: 'Business annuel — meilleure remise.',
     features: [
@@ -212,9 +227,23 @@ const PLANS: PlanDisplay[] = [
     ],
   },
   {
+    code: 'BUSINESS_2Y',
+    name: 'Business',
+    price: '120',
+    period: '2 ans',
+    tagline: 'Business 2 ans — meilleur tarif.',
+    features: [
+      '5 000 e-mails / jour',
+      '50 000 exécutions d’automatisation',
+      'Conservation 90 jours',
+      'Statistiques avancées',
+      'Support prioritaire',
+    ],
+  },
+  {
     code: 'PREMIUM_3M',
     name: 'Premium',
-    price: '80',
+    price: '20',
     period: '3 mois',
     tagline: 'Volume élevé, rapports et automatisation avancés.',
     features: [
@@ -229,7 +258,7 @@ const PLANS: PlanDisplay[] = [
   {
     code: 'PREMIUM_6M',
     name: 'Premium',
-    price: '150',
+    price: '38',
     period: '6 mois',
     tagline: 'Premium sur 6 mois — remise sur la durée.',
     features: [
@@ -244,7 +273,7 @@ const PLANS: PlanDisplay[] = [
   {
     code: 'PREMIUM_1Y',
     name: 'Premium',
-    price: '288',
+    price: '74',
     period: '1 an',
     tagline: 'Premium annuel — meilleure remise.',
     features: [
@@ -256,6 +285,22 @@ const PLANS: PlanDisplay[] = [
       'Support prioritaire',
     ],
   },
+  {
+    code: 'PREMIUM_2Y',
+    name: 'Premium',
+    price: '120',
+    period: '2 ans',
+    tagline: 'Premium 2 ans — meilleur tarif.',
+    features: [
+      '10 000 e-mails / jour',
+      '100 000 exécutions d’automatisation',
+      'Conservation 180 jours',
+      'Programmation avancée',
+      'Rapports avancés',
+      'Support prioritaire',
+    ],
+  },
+
 ]
 
 /* --------------------------- status badge mapping ------------------------- */

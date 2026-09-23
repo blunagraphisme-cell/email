@@ -15,12 +15,13 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-type Duration = '3M' | '6M' | '1Y'
+type Duration = '3M' | '6M' | '1Y' | '2Y'
 
 const DURATIONS: { key: Duration; label: string; short: string }[] = [
   { key: '3M', label: '3 mois', short: '3 mois' },
   { key: '6M', label: '6 mois', short: '6 mois' },
   { key: '1Y', label: '1 an', short: '1 an' },
+  { key: '2Y', label: '2 ans', short: '2 ans' },
 ]
 
 type Plan = {
@@ -53,7 +54,8 @@ const PLANS: Plan[] = [
     prices: {
       '3M': { price: '20', period: '3 mois' },
       '6M': { price: '38', period: '6 mois' },
-      '1Y': { price: '72', period: '1 an' },
+      '1Y': { price: '74', period: '1 an' },
+      '2Y': { price: '120', period: '2 ans' },
     },
   },
   {
@@ -75,9 +77,10 @@ const PLANS: Plan[] = [
       { label: 'Support', value: 'Prioritaire' },
     ],
     prices: {
-      '3M': { price: '45', period: '3 mois' },
-      '6M': { price: '85', period: '6 mois' },
-      '1Y': { price: '162', period: '1 an' },
+      '3M': { price: '20', period: '3 mois' },
+      '6M': { price: '38', period: '6 mois' },
+      '1Y': { price: '74', period: '1 an' },
+      '2Y': { price: '120', period: '2 ans' },
     },
   },
   {
@@ -98,9 +101,10 @@ const PLANS: Plan[] = [
       { label: 'Support', value: 'Prioritaire' },
     ],
     prices: {
-      '3M': { price: '80', period: '3 mois' },
-      '6M': { price: '150', period: '6 mois' },
-      '1Y': { price: '288', period: '1 an' },
+      '3M': { price: '20', period: '3 mois' },
+      '6M': { price: '38', period: '6 mois' },
+      '1Y': { price: '74', period: '1 an' },
+      '2Y': { price: '120', period: '2 ans' },
     },
   },
 ]
@@ -132,7 +136,7 @@ export function PricingView() {
             Choisissez l’offre adaptée à votre activité
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-            Tarification simple et transparente. Choisissez la durée : 3 mois, 6 mois ou 1 an.
+            Tarification simple et transparente. Choisissez la durée : 3 mois, 6 mois, 1 an ou 2 ans.
           </p>
         </div>
       </section>
@@ -216,7 +220,7 @@ export function PricingView() {
 
           <div className="mt-8 flex items-center justify-center gap-2 text-xs text-muted-foreground">
             <Info className="size-3.5" />
-            Tarifs par période (3 mois, 6 mois ou 1 an). Remise sur les durées longues. Paiement par carte.
+            Tarifs par période (3 mois, 6 mois, 1 an ou 2 ans). Remise sur les durées longues. Paiement par carte.
           </div>
         </div>
       </section>

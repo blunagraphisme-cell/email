@@ -7,12 +7,13 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
-type Duration = '3M' | '6M' | '1Y'
+type Duration = '3M' | '6M' | '1Y' | '2Y'
 
 const DURATIONS: { key: Duration; label: string; short: string }[] = [
   { key: '3M', label: '3 mois', short: '3 mois' },
   { key: '6M', label: '6 mois', short: '6 mois' },
   { key: '1Y', label: '1 an', short: '1 an' },
+  { key: '2Y', label: '2 ans', short: '2 ans' },
 ]
 
 interface Tier {
@@ -31,7 +32,8 @@ const TIERS: Tier[] = [
     prices: {
       '3M': { price: '20', code: 'STARTER_3M' },
       '6M': { price: '38', code: 'STARTER_6M' },
-      '1Y': { price: '72', code: 'STARTER_1Y' },
+      '1Y': { price: '74', code: 'STARTER_1Y' },
+      '2Y': { price: '120', code: 'STARTER_2Y' },
     },
   },
   {
@@ -40,9 +42,10 @@ const TIERS: Tier[] = [
     features: ['5 000 e-mails / jour', '50 000 exécutions', 'Conservation 90 jours', 'Support prioritaire'],
     popular: true,
     prices: {
-      '3M': { price: '45', code: 'BUSINESS_3M' },
-      '6M': { price: '85', code: 'BUSINESS_6M' },
-      '1Y': { price: '162', code: 'BUSINESS_1Y' },
+      '3M': { price: '20', code: 'BUSINESS_3M' },
+      '6M': { price: '38', code: 'BUSINESS_6M' },
+      '1Y': { price: '74', code: 'BUSINESS_1Y' },
+      '2Y': { price: '120', code: 'BUSINESS_2Y' },
     },
   },
   {
@@ -50,9 +53,10 @@ const TIERS: Tier[] = [
     tagline: 'Volume élevé, rapports et automatisation avancés.',
     features: ['10 000 e-mails / jour', '100 000 exécutions', 'Conservation 180 jours', 'Support prioritaire + rapports'],
     prices: {
-      '3M': { price: '80', code: 'PREMIUM_3M' },
-      '6M': { price: '150', code: 'PREMIUM_6M' },
-      '1Y': { price: '288', code: 'PREMIUM_1Y' },
+      '3M': { price: '20', code: 'PREMIUM_3M' },
+      '6M': { price: '38', code: 'PREMIUM_6M' },
+      '1Y': { price: '74', code: 'PREMIUM_1Y' },
+      '2Y': { price: '120', code: 'PREMIUM_2Y' },
     },
   },
 ]
