@@ -36,7 +36,7 @@ export function OwnerView() {
   const [loading, setLoading] = React.useState(true)
   const [inviteEmail, setInviteEmail] = React.useState('')
   const [submitting, setSubmitting] = React.useState(false)
-  const [newlyCreated, setNewlyCreated] = React.useState<{ inviteUrl: string; email: string; emailSent: boolean } | null>(null)
+  const [newlyCreated, setNewlyCreated] = React.useState<{ inviteUrl: string; email: string; emailSent: boolean; emailError: string | null } | null>(null)
 
   const fetchInvitations = React.useCallback(async () => {
     setLoading(true)
@@ -98,7 +98,7 @@ export function OwnerView() {
         toast.error(data.error?.message ?? 'Erreur lors de l’invitation.')
         return
       }
-      setNewlyCreated({ inviteUrl: data.inviteUrl, email: data.invitation.email, emailSent: data.emailSent })
+      setNewlyCreated({ inviteUrl: data.inviteUrl, email: data.invitation.email, emailSent: data.emailSent, emailError: data.emailError })
       setInviteEmail('')
       await fetchInvitations()
       if (data.emailSent) {
@@ -240,9 +240,16 @@ export function OwnerView() {
                       Le propriétaire recevra un e-mail avec le lien d'invitation. Il peut aussi le copier ci-dessous.
                     </p>
                   ) : (
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      L'e-mail n'a pas pu être envoyé automatiquement. Copiez ce lien et envoyez-le manuellement.
-                    </p>
+                    <div className="mt-1 flex flex-col gap-1">
+                      <p className="text-xs text-muted-foreground">
+                        L'e-mail n'a pas pu être envoyé automatiquement. Copiez ce lien et envoyez-le manuellement.
+                      </p>
+                      {newlyCreated.emailError && (
+                        <p className="text-xs text-destructive">
+                          Erreur: {newlyCreated.emailError}
+                        </p>
+                      )}
+                    </div>
                   )}
                   <div className="mt-2 flex items-center gap-2">
                     <code className="flex-1 overflow-x-auto rounded-md bg-background p-2 text-xs font-mono">
