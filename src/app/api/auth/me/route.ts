@@ -1,5 +1,7 @@
 /**
- * GET /api/auth/me — récupère l'utilisateur courant + workspace actif
+ * GET /api/auth/me — récupère l'utilisateur courant + workspace actif.
+ * Auto-accepte les invitations en attente pour l'e-mail de l'utilisateur
+ * (utile quand l'utilisateur est déjà connecté via cookie de session).
  */
 import { NextResponse } from 'next/server'
 import { getSecurityContext } from '@/lib/auth'
@@ -10,6 +12,50 @@ export async function GET() {
   if (!ctx || !ctx.user) {
     return NextResponse.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Non connecté' } }, { status: 401 })
   }
+
+  // Auto-accept pending invitations for this user's email
+  // This ensures invitations are accepted even if the user is already logged in
+  // (via cookie) and never went through the login form
+  const pendingInvites = await db.invitation.findMany({
+    where: { email: ctx.user.email.toLowerCase(), status: 'EN_ATTENTE' },
+  })
+  let invitesAccepted = 0
+  for (const inv of pendingInvites) {
+    // Check if already a member of this workspace
+    const existing = await db.workspaceMember.findFirst({
+      where: { workspaceId: inv.workspaceId, userId: ctx.user.id },
+    })
+    if (!existing) {
+      await db.workspaceMember.create({
+        data: {
+          workspaceId: inv.workspaceId,
+          userId: ctx.user.id,
+          role: inv.role,
+          status: 'ACTIF',
+          invitedBy: ctx.user.id,
+        },
+      })
+    }
+    await db.invitation.update({
+      where: { id: inv.id },
+      data: { status: 'ACCEPTEE', acceptedAt: new Date() },
+    })
+    invitesAccepted++
+  }
+
+  // If invitations were just accepted, re-fetch the security context
+  // to get the updated workspace (OWNER membership)
+  if (invitesAccepted > 0) {
+    const updatedCtx = await getSecurityContext()
+    if (updatedCtx?.workspace) {
+      ctx.workspace = updatedCtx.workspace
+      ctx.membership = updatedCtx.membership
+      ctx.subscription = updatedCtx.subscription
+      ctx.plan = updatedCtx.plan
+      ctx.role = updatedCtx.role
+    }
+  }
+
   if (!ctx.workspace) {
     return NextResponse.json({
       success: true,
