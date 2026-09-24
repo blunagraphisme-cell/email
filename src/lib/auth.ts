@@ -79,7 +79,10 @@ export async function getCurrentUser() {
 export async function getActiveWorkspace(userId: string) {
   // Récupère le workspace d'appartenance actif de l'utilisateur
   const membership = await db.workspaceMember.findFirst({
-    where: { userId, status: 'ACTIF' },
+  // Prioritize OWNER memberships over DEVELOPER (so an invited owner
+  // doesn't get stuck on an old DEVELOPER workspace from a previous signup)
+  let membership = await db.workspaceMember.findFirst({
+    where: { userId, status: 'ACTIF', role: 'OWNER' },
     include: {
       workspace: {
         include: {
@@ -93,6 +96,24 @@ export async function getActiveWorkspace(userId: string) {
       },
     },
   })
+  // Fall back to any active membership (DEVELOPER) if no OWNER membership
+  if (!membership) {
+    membership = await db.workspaceMember.findFirst({
+      where: { userId, status: 'ACTIF' },
+      include: {
+        workspace: {
+          include: {
+            subscriptions: {
+              include: { plan: true },
+              orderBy: { createdAt: 'desc' },
+              take: 1,
+            },
+            domain: true,
+          },
+        },
+      },
+    })
+  }
   if (!membership) return null
   const ws = membership.workspace
   const sub = ws.subscriptions[0]

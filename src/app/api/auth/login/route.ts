@@ -35,8 +35,35 @@ export async function POST(req: NextRequest) {
   const token = await createSession(user.id)
   await setSessionCookie(token)
 
+  // Auto-accept any pending invitations for this user's email
+  const pendingInvites = await db.invitation.findMany({
+    where: { email: user.email.toLowerCase(), status: 'EN_ATTENTE' },
+    include: { workspace: true },
+  })
+  for (const inv of pendingInvites) {
+    // Check if already a member
+    const existing = await db.workspaceMember.findFirst({
+      where: { workspaceId: inv.workspaceId, userId: user.id },
+    })
+    if (!existing) {
+      await db.workspaceMember.create({
+        data: {
+          workspaceId: inv.workspaceId,
+          userId: user.id,
+          role: inv.role,
+          status: 'ACTIF',
+          invitedBy: user.id,
+        },
+      })
+    }
+    await db.invitation.update({
+      where: { id: inv.id },
+      data: { status: 'ACCEPTEE', acceptedAt: new Date() },
+    })
+  }
+
   await db.auditLog.create({
-    data: { userId: user.id, workspaceId: '', action: 'LOGIN', entityType: 'User', entityId: user.id, metadata: '{}' },
+    data: { userId: user.id, workspaceId: '', action: 'LOGIN', entityType: 'User', entityId: user.id, metadata: JSON.stringify({ autoAcceptedInvites: pendingInvites.length }) },
   }).catch(() => {})
 
   return NextResponse.json({ success: true, user: {
